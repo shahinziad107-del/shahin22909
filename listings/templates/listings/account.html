@@ -1,0 +1,49 @@
+{% extends 'listings/base.html' %}
+{% load static %}
+
+{% block title %}حسابي - إسكان كوم{% endblock %}
+
+{% block content %}
+<div class="container reveal mt-5 pt-3">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="detail-card text-center pb-5">
+                <!-- Avatar -->
+                <div class="mb-4">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--secondary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; box-shadow: var(--shadow-md);">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+                
+                <h2 class="fw-bold mb-1">{% if request.user.is_authenticated %}{{ request.user.username }}{% else %}ضيف{% endif %}</h2>
+                <p class="text-muted fs-5 mb-4 border-bottom pb-4">
+                    <i class="fa-solid fa-envelope mx-2"></i>
+                    {% if request.user.is_authenticated %}{{ request.user.email|default:"لا يوجد إيميل مسجل" }}{% else %}user@example.com{% endif %}
+                </p>
+
+                <!-- Profile Actions -->
+                <div class="d-flex flex-column gap-3 px-4">
+                    <a href="#" class="btn btn-light border p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fa-solid fa-house text-primary ms-2 fs-5"></i> عقاراتي
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted"></i>
+                    </a>
+                    <a href="#" class="btn btn-light border p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fa-solid fa-gear text-secondary ms-2 fs-5"></i> إعدادات الحساب
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted"></i>
+                    </a>
+                    
+                    <hr class="my-2">
+                    
+                    <a href="#" class="btn btn-danger p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 justify-content-center">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

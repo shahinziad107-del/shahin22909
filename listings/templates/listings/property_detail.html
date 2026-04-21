@@ -1,0 +1,78 @@
+{% extends 'listings/base.html' %}
+{% load static %}
+
+{% block title %}{{ property.title }} - التفاصيل{% endblock %}
+
+{% block content %}
+<div class="container reveal">
+    <nav aria-label="breadcrumb" class="my-4">
+        <ol class="breadcrumb bg-transparent p-0 m-0">
+            <li class="breadcrumb-item"><a href="{% url 'property_list' %}" class="text-decoration-none text-muted"><i class="fa-solid fa-house ms-1"></i>الرئيسية</a></li>
+            <li class="breadcrumb-item text-muted">العقارات</li>
+            <li class="breadcrumb-item active fw-bold" aria-current="page">{{ property.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            {% if property.image %}
+                <img src="{{ property.image.url }}" class="detail-image-main mb-4" alt="{{ property.title }}">
+            {% else %}
+                <div class="detail-image-main bg-light mb-4 d-flex align-items-center justify-content-center text-muted flex-column border">
+                    <i class="fa-solid fa-image fs-1 mb-2"></i>
+                    <h2>صورة غير متوفرة</h2>
+                </div>
+            {% endif %}
+            
+            <div class="detail-card mb-5">
+                <h2 class="fw-bold mb-3">{{ property.title }}</h2>
+                <div class="d-flex align-items-center text-muted mb-4 fs-5">
+                    <i class="fa-solid fa-location-dot text-primary ms-2 fs-4"></i>
+                    {{ property.location }}
+                </div>
+                
+                <h4 class="fw-bold mt-5 border-bottom pb-2 mb-4">وصف العقار</h4>
+                <p class="fs-5 text-secondary" style="line-height: 1.9;">
+                    {{ property.description|linebreaks }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="detail-card sticky-top" style="top: 100px;">
+                <div class="text-center mb-4 border-bottom pb-4">
+                    <p class="text-muted fs-5 mb-1">السعر المطلوب</p>
+                    <div class="detail-price">{{ property.price }} <span class="fs-4 text-muted border-0">ج.م</span></div>
+                </div>
+                
+                <h5 class="fw-bold mb-3">معلومات سريعة</h5>
+                <ul class="list-unstyled feature-list mb-4">
+                    <li>
+                        <div class="feature-icon"><i class="fa-regular fa-calendar"></i></div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold">تاريخ النشر</h6>
+                            <small class="text-muted">{{ property.created_at|date:"d M Y" }}</small>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feature-icon"><i class="fa-regular fa-user"></i></div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold">المالك / الوكيل</h6>
+                            <small class="text-muted">{{ property.owner.username }}</small>
+                        </div>
+                    </li>
+                </ul>
+
+                <button class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-3 d-flex align-items-center justify-content-center gap-2 py-3">
+                    <i class="fa-solid fa-phone"></i> اتصل بالبائع
+                </button>
+                <button class="btn btn-outline-success btn-lg w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 py-3">
+                    <i class="fa-brands fa-whatsapp fs-4"></i> تواصل عبر واتساب
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

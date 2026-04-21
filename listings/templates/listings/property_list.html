@@ -1,0 +1,86 @@
+{% extends 'listings/base.html' %}
+{% load static %}
+
+{% block title %}الرئيسية - أفضل العقارات{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-wrapper reveal">
+        <div class="hero-content">
+            <h1 class="hero-title">ابحث عن منزل أحلامك</h1>
+            <p class="hero-subtitle mb-4">اكتشف أفضل العقارات المتاحة للبيع أو للإيجار بأسعار لا تقبل المنافسة وبخطوات بسيطة.</p>
+            <div class="d-inline-flex gap-2 justify-content-center">
+                <button class="btn btn-light btn-lg rounded-pill px-5 text-primary fw-bold shadow">
+                    <i class="fa-solid fa-magnifying-glass ms-2"></i> تصفح الآن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Properties Section -->
+    <div class="d-flex justify-content-between align-items-center mt-5 mb-4 reveal">
+        <h2 class="fw-bold fs-3 text-dark mb-0">أحدث العقارات المضافة</h2>
+        <a href="#" class="text-decoration-none fw-bold" style="color: var(--secondary-color)">عرض الكل <i class="fa-solid fa-arrow-left ps-1"></i></a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 pb-5">
+        {% for property in properties %}
+            <div class="col reveal">
+                <div class="property-card">
+                    <div class="card-img-wrapper">
+                        <span class="price-tag">{{ property.price }} ج.م</span>
+                        {% if property.image %}
+                            <img src="{{ property.image.url }}" class="property-image" alt="{{ property.title }}">
+                        {% else %}
+                            <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
+                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
+                                <span>لا توجد صورة</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body container-fluid p-4">
+                        <h3 class="card-title text-truncate">{{ property.title }}</h3>
+                        <div class="location-text">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>{{ property.location }}</span>
+                        </div>
+                        
+                        <!-- Dummy Features to make the design rich -->
+                        <div class="row gx-2 mt-3 mb-3 text-muted text-center" style="font-size: 0.9rem;">
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <i class="fa-solid fa-bed text-secondary mb-1 d-block"></i> 3 غرف
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <i class="fa-solid fa-bath text-secondary mb-1 d-block"></i> 2 حمام
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <i class="fa-solid fa-ruler-combined text-secondary mb-1 d-block"></i> 150 م²
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> {{ property.created_at|timesince }}</span>
+                        <a href="{% url 'property_detail' property.pk %}" class="btn btn-primary rounded-pill px-4">
+                            التفاصيل <i class="fa-solid fa-chevron-left ms-1 text-white-50"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5 reveal">
+                <i class="fa-solid fa-folder-open fs-1 text-muted mb-3"></i>
+                <p class="text-muted fs-5">تطبيقك رائع! لكن لا توجد عقارات مضافة حتى الآن.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
