@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const emailEl = document.getElementById('user-email');
             if (emailEl) emailEl.innerText = user.email;
             const nameEl = document.getElementById('user-name');
-            if (nameEl) nameEl.innerText = user.email.split('@')[0];
+            if (nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
         }
     });
 
@@ -64,15 +64,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (regForm) {
             regForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = regForm.querySelector('input[type="email"]').value;
-                const password = regForm.querySelector('input[type="password"]').value;
+                const btn = regForm.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = 'جاري تسجيل الحساب... <i class="fa-solid fa-spinner fa-spin ms-2"></i>';
+
+                const name = regForm.querySelector('#reg-name').value;
+                const email = regForm.querySelector('#reg-email').value;
+                const password = regForm.querySelector('#reg-password').value;
                 
                 try {
-                    await createUserWithEmailAndPassword(auth, email, password);
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    // Update user profile with name
+                    await updateProfile(userCredential.user, {
+                        displayName: name
+                    });
+                    
                     // Redirect Handled by onAuthStateChanged globally!
                     window.location.href = "home.html";
                 } catch (error) {
                     alert("حدث خطأ أثناء التسجيل: " + error.message);
+                    btn.disabled = false;
+                    btn.innerHTML = 'تسجيل الحساب <i class="fa-solid fa-user-plus ms-2"></i>';
                 }
             });
         }

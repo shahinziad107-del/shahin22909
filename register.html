@@ -56,10 +56,18 @@
 
         <form id="register-form">
             <div class="mb-3 text-start">
+                <label class="form-label fw-bold text-muted small">الاسم الكامل <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+                    <input type="text" id="reg-name" class="form-control border-start-0" placeholder="أحمد محمد" required>
+                </div>
+            </div>
+
+            <div class="mb-3 text-start">
                 <label class="form-label fw-bold text-muted small">البريد الإلكتروني <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
-                    <input type="email" class="form-control border-start-0" placeholder="user@example.com" required>
+                    <input type="email" id="reg-email" class="form-control border-start-0" placeholder="user@example.com" required>
                 </div>
             </div>
             
@@ -67,7 +75,7 @@
                 <label class="form-label fw-bold text-muted small">كلمة المرور (6 أحرف أو أكثر) <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" class="form-control border-start-0" placeholder="••••••••" required minlength="6">
+                    <input type="password" id="reg-password" class="form-control border-start-0" placeholder="••••••••" required minlength="6">
                 </div>
             </div>
 
