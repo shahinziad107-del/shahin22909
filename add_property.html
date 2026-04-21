@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة عقار - أجرلي Ajarli</title>
+    
+    <!-- Bootstrap RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">
+                <img src="./static/img/logo.png" alt="Logo" height="30" class="ms-1" style="border-radius: 8px;">
+                أجرلي <span class="fw-normal fs-6 text-muted me-1">Ajarli</span>
+            </a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fa-solid fa-bars fs-2 text-primary"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-phone ms-1"></i>تواصل معنا</a>
+                    </li>
+                </ul>
+                <div class="d-flex gx-2">
+                    <a href="account.html" class="btn btn-outline-primary ms-2 rounded-pill px-4"><i class="fa-regular fa-user ms-1"></i> حسابي</a>
+                    <a href="add_property.html" class="btn btn-primary rounded-pill px-4 shadow-sm active">إضافة عقار</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px; min-height: 80vh;" class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="detail-card reveal mb-5">
+                    <h2 class="fw-bold mb-4 border-bottom pb-3"><i class="fa-solid fa-house-medical text-primary ms-2"></i>إضافة عقار جديد</h2>
+                    
+                    <form action="home.html" method="GET">
+                        <div class="row g-4">
+                            <!-- Title -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">عنوان العقار <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: شقة سوبر لوكس للايجار" required>
+                            </div>
+                            
+                            <!-- Location & Price -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">السعر (بالجنيه المصري) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control px-3 py-2 border rounded-3" placeholder="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">المدينة / الموقع <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control px-3 py-2 border rounded-3" placeholder="المعادي، القاهرة" required>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">تفاصيل العقار <span class="text-danger">*</span></label>
+                                <textarea class="form-control px-3 py-2 border rounded-3" rows="5" placeholder="اكتب وصفاً دقيقاً حول عدد الغرف والمميزات..." required></textarea>
+                            </div>
+                            
+                            <!-- Image Upload (Dummy for Static) -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">صور العقار</label>
+                                <div class="border rounded-3 p-5 text-center bg-light" style="border-style: dashed !important; border-width: 2px !important;">
+                                    <i class="fa-solid fa-cloud-arrow-up fs-1 text-muted mb-2"></i>
+                                    <h5 class="text-muted">اضغط هنا أو اسحب الصور للإرفاق</h5>
+                                    <input type="file" class="d-none">
+                                </div>
+                            </div>
+                            
+                            <!-- Submit -->
+                            <div class="col-12 mt-5">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3">نشر العقار الآن <i class="fa-regular fa-paper-plane ms-2"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <div class="mb-4">
+                <a href="#" class="text-white text-decoration-none mx-2 fs-4"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="text-white text-decoration-none mx-2 fs-4"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="text-white text-decoration-none mx-2 fs-4"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <p class="mb-0">© 2026 أجرلي Ajarli. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./static/js/main.js"></script>
+</body>
+</html>
