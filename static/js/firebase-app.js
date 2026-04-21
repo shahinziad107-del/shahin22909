@@ -51,14 +51,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 const password = loginForm.querySelector('input[type="password"]').value;
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
-                    // Redirect is handled by onAuthStateChanged
                 } catch (error) {
-                    // Quick fallback: if user doesn't exist, we just register them so he can test easily!
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                    } catch (err2) {
-                        alert("خطأ في تسجيل الدخول: " + err2.message);
-                    }
+                    alert("خطأ في تسجيل الدخول: البريد أو كلمة المرور غير صحيحة.");
+                }
+            });
+        }
+    }
+
+    // --- Register Logic ---
+    if (path.includes('register.html')) {
+        const regForm = document.getElementById('register-form');
+        if (regForm) {
+            regForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = regForm.querySelector('input[type="email"]').value;
+                const password = regForm.querySelector('input[type="password"]').value;
+                
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    // Redirect Handled by onAuthStateChanged globally!
+                    window.location.href = "home.html";
+                } catch (error) {
+                    alert("حدث خطأ أثناء التسجيل: " + error.message);
                 }
             });
         }
