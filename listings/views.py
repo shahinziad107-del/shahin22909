@@ -1,21 +1,44 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from .models import Property
 
 def login_view(request):
-    return render(request, 'listings/login.html')
+    if request.user.is_authenticated:
+        return redirect('property_list')
+        
+    error = None
+    if request.method == 'POST':
+        u = request.POST.get('username')
+        p = request.POST.get('password')
+        user = authenticate(request, username=u, password=p)
+        if user is not None:
+            login(request, user)
+            return redirect('property_list')
+        else:
+            error = "اسم المستخدم أو كلمة المرور غير صحيحة"
+    return render(request, 'listings/login.html', {'error': error})
 
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
 def property_list(request):
     properties = Property.objects.all().order_by('-created_at')
     return render(request, 'listings/property_list.html', {'properties': properties})
 
+@login_required
 def property_detail(request, pk):
     property = get_object_or_404(Property, pk=pk)
     return render(request, 'listings/property_detail.html', {'property': property})
 
+@login_required
 def account_view(request):
     return render(request, 'listings/account.html')
 
+@login_required
 def add_property_view(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -24,9 +47,7 @@ def add_property_view(request):
         description = request.POST.get('description')
         image = request.FILES.get('image')
         
-        owner = request.user if request.user.is_authenticated else User.objects.first()
-        if not owner:
-            owner = User.objects.create_superuser('admin', 'admin@ajarli.com', 'admin')
+        owner = request.user
             
         Property.objects.create(
             title=title, price=price, location=location, 
@@ -35,8 +56,7 @@ def add_property_view(request):
         return redirect('property_list')
     return render(request, 'listings/add_property.html')
 
+@login_required
 def my_properties_view(request):
-    # Retrieve properties belonging to the user
-    # properties = Property.objects.filter(owner=request.user)
-    properties = Property.objects.all().order_by('-created_at') # Dummy implementation to show UI
+    properties = Property.objects.filter(owner=request.user).order_by('-created_at')
     return render(request, 'listings/my_properties.html', {'properties': properties})

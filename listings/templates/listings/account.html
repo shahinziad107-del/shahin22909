@@ -15,10 +15,10 @@
                     </div>
                 </div>
                 
-                <h2 class="fw-bold mb-1">{% if request.user.is_authenticated %}{{ request.user.username }}{% else %}ضيف{% endif %}</h2>
+                <h2 class="fw-bold mb-1">{{ request.user.username|default:"المدير العام" }}</h2>
                 <p class="text-muted fs-5 mb-4 border-bottom pb-4">
                     <i class="fa-solid fa-envelope mx-2"></i>
-                    {% if request.user.is_authenticated %}{{ request.user.email|default:"لا يوجد إيميل مسجل" }}{% else %}user@example.com{% endif %}
+                    {% if request.user.email %}{{ request.user.email }}{% else %}admin@ajarli.com{% endif %}
                 </p>
 
                 <!-- Profile Actions -->
@@ -38,7 +38,7 @@
                     
                     <hr class="my-2">
                     
-                    <a href="#" class="btn btn-danger p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 justify-content-center">
+                    <a href="{% url 'logout' %}" class="btn btn-danger p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 justify-content-center">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج
                     </a>
                 </div>
