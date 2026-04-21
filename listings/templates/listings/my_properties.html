@@ -1,0 +1,64 @@
+{% extends 'listings/base.html' %}
+{% load static %}
+
+{% block title %}عقاراتي - أجرلي Ajarli{% endblock %}
+
+{% block content %}
+<div class="container reveal mt-4 pb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold fs-3 text-dark mb-0">
+            <i class="fa-solid fa-building-user text-primary ms-2"></i> إدارة عقاراتي
+        </h2>
+        <a href="{% url 'add_property' %}" class="btn btn-outline-primary rounded-pill fw-bold">
+            <i class="fa-solid fa-plus ms-1"></i> إضافة عقار جديد
+        </a>
+    </div>
+
+    <!-- Properties Management Table / List -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        {% for property in properties %}
+            <div class="col reveal">
+                <div class="property-card">
+                    <div class="card-img-wrapper" style="height: 180px;">
+                        <span class="price-tag bg-primary">{{ property.price }} ج.م</span>
+                        {% if property.image %}
+                            <img src="{{ property.image.url }}" class="property-image" alt="{{ property.title }}">
+                        {% else %}
+                            <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
+                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body container-fluid p-3">
+                        <h4 class="card-title text-truncate mb-2 fs-5">{{ property.title }}</h4>
+                        <div class="location-text mb-0 small">
+                            <i class="fa-solid fa-location-dot"></i> {{ property.location }}
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2">
+                        <a href="{% url 'property_detail' property.pk %}" class="btn btn-sm btn-outline-secondary rounded-pill flex-grow-1">
+                            <i class="fa-regular fa-eye ms-1"></i> عرض
+                        </a>
+                        <button class="btn btn-sm btn-warning rounded-pill flex-grow-1 text-white">
+                            <i class="fa-regular fa-pen-to-square ms-1"></i> تعديل
+                        </button>
+                        <button class="btn btn-sm btn-danger rounded-pill">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fa-solid fa-house-circle-exclamation fs-1 text-muted mb-3 opacity-50"></i>
+                <p class="text-muted fs-5">أنت لم تقم بإضافة أي عقارات حتى الآن.</p>
+                <a href="{% url 'add_property' %}" class="btn btn-primary rounded-pill py-2 px-4 mt-3">انشر عقارك الأول الآن!</a>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

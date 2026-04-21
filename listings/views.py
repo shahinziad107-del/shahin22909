@@ -20,3 +20,9 @@ def add_property_view(request):
         # Add property DB logic would go here
         pass
     return render(request, 'listings/add_property.html')
+
+def my_properties_view(request):
+    # Retrieve properties belonging to the user
+    # properties = Property.objects.filter(owner=request.user)
+    properties = Property.objects.all().order_by('-created_at') # Dummy implementation to show UI
+    return render(request, 'listings/my_properties.html', {'properties': properties})
