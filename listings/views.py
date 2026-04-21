@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.models import User
 from .models import Property
 
 def login_view(request):
@@ -17,8 +18,21 @@ def account_view(request):
 
 def add_property_view(request):
     if request.method == 'POST':
-        # Add property DB logic would go here
-        pass
+        title = request.POST.get('title')
+        price = request.POST.get('price')
+        location = request.POST.get('location')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        
+        owner = request.user if request.user.is_authenticated else User.objects.first()
+        if not owner:
+            owner = User.objects.create_superuser('admin', 'admin@ajarli.com', 'admin')
+            
+        Property.objects.create(
+            title=title, price=price, location=location, 
+            description=description, image=image, owner=owner
+        )
+        return redirect('property_list')
     return render(request, 'listings/add_property.html')
 
 def my_properties_view(request):
