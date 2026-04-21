@@ -20,15 +20,16 @@ const db = getFirestore(app);
 // Router & Logic
 document.addEventListener("DOMContentLoaded", () => {
     const defaultPage = window.location.pathname.endsWith('/') || window.location.pathname.includes('index.html');
+    const isRegisterPage = window.location.pathname.includes('register.html');
     const path = window.location.pathname;
 
     // --- Auth Protection ---
     onAuthStateChanged(auth, (user) => {
-        if (!user && !defaultPage) {
+        if (!user && !defaultPage && !isRegisterPage) {
             // Not logged in but trying to access protected page
             window.location.href = "index.html"; 
-        } else if (user && defaultPage) {
-            // Logged in but visiting login page
+        } else if (user && (defaultPage || isRegisterPage)) {
+            // Logged in but visiting login or register page
             window.location.href = "home.html";
         }
 
