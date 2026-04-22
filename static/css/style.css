@@ -245,26 +245,28 @@ footer {
    ========================================= */
 .mobile-bottom-nav {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    height: 65px;
-    background: rgba(255, 255, 255, 0.6);
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(25px) saturate(200%);
     -webkit-backdrop-filter: blur(25px) saturate(200%);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     z-index: 1050;
-    border-radius: 35px;
-    padding: 0 10px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 40px;
+    padding: 0 15px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .mobile-bottom-nav .nav-item {
-    color: var(--text-muted);
-    font-size: 1.3rem;
+    color: rgba(15, 23, 42, 0.6);
+    font-size: 1.25rem;
     position: relative;
     text-decoration: none;
     display: flex;
@@ -278,24 +280,25 @@ footer {
 
 .mobile-bottom-nav .nav-item.active {
     color: var(--secondary-color);
+    transform: scale(1.1);
 }
 
 .mobile-bottom-nav .center-add-btn {
-    transform: translateY(-22px);
+    transform: translateY(-15px);
 }
 
 .mobile-bottom-nav .center-add-btn .add-btn-inner {
-    background: var(--secondary-color);
+    background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
     color: white;
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.6rem;
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-    border: 3px solid rgba(255, 255, 255, 0.9);
+    font-size: 1.4rem;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -305,6 +308,6 @@ footer {
 
 @media (max-width: 991px) {
     body {
-        padding-bottom: 110px !important;
+        padding-bottom: 90px !important;
     }
 }
