@@ -24,9 +24,7 @@
                 <img src="./static/img/logo.png" alt="Logo" height="30" class="ms-1" style="border-radius: 8px;">
                 أجرلي <span class="fw-normal fs-6 text-muted me-1">Ajarli</span>
             </a>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="fa-solid fa-bars fs-2 text-primary"></i>
-            </button>
+<!-- Mobile Nav Toggler Removed -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -104,5 +102,27 @@
     <!-- Custom JS -->
     <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
+
+    <!-- Mobile Bottom Nav -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="home.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="add_property.html" class="nav-item center-add-btn">
+            <div class="add-btn-inner">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-phone"></i>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class="fa-regular fa-user"></i>
+        </a>
+    </div>
+
 </body>
 </html>
