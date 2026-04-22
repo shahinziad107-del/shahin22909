@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const isRegisterPage = window.location.pathname.includes('register.html');
     const path = window.location.pathname;
 
+    const ADMIN_EMAIL = "shahinziad107@gmail.com";
+
     // --- Auth Protection ---
     onAuthStateChanged(auth, (user) => {
         if (!user && !defaultPage && !isRegisterPage) {
@@ -31,6 +33,26 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (user && (defaultPage || isRegisterPage)) {
             // Logged in but visiting login or register page
             window.location.href = "home.html";
+        }
+
+        // --- Admin Authorization ---
+        if (path.includes('admin_panel.html')) {
+            if (!user || user.email !== ADMIN_EMAIL) {
+                window.location.href = "home.html"; // Kick unauthorized
+            }
+        }
+
+        if (user && user.email === ADMIN_EMAIL && !path.includes('admin_panel.html')) {
+            // Add Admin button to navbar automatically
+            const navAuthButtons = document.querySelector('.d-flex.gx-2');
+            if (navAuthButtons && !document.getElementById('admin-nav-btn')) {
+                const adminBtn = document.createElement('a');
+                adminBtn.href = 'admin_panel.html';
+                adminBtn.id = 'admin-nav-btn';
+                adminBtn.className = 'btn btn-danger rounded-pill px-4 shadow-sm active me-2 fw-bold text-white';
+                adminBtn.innerHTML = '<i class="fa-solid fa-shield-halved ms-1"></i> الإدارة';
+                navAuthButtons.prepend(adminBtn);
+            }
         }
 
         // Display user email in account
@@ -312,6 +334,83 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
             loadDetail();
+        }
+    }
+
+    // --- Admin Panel Logic ---
+    if (path.includes('admin_panel.html')) {
+        const container = document.getElementById('admin-properties-container');
+        const countEl = document.getElementById('total-properties-count');
+        if (container) {
+            onAuthStateChanged(auth, async (user) => {
+                // Double check safety
+                if (user && user.email === "shahinziad107@gmail.com") {
+                    try {
+                        const q = query(collection(db, "properties"), orderBy("createdAt", "desc"));
+                        const querySnapshot = await getDocs(q);
+                        
+                        if (countEl) countEl.innerText = querySnapshot.size;
+
+                        if (querySnapshot.empty) {
+                           container.innerHTML = '<div class="col-12 text-center py-5 w-100"><p class="text-muted fs-5">لا توجد عقارات في الموقع.</p></div>';
+                           return;
+                        }
+
+                        let html = '';
+                        querySnapshot.forEach((docSnap) => {
+                            const prop = docSnap.data();
+                            const id = docSnap.id;
+                            const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'غير معروف';
+                            html += `
+                            <div class="col">
+                                <div class="card h-100 shadow-sm border-0 border-top border-4 border-danger">
+                                    <div class="card-body">
+                                        <h5 class="fw-bold text-truncate">${prop.title}</h5>
+                                        <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot ms-1"></i> ${prop.location}</p>
+                                        <p class="mb-1"><span class="fw-bold">السعر:</span> ${prop.price} ج.م</p>
+                                        <p class="mb-1"><span class="fw-bold">النوع:</span> ${prop.property_type || '-'}</p>
+                                        <p class="mb-0 text-muted small"><i class="fa-solid fa-clock ms-1"></i> أضيف في: ${timeStr}</p>
+                                    </div>
+                                    <div class="card-footer bg-white border-0 p-3 pt-0 text-start">
+                                        <button class="btn btn-danger btn-sm w-100 fw-bold admin-delete-btn" data-id="${id}">
+                                            <i class="fa-solid fa-trash-can ms-1"></i> حذف هذا العقار
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        });
+                        container.innerHTML = html;
+
+                        // Attach delete handlers
+                        document.querySelectorAll('.admin-delete-btn').forEach(btn => {
+                            btn.addEventListener('click', async (e) => {
+                                if (confirm("تحذير: هل أنت متأكد من حذف هذا العقار بشكل نهائي من الموقع؟ لا يمكن التراجع!")) {
+                                    const id = e.currentTarget.getAttribute('data-id');
+                                    const cardEl = e.currentTarget.closest('.col');
+                                    const currentBtn = e.currentTarget;
+                                    
+                                    currentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري الحذف...';
+                                    currentBtn.disabled = true;
+                                    try {
+                                        await deleteDoc(doc(db, "properties", id));
+                                        cardEl.remove();
+                                        if (countEl) countEl.innerText = parseInt(countEl.innerText) - 1;
+                                    } catch (err) {
+                                        alert("خطأ أثناء الحذف: " + err.message);
+                                        currentBtn.innerHTML = '<i class="fa-solid fa-trash-can ms-1"></i> حذف هذا العقار';
+                                        currentBtn.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+
+                    } catch (error) {
+                        console.error(error);
+                        container.innerHTML = '<div class="alert alert-danger w-100 text-center mx-auto">حدث خطأ في جلب بيانات الموقع</div>';
+                    }
+                }
+            });
         }
     }
 
