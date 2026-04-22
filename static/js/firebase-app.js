@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, serverTimestamp, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, serverTimestamp, doc, deleteDoc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB4m5vP4fCnNA8dGv1ZwVoR7cjVXzVsnF0",
@@ -61,6 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (emailEl) emailEl.innerText = user.email;
             const nameEl = document.getElementById('user-name');
             if (nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
+            
+            const avatarPreview = document.getElementById('account-avatar');
+            if (avatarPreview && user.photoURL) {
+                avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
+                avatarPreview.innerHTML = '';
+            }
         }
     });
 
@@ -102,6 +108,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         displayName: name
                     });
                     
+                    // Create user document with device tracking
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        email: email,
+                        name: name,
+                        userAgent: navigator.userAgent,
+                        createdAt: serverTimestamp()
+                    });
+                    
                     // Redirect Handled by onAuthStateChanged globally!
                     window.location.href = "home.html";
                 } catch (error) {
@@ -121,6 +135,110 @@ document.addEventListener("DOMContentLoaded", () => {
             await signOut(auth);
             window.location.href = 'index.html';
         });
+    }
+
+    // --- Settings Logic ---
+    if (path.includes('settings.html')) {
+        const settingsForm = document.getElementById('settings-form');
+        const picInput = document.getElementById('profile-pic-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const nameInput = document.getElementById('display-name');
+        
+        let selectedBase64 = null;
+
+        if (settingsForm) {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    nameInput.value = user.displayName || '';
+                    if (user.photoURL) {
+                        avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
+                        avatarPreview.innerHTML = '';
+                    }
+                }
+            });
+
+            picInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 150;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                            }
+                        } else {
+                            if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        selectedBase64 = canvas.toDataURL('image/webp', 0.8);
+                        avatarPreview.style.backgroundImage = `url('${selectedBase64}')`;
+                        avatarPreview.innerHTML = '';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            settingsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('save-settings-btn');
+                btn.disabled = true;
+                btn.innerHTML = 'جاري الحفظ... <i class="fa-solid fa-spinner fa-spin ms-2"></i>';
+                
+                const user = auth.currentUser;
+                if (!user) return;
+
+                try {
+                    const newName = nameInput.value;
+                    const updates = {};
+                    if(newName) updates.displayName = newName;
+                    if(selectedBase64) updates.photoURL = selectedBase64;
+                    
+                    await updateProfile(user, updates);
+                    
+                    await setDoc(doc(db, "users", user.uid), {
+                        name: newName,
+                        photo: selectedBase64 || user.photoURL || null,
+                        userAgent: navigator.userAgent
+                    }, { merge: true });
+
+                    const q = query(collection(db, "properties"), where("owner", "==", user.uid));
+                    const querySnapshot = await getDocs(q);
+                    const updatePromises = [];
+                    querySnapshot.forEach((documentSnap) => {
+                        updatePromises.push(updateDoc(doc(db, "properties", documentSnap.id), {
+                            authorName: newName,
+                            authorPhoto: selectedBase64 || user.photoURL || null
+                        }));
+                    });
+                    await Promise.all(updatePromises);
+
+                    alert("تم حفظ بياناتك بنجاح!");
+                    window.location.href = 'account.html';
+                } catch (error) {
+                    alert("خطأ: " + error.message);
+                    btn.disabled = false;
+                    btn.innerHTML = 'حفظ التعديلات <i class="fa-regular fa-floppy-disk ms-2"></i>';
+                }
+            });
+        }
     }
 
     // --- Add Property Logic ---
@@ -151,6 +269,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         whatsappNum: addForm.whatsapp.value,
                         description: addForm.description.value,
                         owner: auth.currentUser.uid,
+                        authorName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                        authorPhoto: auth.currentUser.photoURL || null,
+                        authorDevice: navigator.userAgent,
                         createdAt: serverTimestamp()
                     });
                     window.location.href = 'home.html';
@@ -319,7 +440,16 @@ document.addEventListener("DOMContentLoaded", () => {
                                     </div>
                                 </div>
                                 
-                                <h3 class="fw-bold border-bottom pb-2 mb-3 mt-5">تفاصيل العقار</h3>
+                                <div class="d-flex align-items-center mb-4 bg-light p-3 rounded-3 shadow-sm border border-light-subtle">
+                                    <div style="width: 55px; height: 55px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;" class="me-3 ms-3">
+                                        ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">تم النشر بواسطة</small>
+                                        <span class="fw-bold fs-5 d-block lh-1 text-primary">${prop.authorName || 'مستخدم غير معروف'}</span>
+                                    </div>
+                                </div>
+                                <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4">تفاصيل العقار</h3>
                                 <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${prop.description || 'لم يتم إضافة وصف لهذه المنشأة.'}</p>
                                 
                                 ${whatsappBtn}
@@ -370,6 +500,15 @@ document.addEventListener("DOMContentLoaded", () => {
                                         <p class="mb-1"><span class="fw-bold">السعر:</span> ${prop.price} ج.م</p>
                                         <p class="mb-1"><span class="fw-bold">النوع:</span> ${prop.property_type || '-'}</p>
                                         <p class="mb-0 text-muted small"><i class="fa-solid fa-clock ms-1"></i> أضيف في: ${timeStr}</p>
+                                        <hr class="my-2 text-danger">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div style="width: 30px; height: 30px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;" class="me-2 ms-2">
+                                                ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                                            </div>
+                                            <span class="fw-bold small text-primary text-truncate">${prop.authorName || 'مستخدم'}</span>
+                                        </div>
+                                        <p class="mb-0 text-muted" style="font-size: 0.7rem;"><i class="fa-solid fa-mobile-screen-button ms-1"></i> جهاز الدخول:</p>
+                                        <p class="mb-0 text-muted text-break" style="font-size: 0.65rem; direction: ltr; text-align: left;">${prop.authorDevice || 'غير معروف'}</p>
                                     </div>
                                     <div class="card-footer bg-white border-0 p-3 pt-0 text-start">
                                         <button class="btn btn-danger btn-sm w-100 fw-bold admin-delete-btn" data-id="${id}">
@@ -515,6 +654,15 @@ async function loadProperties(container, userOnly, uid=null) {
                     </div>
                     
                     <div class="card-body container-fluid p-3 flex-grow-1">
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+                            <div style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;" class="me-2 ms-2">
+                                ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                            </div>
+                            <div class="text-truncate">
+                                <small class="text-muted d-block lh-1 mb-1" style="font-size: 0.7rem;">ناشر العقار</small>
+                                <span class="fw-bold d-block lh-1 text-primary text-truncate" style="font-size: 0.9rem;">${prop.authorName || 'مستخدم غير معروف'}</span>
+                            </div>
+                        </div>
                         <h4 class="card-title text-truncate mb-2 fs-5">${prop.title}</h4>
                         <div class="location-text mb-2 small text-muted">
                             <i class="fa-solid fa-location-dot"></i> ${prop.location}
