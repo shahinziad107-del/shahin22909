@@ -75,4 +75,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 4. Mobile Bottom Nav Sliding Indicator
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    if (mobileNav) {
+        const indicator = document.createElement('div');
+        indicator.className = 'nav-indicator';
+        mobileNav.insertBefore(indicator, mobileNav.firstChild);
+        
+        const navItems = mobileNav.querySelectorAll('.nav-item:not(.center-add-btn)');
+        let activeItem = null;
+        let currentPath = window.location.pathname.split('/').pop();
+        if (!currentPath || currentPath === '') currentPath = 'home.html';
+        
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath || (currentPath === '' && href === 'home.html')) {
+                item.classList.add('active');
+                activeItem = item;
+            } else {
+                item.classList.remove('active');
+            }
+            
+            item.addEventListener('click', (e) => {
+                if(item.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    return;
+                }
+                e.preventDefault();
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                indicator.style.width = item.offsetWidth + 'px';
+                indicator.style.left = item.offsetLeft + 'px';
+                
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 250); 
+            });
+        });
+        
+        if (!activeItem && navItems.length > 0) {
+           activeItem = navItems[0];
+           activeItem.classList.add('active');
+        }
+        
+        if (activeItem) {
+            setTimeout(() => {
+                indicator.style.width = activeItem.offsetWidth + 'px';
+                indicator.style.left = activeItem.offsetLeft + 'px';
+                setTimeout(() => {
+                     indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+                }, 50);
+            }, 100);
+        }
+        
+        window.addEventListener('resize', () => {
+            const currentActive = mobileNav.querySelector('.nav-item.active:not(.center-add-btn)');
+            if (currentActive) {
+                indicator.style.width = currentActive.offsetWidth + 'px';
+                indicator.style.left = currentActive.offsetLeft + 'px';
+            }
+        });
+    }
+
 });

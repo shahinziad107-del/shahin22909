@@ -265,7 +265,7 @@ footer {
 }
 
 .mobile-bottom-nav .nav-item {
-    color: rgba(15, 23, 42, 0.6);
+    color: rgba(15, 23, 42, 0.5);
     font-size: 1.25rem;
     position: relative;
     text-decoration: none;
@@ -276,11 +276,24 @@ footer {
     width: 45px;
     height: 45px;
     transition: all 0.3s ease;
+    z-index: 1;
 }
 
 .mobile-bottom-nav .nav-item.active {
-    color: var(--secondary-color);
-    transform: scale(1.1);
+    color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.nav-indicator {
+    position: absolute;
+    height: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .mobile-bottom-nav .center-add-btn {
