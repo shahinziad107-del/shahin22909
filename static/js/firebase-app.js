@@ -63,9 +63,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
             
             const avatarPreview = document.getElementById('account-avatar');
-            if (avatarPreview && user.photoURL) {
-                avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
-                avatarPreview.innerHTML = '';
+            if (avatarPreview) {
+                getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+                    if (docSnap.exists() && docSnap.data().photo) {
+                        avatarPreview.style.backgroundImage = `url('${docSnap.data().photo}')`;
+                        avatarPreview.innerHTML = '';
+                    } else if (user.photoURL) {
+                        avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
+                        avatarPreview.innerHTML = '';
+                    }
+                }).catch(e => console.log(e));
             }
         }
     });
@@ -150,10 +157,16 @@ document.addEventListener("DOMContentLoaded", () => {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     nameInput.value = user.displayName || '';
-                    if (user.photoURL) {
-                        avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
-                        avatarPreview.innerHTML = '';
-                    }
+                    try {
+                        const docSnap = await getDoc(doc(db, "users", user.uid));
+                        if (docSnap.exists() && docSnap.data().photo) {
+                            avatarPreview.style.backgroundImage = `url('${docSnap.data().photo}')`;
+                            avatarPreview.innerHTML = '';
+                        } else if (user.photoURL) {
+                            avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
+                            avatarPreview.innerHTML = '';
+                        }
+                    } catch (e) { console.log(e); }
                 }
             });
 
@@ -209,13 +222,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     const newName = nameInput.value;
                     const updates = {};
                     if(newName) updates.displayName = newName;
-                    if(selectedBase64) updates.photoURL = selectedBase64;
                     
-                    await updateProfile(user, updates);
+                    if (Object.keys(updates).length > 0) {
+                        await updateProfile(user, updates);
+                    }
                     
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    const currentPhoto = docSnap.exists() ? docSnap.data().photo : null;
+                    const finalPhoto = selectedBase64 || currentPhoto || user.photoURL || null;
+
                     await setDoc(doc(db, "users", user.uid), {
                         name: newName,
-                        photo: selectedBase64 || user.photoURL || null,
+                        photo: finalPhoto,
                         userAgent: navigator.userAgent
                     }, { merge: true });
 
@@ -225,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     querySnapshot.forEach((documentSnap) => {
                         updatePromises.push(updateDoc(doc(db, "properties", documentSnap.id), {
                             authorName: newName,
-                            authorPhoto: selectedBase64 || user.photoURL || null
+                            authorPhoto: finalPhoto
                         }));
                     });
                     await Promise.all(updatePromises);
@@ -257,6 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const selectedGov = addForm.governorate.value;
                     const selectedCity = addForm.city.value;
                     
+                    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+                    const userPhoto = userDoc.exists() ? userDoc.data().photo : (auth.currentUser.photoURL || null);
+
                     await addDoc(collection(db, "properties"), {
                         title: addForm.title.value,
                         price: parseFloat(addForm.price.value),
@@ -270,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         description: addForm.description.value,
                         owner: auth.currentUser.uid,
                         authorName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
-                        authorPhoto: auth.currentUser.photoURL || null,
+                        authorPhoto: userPhoto,
                         authorDevice: navigator.userAgent,
                         createdAt: serverTimestamp()
                     });
