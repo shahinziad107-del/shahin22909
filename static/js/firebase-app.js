@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, serverTimestamp, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB4m5vP4fCnNA8dGv1ZwVoR7cjVXzVsnF0",
@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         governorate: selectedGov,
                         city: selectedCity,
                         location: `${selectedCity}، ${selectedGov}`,
+                        whatsappNum: addForm.whatsapp.value,
                         description: addForm.description.value,
                         owner: auth.currentUser.uid,
                         createdAt: serverTimestamp()
@@ -135,6 +136,84 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert('خطأ في إضافة العقار: ' + error.message);
                     btn.disabled = false;
                     btn.innerHTML = 'نشر العقار الآن <i class="fa-regular fa-paper-plane ms-2"></i>';
+                }
+            });
+        }
+    }
+
+    // --- Edit Property Logic ---
+    if (path.includes('edit_property.html')) {
+        const editForm = document.getElementById('edit-property-form');
+        const urlParams = new URLSearchParams(window.location.search);
+        const propId = urlParams.get('id');
+
+        if (!propId) {
+            window.location.href = 'my_properties.html';
+        }
+
+        if (editForm) {
+            // Load existing data
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    try {
+                        const docRef = doc(db, "properties", propId);
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (docSnap.exists() && docSnap.data().owner === user.uid) {
+                            const data = docSnap.data();
+                            editForm.title.value = data.title || '';
+                            editForm.price.value = data.price || '';
+                            editForm.property_type.value = data.property_type || '';
+                            editForm.rooms.value = data.rooms || '';
+                            editForm.bathrooms.value = data.bathrooms || '';
+                            editForm.whatsapp.value = data.whatsappNum || '';
+                            editForm.description.value = data.description || '';
+                            
+                            if (data.governorate) {
+                                editForm.governorate.value = data.governorate;
+                                editForm.governorate.dispatchEvent(new Event('change'));
+                                if (data.city) {
+                                    editForm.city.value = data.city;
+                                }
+                            }
+                        } else {
+                            alert("لا تملك صلاحية لتعديل هذا العقار أو العقار غير موجود");
+                            window.location.href = 'my_properties.html';
+                        }
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+            });
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = editForm.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = 'جاري الحفظ...';
+
+                try {
+                    const selectedGov = editForm.governorate.value;
+                    const selectedCity = editForm.city.value;
+                    
+                    const docRef = doc(db, "properties", propId);
+                    await updateDoc(docRef, {
+                        title: editForm.title.value,
+                        price: parseFloat(editForm.price.value),
+                        property_type: editForm.property_type.value,
+                        rooms: parseInt(editForm.rooms.value),
+                        bathrooms: parseInt(editForm.bathrooms.value),
+                        governorate: selectedGov,
+                        city: selectedCity,
+                        location: `${selectedCity}، ${selectedGov}`,
+                        whatsappNum: editForm.whatsapp.value,
+                        description: editForm.description.value
+                    });
+                    window.location.href = 'my_properties.html';
+                } catch (error) {
+                    alert('خطأ في التعديل: ' + error.message);
+                    btn.disabled = false;
+                    btn.innerHTML = 'حفظ التعديلات <i class="fa-regular fa-floppy-disk ms-2"></i>';
                 }
             });
         }
@@ -186,7 +265,7 @@ async function loadProperties(container, userOnly, uid=null) {
 
         // Convert to array for local sorting (avoiding composite index error)
         let properties = [];
-        querySnapshot.forEach(doc => properties.push(doc.data()));
+        querySnapshot.forEach(doc => properties.push({ id: doc.id, ...doc.data() }));
         
         if (userOnly) {
             properties.sort((a, b) => {
@@ -199,35 +278,80 @@ async function loadProperties(container, userOnly, uid=null) {
         let html = '';
         properties.forEach((prop) => {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
+            
+            let whatsappBtn = '';
+            if (prop.whatsappNum && !userOnly) {
+                let formattedNum = prop.whatsappNum;
+                if(formattedNum.startsWith('0')) {
+                    formattedNum = '2' + formattedNum;
+                }
+                whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-sm w-100 mt-3 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp fs-5 ms-1"></i> تواصل واتساب</a>`;
+            }
+
+            let controlsHtml = '';
+            if (userOnly) {
+                controlsHtml = `
+                <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2">
+                    <a href="edit_property.html?id=${prop.id}" class="btn btn-sm btn-warning rounded-pill flex-grow-1 text-white fw-bold">
+                        <i class="fa-regular fa-pen-to-square ms-1"></i> تعديل
+                    </a>
+                    <button class="btn btn-sm btn-danger rounded-pill delete-prop-btn shadow-sm" data-id="${prop.id}">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>`;
+            } else {
+                controlsHtml = `
+                <div class="card-footer bg-light border-top-0 p-3">
+                    <div class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</div>
+                    ${whatsappBtn}
+                </div>`;
+            }
+
             html += `
-            <div class="col reveal active">
-                <div class="property-card">
+            <div class="col reveal active mb-4">
+                <div class="property-card h-100 d-flex flex-column">
                     <div class="card-img-wrapper" style="height: 180px;">
                         <span class="price-tag bg-primary">${prop.price} ج.م</span>
-                        <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
+                        <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100">
                             <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
                         </div>
                     </div>
                     
-                    <div class="card-body container-fluid p-3">
+                    <div class="card-body container-fluid p-3 flex-grow-1">
                         <h4 class="card-title text-truncate mb-2 fs-5">${prop.title}</h4>
                         <div class="location-text mb-2 small text-muted">
                             <i class="fa-solid fa-location-dot"></i> ${prop.location}
                         </div>
-                        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small">
-                            <span title="عدد الغرف"><i class="fa-solid fa-bed text-primary"></i> ${prop.rooms || '-'}</span>
-                            <span title="عدد الحمامات"><i class="fa-solid fa-bath text-primary"></i> ${prop.bathrooms || '-'}</span>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small text-muted">
+                            <span title="عدد الغرف" class="fw-bold"><i class="fa-solid fa-bed text-primary ms-1"></i>${prop.rooms || '-'}</span>
+                            <span title="عدد الحمامات" class="fw-bold"><i class="fa-solid fa-bath text-primary ms-1"></i>${prop.bathrooms || '-'}</span>
                             <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${prop.property_type || 'غير محدد'}</span>
                         </div>
                     </div>
                     
-                    <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2">
-                        <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</span>
-                    </div>
+                    ${controlsHtml}
                 </div>
             </div>`;
         });
         container.innerHTML = html;
+
+        if (userOnly) {
+            document.querySelectorAll('.delete-prop-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if(confirm("هل أنت متأكد من حذف هذا العقار حقاً؟ لا يمكن التراجع عن هذا الإجراء.")) {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        const cardElement = e.currentTarget.closest('.col');
+                        try {
+                            // Using the imported doc, deleteDoc
+                            await deleteDoc(doc(db, "properties", id));
+                            cardElement.remove();
+                        } catch (err) {
+                            alert("حدث خطأ أثناء الحذف: " + err.message);
+                        }
+                    }
+                });
+            });
+        }
     } catch (error) {
         console.error("Error getting documents: ", error);
         container.innerHTML = '<div class="col-12 text-center py-5 text-danger">حدث خطأ أثناء تحميل العقارات</div>';
