@@ -219,6 +219,102 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // --- Property Detail Logic ---
+    if (path.includes('property_detail.html')) {
+        const container = document.getElementById('detail-container');
+        const urlParams = new URLSearchParams(window.location.search);
+        const propId = urlParams.get('id');
+
+        if (!propId) {
+            window.location.href = 'home.html';
+        }
+
+        if (container) {
+            const loadDetail = async () => {
+                try {
+                    const docRef = doc(db, "properties", propId);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        const prop = docSnap.data();
+                        const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
+                        
+                        let whatsappBtn = '';
+                        if (prop.whatsappNum) {
+                            let formattedNum = prop.whatsappNum;
+                            if(formattedNum.startsWith('0')) formattedNum = '2' + formattedNum;
+                            whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-lg w-100 mt-4 shadow-sm fw-bold rounded-pill"><i class="fa-brands fa-whatsapp fs-3 ms-2 align-middle"></i> تواصل مع المالك واتساب</a>`;
+                        }
+
+                        container.innerHTML = `
+                        <div class="property-card h-100 d-flex flex-column mb-4 pb-3" style="border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-img-wrapper rounded-top" style="height: 350px;">
+                                <span class="price-tag bg-primary fs-5 px-4 py-2">${prop.price} ج.م</span>
+                                <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white h-100">
+                                    <i class="fa-solid fa-image opacity-50" style="font-size: 5rem;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body p-4 p-md-5 bg-white rounded-bottom">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h1 class="card-title fw-bold fs-3 mb-0">${prop.title}</h1>
+                                    <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'} fs-6 px-3 py-2">${prop.property_type || 'غير محدد'}</span>
+                                </div>
+                                
+                                <div class="location-text mb-4 text-muted fs-5">
+                                    <i class="fa-solid fa-location-dot ms-1 text-danger"></i> ${prop.location}
+                                </div>
+                                <hr>
+                                
+                                <div class="row text-center mb-4 g-3">
+                                    <div class="col-6 col-md-3">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                            <i class="fa-solid fa-bed text-primary fs-3 mb-2"></i>
+                                            <div class="fw-bold">الغرف</div>
+                                            <div class="text-muted fs-5">${prop.rooms || '-'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                            <i class="fa-solid fa-bath text-primary fs-3 mb-2"></i>
+                                            <div class="fw-bold">الحمامات</div>
+                                            <div class="text-muted fs-5">${prop.bathrooms || '-'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                            <i class="fa-solid fa-calendar-days text-primary fs-3 mb-2"></i>
+                                            <div class="fw-bold">تاريخ النشر</div>
+                                            <div class="text-muted fs-6 mt-1">${timeStr}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                            <i class="fa-solid fa-tag text-primary fs-3 mb-2"></i>
+                                            <div class="fw-bold">النوع</div>
+                                            <div class="text-muted fs-6 mt-1">${prop.property_type || '-'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="fw-bold border-bottom pb-2 mb-3 mt-5">تفاصيل العقار</h3>
+                                <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${prop.description || 'لم يتم إضافة وصف لهذه المنشأة.'}</p>
+                                
+                                ${whatsappBtn}
+                            </div>
+                        </div>`;
+                    } else {
+                        container.innerHTML = '<div class="alert alert-danger text-center fs-5">عذراً، هذا العقار لم يعد متوفراً.</div>';
+                    }
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="alert alert-danger text-center fs-5">حدث خطأ في تحميل بيانات العقار.</div>';
+                }
+            };
+            loadDetail();
+        }
+    }
+
     // --- Load Properties in Home ---
     if (path.includes('home.html')) {
         const container = document.getElementById('properties-container');
@@ -278,14 +374,14 @@ async function loadProperties(container, userOnly, uid=null) {
         let html = '';
         properties.forEach((prop) => {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
+            let actionButtons = `<a href="property_detail.html?id=${prop.id}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-circle-info ms-1"></i> التفاصيل</a>`;
             
-            let whatsappBtn = '';
             if (prop.whatsappNum && !userOnly) {
                 let formattedNum = prop.whatsappNum;
                 if(formattedNum.startsWith('0')) {
                     formattedNum = '2' + formattedNum;
                 }
-                whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-sm w-100 mt-3 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp fs-5 ms-1"></i> تواصل واتساب</a>`;
+                actionButtons += `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp fs-5 ms-1"></i> واتساب</a>`;
             }
 
             let controlsHtml = '';
@@ -302,8 +398,10 @@ async function loadProperties(container, userOnly, uid=null) {
             } else {
                 controlsHtml = `
                 <div class="card-footer bg-light border-top-0 p-3">
-                    <div class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</div>
-                    ${whatsappBtn}
+                    <div class="text-muted small mb-3"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</div>
+                    <div class="d-flex gap-2">
+                        ${actionButtons}
+                    </div>
                 </div>`;
             }
 
