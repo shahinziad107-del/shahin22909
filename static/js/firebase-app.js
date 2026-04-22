@@ -114,10 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.innerHTML = 'جاري النشر...';
 
                 try {
+                    const selectedGov = addForm.governorate.value;
+                    const selectedCity = addForm.city.value;
+                    
                     await addDoc(collection(db, "properties"), {
                         title: addForm.title.value,
                         price: parseFloat(addForm.price.value),
-                        location: addForm.location.value,
+                        property_type: addForm.property_type.value,
+                        rooms: parseInt(addForm.rooms.value),
+                        bathrooms: parseInt(addForm.bathrooms.value),
+                        governorate: selectedGov,
+                        city: selectedCity,
+                        location: `${selectedCity}، ${selectedGov}`,
                         description: addForm.description.value,
                         owner: auth.currentUser.uid,
                         createdAt: serverTimestamp()
@@ -191,8 +199,13 @@ async function loadProperties(container, userOnly, uid=null) {
                     
                     <div class="card-body container-fluid p-3">
                         <h4 class="card-title text-truncate mb-2 fs-5">${prop.title}</h4>
-                        <div class="location-text mb-0 small">
+                        <div class="location-text mb-2 small text-muted">
                             <i class="fa-solid fa-location-dot"></i> ${prop.location}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small">
+                            <span title="عدد الغرف"><i class="fa-solid fa-bed text-primary"></i> ${prop.rooms || '-'}</span>
+                            <span title="عدد الحمامات"><i class="fa-solid fa-bath text-primary"></i> ${prop.bathrooms || '-'}</span>
+                            <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${prop.property_type || 'غير محدد'}</span>
                         </div>
                     </div>
                     

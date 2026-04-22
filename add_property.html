@@ -61,15 +61,42 @@
                                 <label class="form-label fw-bold">عنوان العقار <span class="text-danger">*</span></label>
                                 <input type="text" id="title" name="title" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: شقة سوبر لوكس للايجار" required>
                             </div>
-                            
-                            <!-- Location & Price -->
+                            <!-- Type & Price -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">نوع العقار <span class="text-danger">*</span></label>
+                                <select id="property_type" name="property_type" class="form-select px-3 py-2 border rounded-3" required>
+                                    <option value="" disabled selected>اختر النوع</option>
+                                    <option value="إيجار">إيجار</option>
+                                    <option value="تمليك">تمليك (بيع)</option>
+                                </select>
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">السعر (بالجنيه المصري) <span class="text-danger">*</span></label>
                                 <input type="number" id="price" name="price" class="form-control px-3 py-2 border rounded-3" placeholder="0" required>
                             </div>
+
+                            <!-- Rooms & Bathrooms -->
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">المدينة / الموقع <span class="text-danger">*</span></label>
-                                <input type="text" id="location" name="location" class="form-control px-3 py-2 border rounded-3" placeholder="المعادي، القاهرة" required>
+                                <label class="form-label fw-bold">عدد الغرف <span class="text-danger">*</span></label>
+                                <input type="number" id="rooms" name="rooms" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: 3" required min="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">عدد الحمامات <span class="text-danger">*</span></label>
+                                <input type="number" id="bathrooms" name="bathrooms" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: 2" required min="1">
+                            </div>
+
+                            <!-- Governorate & City -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">المحافظة <span class="text-danger">*</span></label>
+                                <select id="governorate" name="governorate" class="form-select px-3 py-2 border rounded-3" required>
+                                    <option value="" disabled selected>اختر المحافظة</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">المدينة / المنطقة <span class="text-danger">*</span></label>
+                                <select id="city" name="city" class="form-select px-3 py-2 border rounded-3" required disabled>
+                                    <option value="" disabled selected>أولاً اختر المحافظة</option>
+                                </select>
                             </div>
                             
                             <!-- Description -->
