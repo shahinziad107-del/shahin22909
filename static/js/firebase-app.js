@@ -168,7 +168,8 @@ async function loadProperties(container, userOnly, uid=null) {
     try {
         let q;
         if (userOnly) {
-            q = query(collection(db, "properties"), where("owner", "==", uid), orderBy("createdAt", "desc"));
+            // Bypassing composite index requirement for user properties
+            q = query(collection(db, "properties"), where("owner", "==", uid));
         } else {
             q = query(collection(db, "properties"), orderBy("createdAt", "desc"));
         }
@@ -183,9 +184,20 @@ async function loadProperties(container, userOnly, uid=null) {
             return;
         }
 
+        // Convert to array for local sorting (avoiding composite index error)
+        let properties = [];
+        querySnapshot.forEach(doc => properties.push(doc.data()));
+        
+        if (userOnly) {
+            properties.sort((a, b) => {
+                const timeA = a.createdAt ? a.createdAt.toMillis() : 0;
+                const timeB = b.createdAt ? b.createdAt.toMillis() : 0;
+                return timeB - timeA; // Descending
+            });
+        }
+
         let html = '';
-        querySnapshot.forEach((doc) => {
-            const prop = doc.data();
+        properties.forEach((prop) => {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
             html += `
             <div class="col reveal active">
