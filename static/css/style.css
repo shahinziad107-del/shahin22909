@@ -245,66 +245,57 @@ footer {
    ========================================= */
 .mobile-bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.05);
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-around;
     align-items: center;
     z-index: 1050;
-    border-top-right-radius: 20px;
-    border-top-left-radius: 20px;
-    padding-bottom: env(safe-area-inset-bottom); /* For iOS screens */
+    border-radius: 35px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .mobile-bottom-nav .nav-item {
-    color: var(--dark-color);
-    font-size: 1.4rem;
+    color: var(--text-muted);
+    font-size: 1.3rem;
     position: relative;
     text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     transition: all 0.3s ease;
 }
 
 .mobile-bottom-nav .nav-item.active {
-    color: var(--primary-color);
-}
-
-.mobile-bottom-nav .nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 .mobile-bottom-nav .center-add-btn {
-    transform: translateY(-20px);
+    transform: translateY(-22px);
 }
 
 .mobile-bottom-nav .center-add-btn .add-btn-inner {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.8rem;
-    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
-    border: 5px solid white;
+    font-size: 1.6rem;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.9);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -314,6 +305,6 @@ footer {
 
 @media (max-width: 991px) {
     body {
-        padding-bottom: 80px !important;
+        padding-bottom: 110px !important;
     }
 }
