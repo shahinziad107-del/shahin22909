@@ -18,11 +18,11 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg smart-scroll">
         <div class="container">
             <a class="navbar-brand" href="home.html">
                 <img src="./static/img/logo.png" alt="Logo" height="30" class="ms-1" style="border-radius: 8px;">
-                أجرلي <span class="fw-normal fs-6 text-muted me-1">Ajarli</span>
+                أجرلي
             </a>
 <!-- Mobile Nav Toggler Removed -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -31,13 +31,16 @@
                         <a class="nav-link active" href="home.html">الرئيسية</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#search-form"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fa-solid fa-phone ms-1"></i>تواصل معنا</a>
                     </li>
                 </ul>
-                <div class="d-flex gx-2">
+                <div class="d-flex gx-2 align-items-center">
+                    <button class="btn btn-link text-decoration-none p-0 me-3 fs-5 theme-toggle" id="theme-toggle" title="تغيير المظهر" style="color: var(--text-color, #333);">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
                     <a href="account.html" class="btn btn-outline-primary ms-2 rounded-pill px-4"><i class="fa-regular fa-user ms-1"></i> حسابي</a>
                     <a href="add_property.html" class="btn btn-primary rounded-pill px-4 shadow-sm">إضافة عقار</a>
                 </div>
@@ -54,28 +57,11 @@
                     <h1 class="hero-title">ابحث عن منزل أحلامك</h1>
                     <p class="hero-subtitle mb-4">اكتشف أفضل العقارات المتاحة للبيع أو للإيجار بأسعار لا تقبل المنافسة وبخطوات بسيطة.</p>
                     
-                    <!-- Search Form -->
-                    <div class="card shadow-lg border-0 rounded-4 p-3 mt-4 mx-auto" style="max-width: 800px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-                        <form id="search-form" class="row g-3 align-items-center">
-                            <div class="col-md-5">
-                                <div class="input-group input-group-lg shadow-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="fa-solid fa-location-dot"></i></span>
-                                    <input type="text" id="search-location" class="form-control border-start-0 fs-6" placeholder="ابحث بالمنطقة (مثال: القاهرة، الجيزة، شبرا)">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="input-group input-group-lg shadow-sm">
-                                    <input type="number" id="search-min-price" class="form-control fs-6" placeholder="من (ج.م)">
-                                    <span class="input-group-text bg-light text-muted">-</span>
-                                    <input type="number" id="search-max-price" class="form-control fs-6" placeholder="إلى (ج.م)">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold h-100 shadow btn-lg fs-6">
-                                    <i class="fa-solid fa-magnifying-glass ms-1"></i> ابحث الآن
-                                </button>
-                            </div>
-                        </form>
+                    <!-- Search Form Button -->
+                    <div class="mt-5">
+                        <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg fs-4 search-trigger-btn" data-bs-toggle="modal" data-bs-target="#searchModal">
+                            <i class="fa-solid fa-magnifying-glass ms-2"></i> ابحث عن عقارك الآن
+                        </button>
                     </div>
                 </div>
             </div>
@@ -197,12 +183,53 @@
     <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
 
+    <!-- Search Modal -->
+    <div class="modal fade search-bottom-sheet" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h5 class="modal-title fw-bold" id="searchModalLabel"><i class="fa-solid fa-magnifying-glass ms-2"></i>البحث عن عقار</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 p-md-5" style="background-color: var(--bg-color, #fff);">
+                    <form id="search-form" class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">المحافظة</label>
+                            <select id="search-governorate" class="form-select form-select-lg px-3 py-2 border rounded-3">
+                                <option value="" selected>كل المحافظات</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">المدينة / المنطقة</label>
+                            <select id="search-city" class="form-select form-select-lg px-3 py-2 border rounded-3" disabled>
+                                <option value="" selected>كل المدن</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">السعر من (ج.م)</label>
+                            <input type="number" id="search-min-price" class="form-control form-control-lg px-3 py-2 border rounded-3" placeholder="الحد الأدنى">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">السعر إلى (ج.م)</label>
+                            <input type="number" id="search-max-price" class="form-control form-control-lg px-3 py-2 border rounded-3" placeholder="الحد الأقصى">
+                        </div>
+                        <div class="col-12 mt-5">
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-3 shadow btn-lg">
+                                <i class="fa-solid fa-magnifying-glass ms-1"></i> عرض النتائج
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Bottom Nav -->
     <div class="mobile-bottom-nav d-lg-none">
         <a href="home.html" class="nav-item">
             <i class="fa-solid fa-house"></i>
         </a>
-        <a href="#search-form" class="nav-item">
+        <a href="#" class="nav-item" data-bs-toggle="modal" data-bs-target="#searchModal">
             <i class="fa-solid fa-magnifying-glass"></i>
         </a>
         <a href="add_property.html" class="nav-item center-add-btn">

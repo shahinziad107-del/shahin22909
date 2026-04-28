@@ -1,14 +1,57 @@
+// Dark Mode Initialization (Run immediately to prevent flash)
+const currentTheme = localStorage.getItem('theme') || 'light';
+if (currentTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Sticky Navbar Effect
+    // 1. Smart Navbar Effect
     const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    let lastScroll = 0;
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            if (currentScroll <= 0) {
+                navbar.classList.remove('scrolled-up');
+                navbar.classList.remove('scrolled-down');
+                return;
+            }
+            if (currentScroll > lastScroll && !navbar.classList.contains('scrolled-down') && currentScroll > 100) {
+                // Scroll down
+                navbar.classList.remove('scrolled-up');
+                navbar.classList.add('scrolled-down');
+            } else if (currentScroll < lastScroll && navbar.classList.contains('scrolled-down')) {
+                // Scroll up
+                navbar.classList.remove('scrolled-down');
+                navbar.classList.add('scrolled-up');
+            }
+            lastScroll = currentScroll;
+        });
+    }
+
+    // 1.5 Dark Mode Toggle Button Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    }
+
+
 
     // 2. Reveal Animations on Scroll
     const revealElements = document.querySelectorAll('.reveal');
@@ -44,36 +87,41 @@ document.addEventListener('DOMContentLoaded', () => {
         "البحيرة": ["دمنهور", "كفر الدوار", "رشيد", "إدكو"]
     };
 
-    const govSelect = document.getElementById('governorate');
-    const citySelect = document.getElementById('city');
+    function initLocationSelects(govId, cityId, defaultCityText) {
+        const govSelect = document.getElementById(govId);
+        const citySelect = document.getElementById(cityId);
 
-    if (govSelect && citySelect) {
-        // Populate Governorates
-        Object.keys(egyptLocations).forEach(gov => {
-            const option = document.createElement('option');
-            option.value = gov;
-            option.textContent = gov;
-            govSelect.appendChild(option);
-        });
+        if (govSelect && citySelect) {
+            Object.keys(egyptLocations).forEach(gov => {
+                const option = document.createElement('option');
+                option.value = gov;
+                option.textContent = gov;
+                govSelect.appendChild(option);
+            });
 
-        // Handle Change Event
-        govSelect.addEventListener('change', () => {
-            const selectedGov = govSelect.value;
-            citySelect.innerHTML = '<option value="" disabled selected>اختر المدينة / المنطقة</option>'; // Reset
-            
-            if (egyptLocations[selectedGov]) {
-                egyptLocations[selectedGov].forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city;
-                    option.textContent = city;
-                    citySelect.appendChild(option);
-                });
-                citySelect.disabled = false; // Enable cities dropdown
-            } else {
-                citySelect.disabled = true; // Disable if unexpected value
-            }
-        });
+            govSelect.addEventListener('change', () => {
+                const selectedGov = govSelect.value;
+                citySelect.innerHTML = `<option value="" selected>${defaultCityText}</option>`; // Reset
+                
+                if (egyptLocations[selectedGov]) {
+                    egyptLocations[selectedGov].forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                    citySelect.disabled = false; 
+                } else {
+                    citySelect.disabled = true;
+                }
+            });
+        }
     }
+
+    // Initialize for Add Property Page
+    initLocationSelects('governorate', 'city', 'اختر المدينة / المنطقة');
+    // Initialize for Search Modal
+    initLocationSelects('search-governorate', 'search-city', 'كل المدن');
 
     // 4. Mobile Bottom Nav Interactive Dragging & Animations
     const mobileNav = document.querySelector('.mobile-bottom-nav');

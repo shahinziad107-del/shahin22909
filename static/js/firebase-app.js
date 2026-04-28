@@ -584,15 +584,30 @@ document.addEventListener("DOMContentLoaded", () => {
             if (searchForm) {
                 searchForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const locationFilter = document.getElementById('search-location').value.trim().toLowerCase();
+                    const govFilter = document.getElementById('search-governorate').value;
+                    const cityFilter = document.getElementById('search-city').value;
                     const minPriceFilter = document.getElementById('search-min-price').value;
                     const maxPriceFilter = document.getElementById('search-max-price').value;
                     
                     loadProperties(container, false, null, {
-                        location: locationFilter,
+                        governorate: govFilter,
+                        city: cityFilter,
                         minPrice: minPriceFilter ? parseFloat(minPriceFilter) : null,
                         maxPrice: maxPriceFilter ? parseFloat(maxPriceFilter) : null
                     });
+                    
+                    // Close the modal
+                    const searchModalEl = document.getElementById('searchModal');
+                    if (searchModalEl) {
+                        // Using bootstrap global object if available
+                        if (typeof bootstrap !== 'undefined') {
+                            const modalInstance = bootstrap.Modal.getInstance(searchModalEl);
+                            if (modalInstance) modalInstance.hide();
+                        } else {
+                            const closeBtn = searchModalEl.querySelector('.btn-close');
+                            if (closeBtn) closeBtn.click();
+                        }
+                    }
                     
                     setTimeout(() => {
                         const target = document.getElementById('properties-container');
@@ -600,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             const y = target.getBoundingClientRect().top + window.scrollY - 100;
                             window.scrollTo({top: y, behavior: 'smooth'});
                         }
-                    }, 300);
+                    }, 400);
                 });
             }
         }
@@ -657,11 +672,13 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
         if (filters) {
             properties = properties.filter(prop => {
                 let match = true;
-                if (filters.location) {
-                    const loc = (prop.location || '').toLowerCase();
-                    const gov = (prop.governorate || '').toLowerCase();
-                    const city = (prop.city || '').toLowerCase();
-                    if (!loc.includes(filters.location) && !gov.includes(filters.location) && !city.includes(filters.location)) {
+                if (filters.governorate) {
+                    if (prop.governorate !== filters.governorate) {
+                        match = false;
+                    }
+                }
+                if (filters.city) {
+                    if (prop.city !== filters.city) {
                         match = false;
                     }
                 }

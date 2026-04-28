@@ -352,4 +352,67 @@ footer {
     body {
         padding-bottom: 90px !important;
     }
+    
+    /* Search Bottom Sheet for Mobile */
+    .search-bottom-sheet .modal-dialog {
+        display: flex;
+        align-items: flex-end;
+        min-height: 100%;
+        margin: 0;
+    }
+    .search-bottom-sheet .modal-content {
+        border-radius: 24px 24px 0 0 !important;
+        border-bottom: none;
+    }
+    .search-bottom-sheet.fade .modal-dialog {
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+    }
+    .search-bottom-sheet.show .modal-dialog {
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   Dark Mode Styles
+   ========================================= */
+[data-theme="dark"] {
+    --primary-color: #60A5FA;
+    --secondary-color: #3B82F6;
+    --accent-color: #10B981;
+    --bg-color: #0F172A;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --card-bg: #1E293B;
+    --glass-bg: rgba(30, 41, 59, 0.85);
+}
+[data-theme="dark"] .bg-white { background-color: var(--card-bg) !important; color: var(--text-main) !important; }
+[data-theme="dark"] .bg-light { background-color: rgba(255,255,255,0.05) !important; color: var(--text-main) !important; }
+[data-theme="dark"] .text-dark { color: var(--text-main) !important; }
+[data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
+[data-theme="dark"] .form-control, [data-theme="dark"] .form-select, [data-theme="dark"] .input-group-text {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .form-control::placeholder { color: var(--text-muted); }
+[data-theme="dark"] .modal-content { background-color: var(--card-bg); color: var(--text-main); }
+[data-theme="dark"] .theme-toggle i::before { content: "\f185"; color: #FCD34D; }
+
+/* =========================================
+   Smart Scroll Navbar
+   ========================================= */
+.smart-scroll {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, box-shadow 0.3s ease;
+}
+.smart-scroll.scrolled-down {
+    transform: translateY(-100%);
+}
+.smart-scroll.scrolled-up {
+    transform: translateY(0);
 }
