@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         applyTheme(savedTheme);
 
+        let currentThemeIndex = ['light', 'dark', 'auto'].indexOf(savedTheme);
+        if (currentThemeIndex === -1) currentThemeIndex = 2;
+
         themeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const selectedTheme = btn.getAttribute('data-theme-val');
@@ -72,7 +75,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
                 
                 applyTheme(selectedTheme);
+                currentThemeIndex = ['light', 'dark', 'auto'].indexOf(selectedTheme);
             });
+        });
+
+        // Swipe/Drag functionality
+        let isDraggingTheme = false;
+        let startXTheme = 0;
+
+        themeToggleContainer.addEventListener('pointerdown', (e) => {
+            isDraggingTheme = true;
+            startXTheme = e.clientX;
+            themeToggleContainer.setPointerCapture(e.pointerId);
+            // Disable touch scrolling while interacting with switch
+            e.preventDefault();
+        });
+
+        themeToggleContainer.addEventListener('pointermove', (e) => {
+            if (!isDraggingTheme) return;
+            const diffX = e.clientX - startXTheme;
+            
+            if (diffX > 20) { // Dragged right
+                if (currentThemeIndex < 2) {
+                    currentThemeIndex++;
+                    const themes = ['light', 'dark', 'auto'];
+                    const btn = document.querySelector(`.theme-btn[data-theme-val="${themes[currentThemeIndex]}"]`);
+                    if (btn) btn.click();
+                    startXTheme = e.clientX;
+                }
+            } else if (diffX < -20) { // Dragged left
+                if (currentThemeIndex > 0) {
+                    currentThemeIndex--;
+                    const themes = ['light', 'dark', 'auto'];
+                    const btn = document.querySelector(`.theme-btn[data-theme-val="${themes[currentThemeIndex]}"]`);
+                    if (btn) btn.click();
+                    startXTheme = e.clientX;
+                }
+            }
+        });
+
+        themeToggleContainer.addEventListener('pointerup', (e) => {
+            isDraggingTheme = false;
+            themeToggleContainer.releasePointerCapture(e.pointerId);
+        });
+        
+        themeToggleContainer.addEventListener('pointercancel', () => {
+            isDraggingTheme = false;
         });
         
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

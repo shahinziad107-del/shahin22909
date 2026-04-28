@@ -20,13 +20,28 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg smart-scroll py-2">
         <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <a class="navbar-brand d-flex align-items-center m-0" href="home.html">
-                    <img src="./static/img/logo.png" alt="Logo" height="40" class="ms-2 shadow-sm" style="border-radius: 10px;">
-                    <span class="fs-4 fw-bold">أجرلي</span>
-                </a>
-                                <!-- Liquid Glass Theme Toggle -->
-                <div class="glass-theme-toggle me-3" dir="ltr">
+            
+            <a class="navbar-brand d-flex align-items-center m-0" href="home.html">
+                <img src="./static/img/logo.png" alt="Logo" height="40" class="ms-2 shadow-sm" style="border-radius: 10px;">
+                <span class="fs-4 fw-bold">أجرلي</span>
+            </a>
+            
+            <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-phone ms-1"></i>تواصل معنا</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="glass-theme-toggle" dir="ltr">
                     <div class="toggle-slider"></div>
                     <button class="theme-btn" data-theme-val="light" title="وضع النهار">
                         <i class="fa-regular fa-sun"></i>
@@ -38,21 +53,8 @@
                         <i class="fa-solid fa-cloud-sun"></i>
                     </button>
                 </div>
-            </div>
-
-            <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="home.html">الرئيسية</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fa-solid fa-phone ms-1"></i>تواصل معنا</a>
-                    </li>
-                </ul>
-                <div class="d-flex gx-2 align-items-center">
+                
+                <div class="d-none d-lg-flex gx-2 align-items-center">
                     <a href="account.html" class="btn btn-outline-primary ms-2 rounded-pill px-4"><i class="fa-regular fa-user ms-1"></i> حسابي</a>
                     <a href="add_property.html" class="btn btn-primary rounded-pill px-4 shadow-sm">إضافة عقار</a>
                 </div>
