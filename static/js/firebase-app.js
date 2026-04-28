@@ -53,6 +53,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 adminBtn.innerHTML = '<i class="fa-solid fa-shield-halved ms-1"></i> الإدارة';
                 navAuthButtons.prepend(adminBtn);
             }
+            
+            // On account page, hide 'My Properties' and show 'Admin Panel'
+            if (path.includes('account.html')) {
+                const myPropsBtn = document.querySelector('a[href="my_properties.html"]');
+                if (myPropsBtn) myPropsBtn.style.display = 'none';
+                
+                const adminPanelLink = document.getElementById('admin-panel-link');
+                if (adminPanelLink) adminPanelLink.classList.remove('d-none');
+                if (adminPanelLink) adminPanelLink.classList.add('d-flex');
+            }
         }
 
         // Display user email in account
@@ -63,14 +73,20 @@ document.addEventListener("DOMContentLoaded", () => {
             if (nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
             
             const avatarPreview = document.getElementById('account-avatar');
-            if (avatarPreview) {
+            const navAvatar = document.getElementById('nav-avatar');
+            
+            if (avatarPreview || navAvatar) {
                 getDoc(doc(db, "users", user.uid)).then((docSnap) => {
-                    if (docSnap.exists() && docSnap.data().photo) {
-                        avatarPreview.style.backgroundImage = `url('${docSnap.data().photo}')`;
-                        avatarPreview.innerHTML = '';
-                    } else if (user.photoURL) {
-                        avatarPreview.style.backgroundImage = `url('${user.photoURL}')`;
-                        avatarPreview.innerHTML = '';
+                    const photo = (docSnap.exists() && docSnap.data().photo) ? docSnap.data().photo : user.photoURL;
+                    if (photo) {
+                        if (avatarPreview) {
+                            avatarPreview.style.backgroundImage = `url('${photo}')`;
+                            avatarPreview.innerHTML = '';
+                        }
+                        if (navAvatar) {
+                            navAvatar.style.backgroundImage = `url('${photo}')`;
+                            navAvatar.innerHTML = '';
+                        }
                     }
                 }).catch(e => console.log(e));
             }
@@ -135,14 +151,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Logout Logic ---
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        await signOut(auth);
+        window.location.href = 'index.html';
+    };
+
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await signOut(auth);
-            window.location.href = 'index.html';
-        });
-    }
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+    const topLogoutBtn = document.getElementById('top-logout-btn');
+    if (topLogoutBtn) topLogoutBtn.addEventListener('click', handleLogout);
 
     // --- Settings Logic ---
     if (path.includes('settings.html')) {

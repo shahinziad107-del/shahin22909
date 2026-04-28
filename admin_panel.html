@@ -18,22 +18,15 @@
 <body class="bg-light">
 
     <!-- Navbar -->
-    <nav class="navbar fixed-top bg-dark border-bottom border-danger" data-bs-theme="dark" style="padding: 10px 0;">
-        <div class="container d-flex justify-content-between align-items-center">
-            
-            <!-- Admin Profile Pic -->
-            <div class="d-flex align-items-center">
-                <div id="admin-avatar-nav" style="width: 45px; height: 45px; border-radius: 50%; background: #444; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 2px solid var(--bs-danger); box-shadow: 0 2px 10px rgba(220,53,69,0.3);">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark border-bottom border-danger" data-bs-theme="dark">
+        <div class="container">
+            <a class="navbar-brand text-white" href="home.html">
+                <i class="fa-solid fa-shield-halved text-danger me-1 ms-1"></i>
+                أجرلي <span class="fw-bold text-danger">ADMIN</span>
+            </a>
+            <div class="d-flex gx-2">
+                <a href="home.html" class="btn btn-outline-light ms-2 rounded-pill px-4"><i class="fa-solid fa-house ms-1"></i> العودة للموقع</a>
             </div>
-
-            <!-- Settings & Logout -->
-            <div class="d-flex align-items-center gap-4">
-                <a href="#" class="text-white fs-4" title="الإعدادات"><i class="fa-solid fa-gear"></i></a>
-                <a href="#" id="admin-logout-top-btn" class="text-danger fs-4" title="تسجيل الخروج"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
-            </div>
-            
         </div>
     </nav>
 
@@ -82,20 +75,23 @@
     <script type="module" src="./static/js/firebase-app.js"></script>
 
     <!-- Mobile Bottom Nav -->
-    <div class="mobile-bottom-nav d-lg-none" style="justify-content: space-around;">
+    <div class="mobile-bottom-nav d-lg-none">
         <a href="home.html" class="nav-item">
             <i class="fa-solid fa-house"></i>
         </a>
         <a href="#" class="nav-item">
             <i class="fa-solid fa-magnifying-glass"></i>
         </a>
-        <a href="admin_panel.html" class="nav-item center-add-btn active">
-            <div class="add-btn-inner" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); border-color: #dc3545; box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);">
-                <i class="fa-solid fa-shield-halved"></i>
+        <a href="add_property.html" class="nav-item center-add-btn">
+            <div class="add-btn-inner">
+                <i class="fa-solid fa-building"></i>
             </div>
         </a>
         <a href="#" class="nav-item">
             <i class="fa-solid fa-phone"></i>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class="fa-regular fa-user"></i>
         </a>
     </div>
 
