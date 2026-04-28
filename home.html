@@ -31,7 +31,7 @@
                         <a class="nav-link active" href="home.html">الرئيسية</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
+                        <a class="nav-link" href="#search-form"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fa-solid fa-phone ms-1"></i>تواصل معنا</a>
@@ -53,10 +53,29 @@
                 <div class="hero-content">
                     <h1 class="hero-title">ابحث عن منزل أحلامك</h1>
                     <p class="hero-subtitle mb-4">اكتشف أفضل العقارات المتاحة للبيع أو للإيجار بأسعار لا تقبل المنافسة وبخطوات بسيطة.</p>
-                    <div class="d-inline-flex gap-2 justify-content-center">
-                        <button class="btn btn-light btn-lg rounded-pill px-5 text-primary fw-bold shadow">
-                            <i class="fa-solid fa-magnifying-glass ms-2"></i> تصفح الآن
-                        </button>
+                    
+                    <!-- Search Form -->
+                    <div class="card shadow-lg border-0 rounded-4 p-3 mt-4 mx-auto" style="max-width: 800px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                        <form id="search-form" class="row g-3 align-items-center">
+                            <div class="col-md-5">
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="fa-solid fa-location-dot"></i></span>
+                                    <input type="text" id="search-location" class="form-control border-start-0 fs-6" placeholder="ابحث بالمنطقة (مثال: القاهرة، الجيزة، شبرا)">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <input type="number" id="search-min-price" class="form-control fs-6" placeholder="من (ج.م)">
+                                    <span class="input-group-text bg-light text-muted">-</span>
+                                    <input type="number" id="search-max-price" class="form-control fs-6" placeholder="إلى (ج.م)">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold h-100 shadow btn-lg fs-6">
+                                    <i class="fa-solid fa-magnifying-glass ms-1"></i> ابحث الآن
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -183,7 +202,7 @@
         <a href="home.html" class="nav-item">
             <i class="fa-solid fa-house"></i>
         </a>
-        <a href="#" class="nav-item">
+        <a href="#search-form" class="nav-item">
             <i class="fa-solid fa-magnifying-glass"></i>
         </a>
         <a href="add_property.html" class="nav-item center-add-btn">

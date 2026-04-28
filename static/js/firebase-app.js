@@ -579,6 +579,30 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById('properties-container');
         if (container) {
             loadProperties(container, false);
+            
+            const searchForm = document.getElementById('search-form');
+            if (searchForm) {
+                searchForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const locationFilter = document.getElementById('search-location').value.trim().toLowerCase();
+                    const minPriceFilter = document.getElementById('search-min-price').value;
+                    const maxPriceFilter = document.getElementById('search-max-price').value;
+                    
+                    loadProperties(container, false, null, {
+                        location: locationFilter,
+                        minPrice: minPriceFilter ? parseFloat(minPriceFilter) : null,
+                        maxPrice: maxPriceFilter ? parseFloat(maxPriceFilter) : null
+                    });
+                    
+                    setTimeout(() => {
+                        const target = document.getElementById('properties-container');
+                        if (target) {
+                            const y = target.getBoundingClientRect().top + window.scrollY - 100;
+                            window.scrollTo({top: y, behavior: 'smooth'});
+                        }
+                    }, 300);
+                });
+            }
         }
     }
 
@@ -597,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function loadProperties(container, userOnly, uid=null) {
+async function loadProperties(container, userOnly, uid=null, filters=null) {
     container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
     try {
         let q;
@@ -628,6 +652,36 @@ async function loadProperties(container, userOnly, uid=null) {
                 const timeB = b.createdAt ? b.createdAt.toMillis() : 0;
                 return timeB - timeA; // Descending
             });
+        }
+
+        if (filters) {
+            properties = properties.filter(prop => {
+                let match = true;
+                if (filters.location) {
+                    const loc = (prop.location || '').toLowerCase();
+                    const gov = (prop.governorate || '').toLowerCase();
+                    const city = (prop.city || '').toLowerCase();
+                    if (!loc.includes(filters.location) && !gov.includes(filters.location) && !city.includes(filters.location)) {
+                        match = false;
+                    }
+                }
+                if (filters.minPrice !== null && !isNaN(filters.minPrice)) {
+                    if (prop.price < filters.minPrice) match = false;
+                }
+                if (filters.maxPrice !== null && !isNaN(filters.maxPrice)) {
+                    if (prop.price > filters.maxPrice) match = false;
+                }
+                return match;
+            });
+
+            if (properties.length === 0) {
+                container.innerHTML = `
+                <div class="col-12 text-center py-5 reveal active">
+                    <i class="fa-solid fa-magnifying-glass fs-1 text-muted mb-3"></i>
+                    <p class="text-muted fs-5">لا توجد عقارات مطابقة لعملية البحث.</p>
+                </div>`;
+                return;
+            }
         }
 
         let html = '';
