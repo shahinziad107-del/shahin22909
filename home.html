@@ -25,9 +25,19 @@
                     <img src="./static/img/logo.png" alt="Logo" height="40" class="ms-2 shadow-sm" style="border-radius: 10px;">
                     <span class="fs-4 fw-bold">أجرلي</span>
                 </a>
-                <button class="btn btn-link text-decoration-none p-0 fs-4 theme-toggle me-3" id="theme-toggle" title="تغيير المظهر" style="color: var(--text-color, #333);">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
+                                <!-- Liquid Glass Theme Toggle -->
+                <div class="glass-theme-toggle me-3" dir="ltr">
+                    <div class="toggle-slider"></div>
+                    <button class="theme-btn" data-theme-val="light" title="وضع النهار">
+                        <i class="fa-regular fa-sun"></i>
+                    </button>
+                    <button class="theme-btn" data-theme-val="dark" title="وضع الليل">
+                        <i class="fa-regular fa-moon"></i>
+                    </button>
+                    <button class="theme-btn" data-theme-val="auto" title="تلقائي">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">

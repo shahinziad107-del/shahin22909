@@ -1,6 +1,6 @@
 // Dark Mode Initialization (Run immediately to prevent flash)
-const currentTheme = localStorage.getItem('theme') || 'light';
-if (currentTheme === 'dark') {
+const currentTheme = localStorage.getItem('theme') || 'auto';
+if (currentTheme === 'dark' || (currentTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.setAttribute('data-theme', 'dark');
 }
 
@@ -36,19 +36,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1.5 Dark Mode Toggle Button Logic
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            let theme = document.documentElement.getAttribute('data-theme');
-            if (theme === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
+    // 1.5 Glass Theme Toggle Logic
+    const themeToggleContainer = document.querySelector('.glass-theme-toggle');
+    const themeBtns = document.querySelectorAll('.theme-btn');
+    
+    function applyTheme(theme) {
+        if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    }
+
+    if (themeToggleContainer && themeBtns.length > 0) {
+        const savedTheme = localStorage.getItem('theme') || 'auto';
+        themeToggleContainer.setAttribute('data-active', savedTheme);
+        themeBtns.forEach(btn => {
+            if (btn.getAttribute('data-theme-val') === savedTheme) {
+                btn.classList.add('active');
             } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
+                btn.classList.remove('active');
             }
         });
+        
+        applyTheme(savedTheme);
+
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedTheme = btn.getAttribute('data-theme-val');
+                localStorage.setItem('theme', selectedTheme);
+                
+                themeToggleContainer.setAttribute('data-active', selectedTheme);
+                
+                themeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                applyTheme(selectedTheme);
+            });
+        });
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (localStorage.getItem('theme') === 'auto') {
+                applyTheme('auto');
+            }
+        });
+    } else {
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                let theme = document.documentElement.getAttribute('data-theme');
+                if (theme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        }
     }
 
 
