@@ -486,13 +486,13 @@ document.addEventListener("DOMContentLoaded", () => {
                                     </div>
                                 </div>
                                 
-                                <div class="d-flex align-items-center mb-4 bg-light p-3 rounded-3 shadow-sm border border-light-subtle">
-                                    <div style="width: 55px; height: 55px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;" class="me-3 ms-3">
+                                <div class="d-flex align-items-center mb-4 bg-light p-3 rounded-4 border">
+                                    <a href="user_profile.html?id=${prop.owner}" style="width: 55px; height: 55px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; text-decoration:none;" class="me-3 ms-3">
                                         ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">تم النشر بواسطة</small>
-                                        <span class="fw-bold fs-5 d-block lh-1 text-primary">${prop.authorName || 'مستخدم غير معروف'}</span>
+                                    </a>
+                                    <div class="flex-grow-1">
+                                        <span class="text-muted small d-block mb-1">صاحب الإعلان</span>
+                                        <a href="user_profile.html?id=${prop.owner}" class="fw-bold fs-5 d-block lh-1 text-primary text-decoration-none">${prop.authorName || 'مستخدم غير معروف'}</a>
                                     </div>
                                 </div>
                                 <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4">تفاصيل العقار</h3>
@@ -775,12 +775,12 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                     
                     <div class="card-body container-fluid p-3 flex-grow-1">
                         <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
-                            <div style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;" class="me-2 ms-2">
+                            <a href="user_profile.html?id=${prop.owner}" style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; text-decoration:none;" class="me-2 ms-2">
                                 ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
-                            </div>
+                            </a>
                             <div class="text-truncate">
                                 <small class="text-muted d-block lh-1 mb-1" style="font-size: 0.7rem;">ناشر العقار</small>
-                                <span class="fw-bold d-block lh-1 text-primary text-truncate" style="font-size: 0.9rem;">${prop.authorName || 'مستخدم غير معروف'}</span>
+                                <a href="user_profile.html?id=${prop.owner}" class="fw-bold d-block lh-1 text-primary text-truncate text-decoration-none" style="font-size: 0.9rem;">${prop.authorName || 'مستخدم غير معروف'}</a>
                             </div>
                         </div>
                         <h4 class="card-title text-truncate mb-2 fs-5">${prop.title}</h4>
@@ -865,24 +865,19 @@ function initChatWidget(user) {
     const input = document.getElementById('chat-msg-input');
     const title = document.getElementById('chat-header-title');
 
+    // Load chats in background immediately!
+    loadChatsList(user.uid, body, footer, backBtn, title);
+
     // Toggle logic
     document.querySelectorAll('.chat-toggle-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             widget.classList.toggle('active');
-            if (widget.classList.contains('active')) {
-                loadChatsList(user.uid, body, footer, backBtn, title);
-            } else {
-                if(chatsUnsubscribe) chatsUnsubscribe();
-                if(currentChatUnsubscribe) currentChatUnsubscribe();
-            }
         });
     });
 
     closeBtn.addEventListener('click', () => {
         widget.classList.remove('active');
-        if(chatsUnsubscribe) chatsUnsubscribe();
-        if(currentChatUnsubscribe) currentChatUnsubscribe();
     });
 
     backBtn.addEventListener('click', () => {
@@ -891,6 +886,9 @@ function initChatWidget(user) {
             currentChatUnsubscribe = null;
         }
         currentChatId = null;
+        footer.classList.add('d-none');
+        backBtn.classList.add('d-none');
+        title.innerHTML = '<i class="fa-solid fa-comment-dots ms-2"></i> الرسائل';
         loadChatsList(user.uid, body, footer, backBtn, title);
     });
 
@@ -953,13 +951,13 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
             const otherUser = data.participantDetails && data.participantDetails[otherUid] ? data.participantDetails[otherUid] : {name: 'مستخدم', photo: ''};
             
             html += `
-            <div class="chat-list-item" data-id="${data.id}" data-other="${otherUid}">
-                <div class="chat-list-avatar" style="background-image: url('${otherUser.photo || ''}');">
+            <div class="chat-list-item" data-id="${data.id}" data-other="${otherUid}" data-name="${otherUser.name || 'مستخدم'}">
+                <a href="user_profile.html?id=${otherUid}" class="chat-list-avatar" style="background-image: url('${otherUser.photo || ''}'); text-decoration:none;">
                     ${!otherUser.photo ? '<i class="fa-regular fa-user"></i>' : ''}
-                </div>
+                </a>
                 <div class="chat-list-info">
-                    <div class="chat-list-name">${otherUser.name || 'مستخدم'}</div>
-                    <div class="chat-list-lastmsg">${data.lastMessage || '...'}</div>
+                    <a href="user_profile.html?id=${otherUid}" class="chat-list-name d-block text-decoration-none">${otherUser.name || 'مستخدم'}</a>
+                    <div class="chat-list-lastmsg" style="cursor:pointer;">${data.lastMessage || '...'}</div>
                 </div>
             </div>
             `;
@@ -967,10 +965,11 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
         body.innerHTML = html;
 
         body.querySelectorAll('.chat-list-item').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('a')) return; // Allow normal navigation if clicked on avatar or name
                 const chatId = item.getAttribute('data-id');
                 const otherUid = item.getAttribute('data-other');
-                const otherName = item.querySelector('.chat-list-name').innerText;
+                const otherName = item.getAttribute('data-name');
                 openChatThread(chatId, myUid, otherUid, otherName, body, footer, backBtn, title);
             });
         });
@@ -1067,3 +1066,101 @@ window.startChatWith = async function(otherUid, otherName, otherPhoto) {
         alert("حدث خطأ أثناء بدء المحادثة.");
     }
 };
+
+// --- User Profile Page Logic ---
+if (path.includes('user_profile.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUid = urlParams.get('id');
+    
+    if (!targetUid) {
+        window.location.href = 'home.html';
+    } else {
+        const profileHeader = document.getElementById('user-profile-header');
+        const propertiesContainer = document.getElementById('user-properties-container');
+        const totalCountEl = document.getElementById('user-total-properties');
+        const chatBtn = document.getElementById('profile-chat-btn');
+
+        async function loadUserProfile() {
+            try {
+                // Fetch User Info
+                const userDoc = await getDoc(doc(db, "users", targetUid));
+                let userName = 'مستخدم';
+                let userPhoto = '';
+                
+                if (userDoc.exists()) {
+                    userName = userDoc.data().name || 'مستخدم';
+                    userPhoto = userDoc.data().photo || '';
+                }
+
+                // Render Header
+                if (profileHeader) {
+                    profileHeader.innerHTML = `
+                        <div class="d-flex align-items-center flex-column">
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('${userPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 15px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                                ${!userPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                            </div>
+                            <h2 class="fw-bold">${userName}</h2>
+                            <p class="text-muted mb-4">عضو في أجرلي</p>
+                        </div>
+                    `;
+                }
+
+                // Setup Chat Button
+                if (chatBtn) {
+                    chatBtn.onclick = () => {
+                        if (typeof startChatWith === 'function') {
+                            startChatWith(targetUid, userName, userPhoto);
+                        }
+                    };
+                }
+
+                // Fetch Properties
+                if (propertiesContainer) {
+                    const q = query(collection(db, "properties"), where("owner", "==", targetUid));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (totalCountEl) totalCountEl.innerText = querySnapshot.size;
+
+                    if (querySnapshot.empty) {
+                        propertiesContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5 mb-5"><i class="fa-solid fa-folder-open fs-1 mb-3"></i><br>هذا المستخدم لم يقم بنشر أي عقارات بعد.</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    querySnapshot.forEach((docSnap) => {
+                        const prop = docSnap.data();
+                        const firstImage = (prop.images && prop.images.length > 0) ? prop.images[0] : '';
+                        const price = prop.price ? parseInt(prop.price).toLocaleString('ar-EG') : 'غير محدد';
+                        
+                        html += `
+                        <div class="col reveal">
+                            <div class="property-card">
+                                <div class="card-img-wrapper" style="height: 200px;">
+                                    <span class="price-tag">${price} ج.م</span>
+                                    <div class="property-image h-100" style="background-image: url('${firstImage}'); background-size: cover; background-position: center; ${!firstImage ? 'background-color: var(--secondary-color); display:flex; justify-content:center; align-items:center;' : ''}">
+                                        ${!firstImage ? '<i class="fa-solid fa-image fs-1 text-white opacity-50"></i>' : ''}
+                                    </div>
+                                </div>
+                                <div class="card-body container-fluid p-3">
+                                    <h5 class="card-title text-truncate fw-bold mb-2">${prop.title || 'بدون عنوان'}</h5>
+                                    <div class="location-text mb-3 small text-muted">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>${prop.governorate || ''}${prop.city ? '، ' + prop.city : ''}</span>
+                                    </div>
+                                    <a href="property_detail.html?id=${docSnap.id}" class="btn btn-outline-primary w-100 rounded-pill mt-2">التفاصيل</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    propertiesContainer.innerHTML = html;
+                }
+
+            } catch (err) {
+                console.error("Error loading user profile", err);
+            }
+        }
+        
+        loadUserProfile();
+    }
+}
+

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - أجرلي Ajarli</title>
+    
+    <!-- Bootstrap RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+<body style="background-color: var(--bg-color, #f8f9fa);">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg smart-scroll py-2 sticky-top bg-white shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            
+            <a class="navbar-brand d-flex align-items-center m-0" href="home.html">
+                <img src="./static/img/logo.png" alt="Logo" height="40" class="ms-2 shadow-sm" style="border-radius: 10px;">
+                <span class="fs-4 fw-bold text-primary">أجرلي</span>
+            </a>
+            
+            <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-1"></i>بحث</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link chat-toggle-btn" href="#" data-action="toggle-chat"><i class="fa-solid fa-comment-dots ms-1"></i>الرسائل</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="glass-theme-toggle" dir="ltr">
+                    <div class="toggle-slider"></div>
+                    <button class="theme-btn" data-theme-val="light" title="وضع النهار">
+                        <i class="fa-regular fa-sun"></i>
+                    </button>
+                    <button class="theme-btn" data-theme-val="dark" title="وضع الليل">
+                        <i class="fa-regular fa-moon"></i>
+                    </button>
+                    <button class="theme-btn" data-theme-val="auto" title="تلقائي">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </button>
+                </div>
+                
+                <div class="d-none d-lg-flex gx-2 align-items-center" id="nav-auth-buttons">
+                    <a href="account.html" class="btn btn-outline-primary ms-2 rounded-pill px-4"><i class="fa-regular fa-user ms-1"></i> حسابي</a>
+                    <a href="add_property.html" class="btn btn-primary rounded-pill px-4 shadow-sm">إضافة عقار</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-5 mt-4" style="min-height: 80vh;">
+        
+        <div class="row g-4">
+            <!-- Profile Info Sidebar -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle text-center sticky-top" style="top: 100px; z-index: 10;">
+                    <div id="user-profile-header">
+                        <div class="d-flex align-items-center flex-column">
+                            <div class="spinner-border text-primary my-4" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="profile-chat-btn" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold mt-2">
+                        <i class="fa-solid fa-comment-dots ms-2"></i> تواصل معي
+                    </button>
+                    
+                    <hr class="my-4 text-muted">
+                    
+                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
+                        <span class="text-muted fw-bold">إجمالي العقارات</span>
+                        <span class="badge bg-secondary rounded-pill fs-6" id="user-total-properties">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Properties -->
+            <div class="col-lg-8">
+                <h3 class="fw-bold border-bottom pb-3 mb-4 text-primary"><i class="fa-solid fa-building ms-2"></i> عقارات المستخدم</h3>
+                
+                <div class="row row-cols-1 row-cols-md-2 g-4" id="user-properties-container">
+                    <div class="col-12 text-center text-muted mt-5">
+                        <i class="fa-solid fa-spinner fa-spin fs-1 mb-3"></i>
+                        <br>جاري تحميل العقارات...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 bg-white mt-auto border-top">
+        <div class="container">
+            <p class="mb-0 text-muted">© 2026 أجرلي Ajarli. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="./static/js/main.js"></script>
+    <script type="module" src="./static/js/firebase-app.js"></script>
+
+    <!-- Mobile Bottom Nav -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="home.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+        </a>
+        <a href="#" class="nav-item" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="add_property.html" class="nav-item center-add-btn">
+            <div class="add-btn-inner">
+                <i class="fa-solid fa-building"></i>
+            </div>
+        </a>
+        <a href="#" class="nav-item chat-toggle-btn" data-action="toggle-chat">
+            <i class="fa-solid fa-comment-dots"></i>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class="fa-regular fa-user"></i>
+        </a>
+    </div>
+
+</body>
+</html>
