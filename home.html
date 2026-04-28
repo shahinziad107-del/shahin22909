@@ -18,14 +18,19 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg smart-scroll">
-        <div class="container">
-            <a class="navbar-brand" href="home.html">
-                <img src="./static/img/logo.png" alt="Logo" height="30" class="ms-1" style="border-radius: 8px;">
-                أجرلي
-            </a>
-<!-- Mobile Nav Toggler Removed -->
-            <div class="collapse navbar-collapse" id="navbarNav">
+    <nav class="navbar navbar-expand-lg smart-scroll py-2">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand d-flex align-items-center m-0" href="home.html">
+                    <img src="./static/img/logo.png" alt="Logo" height="40" class="ms-2 shadow-sm" style="border-radius: 10px;">
+                    <span class="fs-4 fw-bold">أجرلي</span>
+                </a>
+                <button class="btn btn-link text-decoration-none p-0 fs-4 theme-toggle me-3" id="theme-toggle" title="تغيير المظهر" style="color: var(--text-color, #333);">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link active" href="home.html">الرئيسية</a>
@@ -38,9 +43,6 @@
                     </li>
                 </ul>
                 <div class="d-flex gx-2 align-items-center">
-                    <button class="btn btn-link text-decoration-none p-0 me-3 fs-5 theme-toggle" id="theme-toggle" title="تغيير المظهر" style="color: var(--text-color, #333);">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
                     <a href="account.html" class="btn btn-outline-primary ms-2 rounded-pill px-4"><i class="fa-regular fa-user ms-1"></i> حسابي</a>
                     <a href="add_property.html" class="btn btn-primary rounded-pill px-4 shadow-sm">إضافة عقار</a>
                 </div>

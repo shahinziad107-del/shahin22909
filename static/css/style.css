@@ -99,6 +99,21 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Mobile Responsiveness for Hero */
+@media (max-width: 768px) {
+    .hero-wrapper {
+        padding: 50px 20px;
+        margin-top: 10px;
+        border-radius: 16px;
+    }
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    .hero-subtitle {
+        font-size: 1.05rem;
+    }
+}
+
 /* Property Cards */
 .property-card {
     background: var(--card-bg);
@@ -238,6 +253,16 @@ footer {
     color: rgba(255,255,255,0.7);
     padding: 3rem 0;
     margin-top: 5rem;
+}
+
+@media (max-width: 768px) {
+    footer {
+        padding: 2rem 0;
+        margin-top: 3rem;
+    }
+    .property-card {
+        margin-bottom: 1rem;
+    }
 }
 
 /* =========================================
