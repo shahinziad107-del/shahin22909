@@ -36,9 +36,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         if (user) {
-            if (typeof initChatWidget === "function") {
-                initChatWidget(user);
-            }
+            getDoc(doc(db, "users", user.uid)).then(docSnap => {
+                if (docSnap.exists() && docSnap.data().banned) {
+                    alert("عذراً، لقد تم حظر حسابك نهائياً من قبل الإدارة.");
+                    signOut(auth).then(() => {
+                        window.location.href = 'index.html';
+                    });
+                    return;
+                }
+                
+                if (typeof initChatWidget === "function") {
+                    initChatWidget(user);
+                }
+            }).catch(err => console.error("Error checking ban status", err));
         }
 
         // --- Admin Authorization ---
@@ -1072,7 +1082,8 @@ if (window.location.pathname.includes('user_profile.html')) {
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('id');
     
-    if (!targetUid) {
+    if (!targetUid || targetUid === 'undefined') {
+        alert("بيانات المالك غير متوفرة (قد يكون هذا العقار قديماً جداً).");
         window.location.href = 'home.html';
     } else {
         const profileHeader = document.getElementById('user-profile-header');
@@ -1093,6 +1104,16 @@ if (window.location.pathname.includes('user_profile.html')) {
                 }
 
                 // Render Header
+                let banBtnHtml = '';
+                if (auth.currentUser && auth.currentUser.email === "shahinziad107@gmail.com" && targetUid !== auth.currentUser.uid) {
+                    banBtnHtml = `
+                    <div class="mt-3 w-100">
+                        <button id="admin-ban-btn" class="btn btn-danger btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                            <i class="fa-solid fa-ban ms-1"></i> حظر هذا المستخدم
+                        </button>
+                    </div>`;
+                }
+
                 if (profileHeader) {
                     profileHeader.innerHTML = `
                         <div class="d-flex align-items-center flex-column">
@@ -1101,8 +1122,25 @@ if (window.location.pathname.includes('user_profile.html')) {
                             </div>
                             <h2 class="fw-bold">${userName}</h2>
                             <p class="text-muted mb-4">عضو في أجرلي</p>
+                            ${banBtnHtml}
                         </div>
                     `;
+
+                    const adminBanBtn = document.getElementById('admin-ban-btn');
+                    if (adminBanBtn) {
+                        adminBanBtn.addEventListener('click', async () => {
+                            if(confirm("هل أنت متأكد من حظر هذا المستخدم نهائياً؟ لن يتمكن من دخول الموقع أو نشر عقارات مرة أخرى.")) {
+                                try {
+                                    await updateDoc(doc(db, "users", targetUid), { banned: true });
+                                    alert("تم حظر المستخدم بنجاح.");
+                                    window.location.href = 'home.html';
+                                } catch(err) {
+                                    console.error("Error banning user", err);
+                                    alert("حدث خطأ أثناء الحظر.");
+                                }
+                            }
+                        });
+                    }
                 }
 
                 // Setup Chat Button
