@@ -1068,7 +1068,7 @@ window.startChatWith = async function(otherUid, otherName, otherPhoto) {
 };
 
 // --- User Profile Page Logic ---
-if (path.includes('user_profile.html')) {
+if (window.location.pathname.includes('user_profile.html')) {
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('id');
     
