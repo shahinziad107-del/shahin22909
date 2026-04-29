@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.location.href = "home.html";
                 return;
             }
+        }
         
         if (user) {
             getDoc(doc(db, "users", user.uid)).then(docSnap => {
