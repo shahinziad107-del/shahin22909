@@ -1213,8 +1213,7 @@ function openChatThread(chatId, myUid, otherUid, otherName, body, footer, backBt
 
 window.startChatWith = async function(otherUid, otherName, otherPhoto) {
     if (typeof auth === 'undefined' || !auth.currentUser) {
-        alert("يرجى تسجيل الدخول أولاً للتمكن من المراسلة.");
-        window.location.href = "index.html";
+        window.location.href = "login.html";
         return;
     }
     const user = auth.currentUser;
