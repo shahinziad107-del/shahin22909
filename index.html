@@ -3,103 +3,431 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - أجرلي Ajarli</title>
-    
+    <title>أجرلي - البوابة</title>
     <!-- Bootstrap RTL -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Google Fonts: Cairo -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/style.css">
+    
     <style>
-        body {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #050810; /* Darker background for sci-fi */
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .scroll-container {
+            height: 400vh;
+            width: 100%;
+        }
+
+        .fixed-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
             height: 100vh;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            overflow: hidden;
+            perspective: 1500px;
+            z-index: 10;
+            pointer-events: none;
         }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 3rem;
+
+        /* The Electronic Keycard */
+        .key-wrapper {
+            position: absolute;
+            z-index: 15;
+            left: 50%;
+            top: 10%;
+            margin-left: 0;
+            transform: translateX(-50%) scale(1.5) rotate(0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 15px rgba(13, 202, 240, 0.8));
+            color: #0dcaf0;
+            will-change: transform, opacity, top, margin-left;
+        }
+        
+        .key-icon {
+            font-size: 5rem;
+        }
+
+        /* The Metallic Door Frame */
+        .door-frame {
+            position: absolute;
+            width: 280px;
+            height: 480px;
+            top: 50%;
+            left: 50%;
+            z-index: 5;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: #000;
+            border: 12px solid #1a1a1a;
+            border-bottom: none;
+            perspective: 1500px;
+            will-change: opacity, transform;
+            box-shadow: 0 0 50px rgba(13, 202, 240, 0.2), inset 0 0 15px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        /* The Metallic Door Panel (Hinges on Right) */
+        .door-panel {
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            height: 100%;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            position: absolute;
+            top: 0; right: 0;
+            transform-origin: right center;
+            transform-style: preserve-3d;
+            box-shadow: inset -5px 0 15px rgba(0,0,0,0.8), inset 0 0 5px rgba(13, 202, 240, 0.3);
+            will-change: transform;
+            border: 1px solid #000;
+            z-index: 2;
+        }
+
+        /* Sci-Fi Panels Design */
+        .door-panels-grid {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(13, 202, 240, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(13, 202, 240, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        
+        .door-panel::before {
+            content: '';
+            position: absolute;
+            top: 15px; bottom: 15px; left: 15px; right: 15px;
+            border: 2px solid rgba(13, 202, 240, 0.2);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .door-panel::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 2px;
+            background: rgba(13, 202, 240, 0.2);
+        }
+
+        /* Scanner Pad */
+        .scanner-pad {
+            position: absolute;
+            left: 20px;
+            top: 52%;
+            width: 40px;
+            height: 60px;
+            background: #111;
+            border-radius: 6px;
+            border: 2px solid #333;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.8), inset 0 0 10px #000;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-screen {
+            width: 20px;
+            height: 30px;
+            background: #dc3545; /* Red */
+            border-radius: 3px;
+            box-shadow: 0 0 10px #dc3545;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .scanner-screen.granted {
+            background: #198754; /* Green */
+            box-shadow: 0 0 15px #198754;
+        }
+
+        /* Texts */
+        .scene-text {
+            position: absolute;
             text-align: center;
+            font-size: 3.5rem;
+            font-weight: 800;
+            width: 90%;
+            max-width: 900px;
+            z-index: 20;
+            opacity: 0;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+            will-change: opacity, transform;
+            line-height: 1.4;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
         }
-        .form-control {
-            border-radius: 12px;
-            padding: 12px 20px;
-            border: 1px solid rgba(0,0,0,0.1);
+
+        #text1 { 
+            top: 25%; 
+            background: -webkit-linear-gradient(45deg, #0dcaf0, #0d6efd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: var(--secondary-color);
+        
+        #text2 { 
+            top: 75%; 
+            font-size: 2.2rem; 
+            background: -webkit-linear-gradient(45deg, #0dcaf0, #0d6efd); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .portal-light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(13, 202, 240, 0.4) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 1;
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .door-frame { width: 240px; height: 400px; }
+            #text1 { font-size: 2.5rem; top: 20%; }
+            #text2 { font-size: 1.5rem; top: 80%; }
+            .key-icon { font-size: 4rem; }
+        }
+        
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(13, 202, 240, 0.7);
+            animation: bounce 2s infinite;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .scroll-hint i { font-size: 2rem; margin-top: 10px; color: #0dcaf0; }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-15px) translateX(-50%); }
+            60% { transform: translateY(-7px) translateX(-50%); }
         }
     </style>
 </head>
 <body>
 
-    <div class="login-card reveal shadow-lg">
-        <div class="mb-4">
-             <img src="./static/img/logo.png" alt="Logo" height="60" style="border-radius: 12px; margin-bottom: 15px;">
-             <h2 class="fw-bold mb-0">أهلاً بك في أجرلي</h2>
-             <p class="text-muted">قم بتسجيل الدخول لتصفح العقارات</p>
-        </div>
+    <div class="scroll-container">
+        <div class="fixed-scene">
+            <div class="portal-light" id="portalLight"></div>
+            
+            <div class="scroll-hint" id="scrollHint">
+                <span>اسحب للأسفل للاستكشاف</span>
+                <i class="fa-solid fa-angles-down"></i>
+            </div>
 
-        <form id="login-form">
-            <div class="mb-3 text-start">
-                <label class="form-label fw-bold text-muted small">البريد الإلكتروني</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
-                    <input type="email" class="form-control border-start-0" placeholder="admin@ajarli.com" required>
+            <!-- Texts -->
+            <div class="scene-text" id="text1">ليه تختارنا؟</div>
+            <div class="scene-text" id="text2">عشان احنا احسن موقع يقدم لك خدمات تأجير ببلاش وأمان وأعلى سيكيورتي</div>
+
+            <!-- Door -->
+            <div class="door-frame" id="doorFrame">
+                <div class="door-panel" id="mainDoor">
+                    <div class="door-panels-grid"></div>
+                    
+                    <div class="scanner-pad">
+                        <div class="scanner-screen" id="scannerScreen"></div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Keycard -->
+            <div class="key-wrapper" id="keyWrapper">
+                <i class="fa-solid fa-id-card key-icon" id="keyIcon"></i>
             </div>
             
-            <div class="mb-4 text-start">
-                <label class="form-label fw-bold text-muted small d-flex justify-content-between">
-                    كلمة المرور
-                    <a href="#" class="text-decoration-none">نسيت كلمة المرور؟</a>
-                </label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" class="form-control border-start-0" placeholder="••••••••" required>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm mb-3">
-                تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
-            </button>
-        </form>
-        
-        <div class="position-relative mb-4 mt-4 text-center">
-            <hr class="text-muted">
-            <span class="position-absolute top-50 start-50 translate-middle px-3 text-muted small" style="background: rgba(255, 255, 255, 0.95);">ليس لديك حساب؟</span>
         </div>
-
-        <a href="register.html" class="btn btn-outline-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm">
-            إنشاء حساب جديد كزائر <i class="fa-solid fa-user-plus ms-2"></i>
-        </a>
     </div>
 
-    <script src="./static/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const keyWrapper = document.getElementById('keyWrapper');
+            const keyIcon = document.getElementById('keyIcon');
+            const doorFrame = document.getElementById('doorFrame');
+            const mainDoor = document.getElementById('mainDoor');
+            const scannerScreen = document.getElementById('scannerScreen');
+            const text1 = document.getElementById('text1');
+            const text2 = document.getElementById('text2');
+            const portalLight = document.getElementById('portalLight');
+            const scrollHint = document.getElementById('scrollHint');
+            
+            window.scrollTo(0, 0);
+
+            const SCENE1_END = 0.3; 
+            const SCENE2_END = 0.6; 
+            const SCENE3_END = 0.75; 
+            const SCENE4_END = 1.0; 
+
+            // Scanner position logic
+            let keyholeMarginLeft = window.innerWidth <= 768 ? -68 : -88;
+            let keyholeMarginTop = window.innerWidth <= 768 ? 37 : 39;
+
+            let animationFrameId;
+
+            const updateScene = () => {
+                const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                let progress = window.scrollY / maxScroll;
+                if (progress < 0) progress = 0;
+                if (progress > 1) progress = 1;
+
+                if (progress > 0.02) {
+                    scrollHint.style.opacity = '0';
+                } else {
+                    scrollHint.style.opacity = '1';
+                }
+
+                // --- Scene 1: Keycard moves down & Text 1 Appears (0 to 0.3) ---
+                if (progress <= SCENE1_END) {
+                    const p = progress / SCENE1_END; 
+                    
+                    keyWrapper.style.top = `${10 + (25 * p)}%`;
+                    keyWrapper.style.marginLeft = '0px';
+                    keyWrapper.style.transform = `translateX(-50%) scale(1.5) rotate(0deg)`;
+                    
+                    if (p < 0.5) {
+                        text1.style.opacity = p * 2;
+                        text1.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 2)}px)`;
+                    } else {
+                        text1.style.opacity = 2 - (p * 2);
+                        text1.style.transform = `translateX(-50%) translateY(0px)`;
+                    }
+                    
+                    text2.style.opacity = '0';
+                    doorFrame.style.opacity = '0';
+                    doorFrame.style.transform = `translate(-50%, -50%) scale(0.8)`;
+                    mainDoor.style.transform = 'rotateY(0deg)';
+                    scannerScreen.classList.remove('granted');
+                }
+
+                // --- Scene 2: Keycard reaches scanner, Text 2 & Door Appears (0.3 to 0.6) ---
+                if (progress > SCENE1_END && progress <= SCENE2_END) {
+                    const p = (progress - SCENE1_END) / (SCENE2_END - SCENE1_END); 
+                    
+                    text1.style.opacity = '0';
+                    
+                    if (p < 0.5) {
+                        text2.style.opacity = p * 2;
+                        text2.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 2)}px)`;
+                    } else {
+                        text2.style.opacity = '1';
+                    }
+
+                    doorFrame.style.opacity = p;
+                    doorFrame.style.transform = `translate(-50%, -50%) scale(${0.8 + (0.2 * p)})`;
+                    mainDoor.style.transform = 'rotateY(0deg)';
+                    scannerScreen.classList.remove('granted');
+
+                    // Keycard moves to exact scanner position and rotates slightly to "tap"
+                    keyWrapper.style.top = `calc(${35 + (15 * p)}% + ${keyholeMarginTop * p}px)`;
+                    keyWrapper.style.marginLeft = `${keyholeMarginLeft * p}px`;
+                    keyWrapper.style.transform = `translateX(-50%) scale(${1.5 - (0.8 * p)}) rotate(${90 * p}deg)`; 
+                    
+                    keyWrapper.style.opacity = '1';
+                }
+
+                // --- Scene 3: Access Granted, Text 2 Fades Out (0.6 to 0.75) ---
+                if (progress > SCENE2_END && progress <= SCENE3_END) {
+                    const p = (progress - SCENE2_END) / (SCENE3_END - SCENE2_END);
+                    
+                    text2.style.opacity = Math.max(0, 1 - (p * 1.5));
+                    
+                    doorFrame.style.opacity = '1';
+                    doorFrame.style.transform = `translate(-50%, -50%) scale(1)`;
+                    mainDoor.style.transform = 'rotateY(0deg)';
+                    
+                    // Access Granted!
+                    scannerScreen.classList.add('granted');
+                    
+                    // Keycard stays tapped for a moment then fades out
+                    keyWrapper.style.top = `calc(50% + ${keyholeMarginTop}px)`;
+                    keyWrapper.style.marginLeft = `${keyholeMarginLeft}px`;
+                    keyWrapper.style.transform = `translateX(-50%) scale(0.7) rotate(90deg)`;
+                    keyWrapper.style.opacity = Math.max(0, 1 - (p * 2));
+                    
+                    portalLight.style.opacity = p * 0.2;
+                }
+
+                // --- Scene 4: Sci-Fi Door Opens Inwards & Redirect (0.75 to 1.0) ---
+                if (progress > SCENE3_END) {
+                    const p = (progress - SCENE3_END) / (SCENE4_END - SCENE3_END);
+                    
+                    text2.style.opacity = '0';
+                    doorFrame.style.opacity = '1';
+                    
+                    doorFrame.style.transform = `translate(-50%, -50%) scale(${1 + (5 * p)})`;
+                    
+                    mainDoor.style.transform = `rotateY(${-100 * p}deg)`;
+                    
+                    keyWrapper.style.opacity = '0';
+                    scannerScreen.classList.add('granted');
+                    
+                    portalLight.style.opacity = 0.2 + (0.8 * p);
+
+                    if (progress >= 0.99) {
+                        if (!window.redirecting) {
+                            window.redirecting = true;
+                            
+                            const flash = document.createElement('div');
+                            flash.style.position = 'fixed';
+                            flash.style.top = '0';
+                            flash.style.left = '0';
+                            flash.style.width = '100vw';
+                            flash.style.height = '100vh';
+                            flash.style.backgroundColor = '#0dcaf0'; // Cyan flash
+                            flash.style.zIndex = '9999';
+                            flash.style.opacity = '0';
+                            flash.style.transition = 'opacity 0.2s ease-in';
+                            document.body.appendChild(flash);
+                            
+                            void flash.offsetWidth;
+                            flash.style.opacity = '1';
+                            
+                            setTimeout(() => {
+                                window.location.href = 'home.html';
+                            }, 300);
+                        }
+                    }
+                } else {
+                    window.redirecting = false;
+                }
+            };
+
+            window.addEventListener('scroll', () => {
+                if(animationFrameId) cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(updateScene);
+            }, { passive: true });
+            
+            window.addEventListener('resize', () => {
+                keyholeMarginLeft = window.innerWidth <= 768 ? -68 : -88;
+                keyholeMarginTop = window.innerWidth <= 768 ? 37 : 39;
+                if(animationFrameId) cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(updateScene);
+            });
+            
+            updateScene();
+        });
+    </script>
     <script type="module" src="./static/js/firebase-app.js"></script>
-
-    </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-phone"></i>
-        </a>
-        <a href="account.html" class="nav-item">
-            <i class="fa-regular fa-user"></i>
-        </a>
-    </div>
-
 </body>
 </html>

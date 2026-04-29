@@ -19,28 +19,68 @@ const db = getFirestore(app);
 
 // Router & Logic
 document.addEventListener("DOMContentLoaded", () => {
-    const defaultPage = window.location.pathname.endsWith('/') || window.location.pathname.includes('index.html');
+    const isIntroPage = window.location.pathname.endsWith('/') || window.location.pathname.includes('index.html');
+    const isLoginPage = window.location.pathname.includes('login.html');
     const isRegisterPage = window.location.pathname.includes('register.html');
+    const isHomePage = window.location.pathname.includes('home.html');
     const path = window.location.pathname;
 
     const ADMIN_EMAIL = "shahinziad107@gmail.com";
 
+    // --- Guest Mode Interceptor ---
+    document.body.addEventListener('click', (e) => {
+        if (document.body.classList.contains('guest-mode')) {
+            const link = e.target.closest('a') || e.target.closest('button');
+            if (link) {
+                if (link.classList.contains('theme-btn') || link.closest('.glass-theme-toggle') || link.id === 'theme-toggle') {
+                    return; 
+                }
+                const href = link.getAttribute('href');
+                if (href && (href.includes('login.html') || href.includes('index.html') || href.includes('register.html') || href === '#')) {
+                    // Check if it's a specific protected action disguised as a '#' link
+                    const isSearchModal = link.getAttribute('data-bs-target') === '#searchModal';
+                    const isChat = link.classList.contains('chat-toggle-btn') || link.getAttribute('data-action') === 'toggle-chat';
+                    if (!isSearchModal && !isChat) {
+                        return; // Allow generic # links if they aren't protected
+                    }
+                }
+                
+                const isProtectedHref = href && (href.includes('property_detail.html') || href.includes('add_property.html') || href.includes('account.html') || href.includes('my_properties.html'));
+                const isSearchModal = link.getAttribute('data-bs-target') === '#searchModal';
+                const isChat = link.classList.contains('chat-toggle-btn') || link.getAttribute('data-action') === 'toggle-chat';
+                
+                if (isProtectedHref || isSearchModal || isChat) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+    }, true);
+
     // --- Auth Protection ---
     onAuthStateChanged(auth, (user) => {
-        if (!user && !defaultPage && !isRegisterPage) {
-            // Not logged in but trying to access protected page
-            window.location.href = "index.html"; 
-        } else if (user && (defaultPage || isRegisterPage)) {
-            // Logged in but visiting login or register page
-            window.location.href = "home.html";
-        }
+        if (!user) {
+            document.body.classList.add('guest-mode');
+            if (!isIntroPage && !isLoginPage && !isRegisterPage && !isHomePage) {
+                // Not logged in but trying to access protected page
+                window.location.href = "login.html"; 
+                return;
+            }
+        } else {
+            document.body.classList.remove('guest-mode');
+            if (isIntroPage || isLoginPage || isRegisterPage) {
+                // Logged in but visiting login or register or intro page
+                window.location.href = "home.html";
+                return;
+            }
         
         if (user) {
             getDoc(doc(db, "users", user.uid)).then(docSnap => {
                 if (docSnap.exists() && docSnap.data().banned) {
                     alert("عذراً، لقد تم حظر حسابك نهائياً من قبل الإدارة.");
                     signOut(auth).then(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'login.html';
                     });
                     return;
                 }
@@ -110,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Login Logic ---
-    if (defaultPage) {
+    if (isLoginPage) {
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
@@ -170,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const handleLogout = async (e) => {
         e.preventDefault();
         await signOut(auth);
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     };
 
     const logoutBtn = document.getElementById('logout-btn');
