@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Login Logic ---
-    if (isLoginPage) {
+    if (defaultPage) {
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
