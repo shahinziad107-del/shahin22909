@@ -17,6 +17,85 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Image Processing Helpers
+function resizeAndConvertToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 800;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Compress to JPEG with 0.6 quality to save space
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
+function setupImageUpload(inputEl, previewContainerEl) {
+    inputEl.base64Images = []; // store base64 array here
+    inputEl.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 3) {
+            alert("الحد الأقصى هو 3 صور فقط.");
+            e.target.value = '';
+            previewContainerEl.innerHTML = '';
+            inputEl.base64Images = [];
+            return;
+        }
+        
+        previewContainerEl.innerHTML = '<div class="w-100 text-center"><i class="fa-solid fa-spinner fa-spin"></i> جاري معالجة و ضغط الصور...</div>';
+        const base64Images = [];
+        
+        for (let file of files) {
+            try {
+                const b64 = await resizeAndConvertToBase64(file);
+                base64Images.push(b64);
+            } catch (err) {
+                console.error("Error processing image", err);
+            }
+        }
+        
+        previewContainerEl.innerHTML = '';
+        base64Images.forEach((b64) => {
+            const imgWrap = document.createElement('div');
+            imgWrap.style.width = '100px';
+            imgWrap.style.height = '100px';
+            imgWrap.style.backgroundImage = `url('${b64}')`;
+            imgWrap.style.backgroundSize = 'cover';
+            imgWrap.style.backgroundPosition = 'center';
+            imgWrap.className = 'border rounded shadow-sm';
+            previewContainerEl.appendChild(imgWrap);
+        });
+        
+        inputEl.base64Images = base64Images;
+    });
+}
+
 // Router & Logic
 document.addEventListener("DOMContentLoaded", () => {
     const isIntroPage = window.location.pathname.endsWith('/') || window.location.pathname.includes('index.html');
@@ -339,6 +418,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (path.includes('add_property.html')) {
         const addForm = document.getElementById('add-property-form');
         if (addForm) {
+            const imagesInput = document.getElementById('images-input');
+            const previewContainer = document.getElementById('image-preview-container');
+            if (imagesInput && previewContainer) {
+                setupImageUpload(imagesInput, previewContainer);
+            }
+
             addForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
@@ -354,12 +439,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
                     const userPhoto = userDoc.exists() ? userDoc.data().photo : (auth.currentUser.photoURL || null);
 
+                    const base64Images = imagesInput && imagesInput.base64Images ? imagesInput.base64Images : [];
+
                     await addDoc(collection(db, "properties"), {
                         title: addForm.title.value,
                         price: parseFloat(addForm.price.value),
                         property_type: addForm.property_type.value,
                         rooms: parseInt(addForm.rooms.value),
                         bathrooms: parseInt(addForm.bathrooms.value),
+                        area: parseInt(addForm.area.value),
+                        images: base64Images,
                         governorate: selectedGov,
                         city: selectedCity,
                         location: `${selectedCity}، ${selectedGov}`,
@@ -406,8 +495,28 @@ document.addEventListener("DOMContentLoaded", () => {
                             editForm.property_type.value = data.property_type || '';
                             editForm.rooms.value = data.rooms || '';
                             editForm.bathrooms.value = data.bathrooms || '';
+                            if (editForm.area) editForm.area.value = data.area || '';
                             editForm.whatsapp.value = data.whatsappNum || '';
                             editForm.description.value = data.description || '';
+                            
+                            const imagesInput = document.getElementById('images-input');
+                            const previewContainer = document.getElementById('image-preview-container');
+                            if (imagesInput && previewContainer) {
+                                setupImageUpload(imagesInput, previewContainer);
+                                if (data.images && data.images.length > 0) {
+                                    imagesInput.base64Images = data.images;
+                                    data.images.forEach(b64 => {
+                                        const imgWrap = document.createElement('div');
+                                        imgWrap.style.width = '100px';
+                                        imgWrap.style.height = '100px';
+                                        imgWrap.style.backgroundImage = `url('${b64}')`;
+                                        imgWrap.style.backgroundSize = 'cover';
+                                        imgWrap.style.backgroundPosition = 'center';
+                                        imgWrap.className = 'border rounded shadow-sm';
+                                        previewContainer.appendChild(imgWrap);
+                                    });
+                                }
+                            }
                             
                             if (data.governorate) {
                                 editForm.governorate.value = data.governorate;
@@ -435,9 +544,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     const selectedGov = editForm.governorate.value;
                     const selectedCity = editForm.city.value;
-                    
                     const docRef = doc(db, "properties", propId);
-                    await updateDoc(docRef, {
+                    
+                    const imagesInput = document.getElementById('images-input');
+                    const base64Images = imagesInput && imagesInput.base64Images ? imagesInput.base64Images : [];
+                    
+                    const updateData = {
                         title: editForm.title.value,
                         price: parseFloat(editForm.price.value),
                         property_type: editForm.property_type.value,
@@ -448,7 +560,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         location: `${selectedCity}، ${selectedGov}`,
                         whatsappNum: editForm.whatsapp.value,
                         description: editForm.description.value
-                    });
+                    };
+                    if (editForm.area && editForm.area.value) {
+                        updateData.area = parseInt(editForm.area.value);
+                    }
+                    if (base64Images.length > 0) {
+                        updateData.images = base64Images;
+                    }
+                    
+                    await updateDoc(docRef, updateData);
                     window.location.href = 'my_properties.html';
                 } catch (error) {
                     alert('خطأ في التعديل: ' + error.message);
@@ -486,13 +606,42 @@ document.addEventListener("DOMContentLoaded", () => {
                             whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-lg w-100 mt-4 shadow-sm fw-bold rounded-pill"><i class="fa-brands fa-whatsapp fs-3 ms-2 align-middle"></i> تواصل مع المالك واتساب</a>`;
                         }
 
+                        let imagesHtml = '';
+                        if (prop.images && prop.images.length > 0) {
+                            if (prop.images.length === 1) {
+                                imagesHtml = `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>`;
+                            } else {
+                                let indicators = '';
+                                let items = '';
+                                prop.images.forEach((img, i) => {
+                                    indicators += `<button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="${i}" class="${i===0?'active':''}"></button>`;
+                                    items += `<div class="carousel-item h-100 w-100 ${i===0?'active':''}" style="background-image: url('${img}'); background-size: cover; background-position: center;"></div>`;
+                                });
+                                imagesHtml = `
+                                <div id="propertyCarousel" class="carousel slide h-100 w-100" data-bs-ride="carousel">
+                                    <div class="carousel-indicators">${indicators}</div>
+                                    <div class="carousel-inner h-100 w-100">${items}</div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">السابق</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">التالي</span>
+                                    </button>
+                                </div>`;
+                            }
+                        } else {
+                            imagesHtml = `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white h-100">
+                                <i class="fa-solid fa-image opacity-50" style="font-size: 5rem;"></i>
+                            </div>`;
+                        }
+
                         container.innerHTML = `
                         <div class="property-card h-100 d-flex flex-column mb-4 pb-3" style="border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                            <div class="card-img-wrapper rounded-top" style="height: 350px;">
-                                <span class="price-tag bg-primary fs-5 px-4 py-2">${prop.price} ج.م</span>
-                                <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white h-100">
-                                    <i class="fa-solid fa-image opacity-50" style="font-size: 5rem;"></i>
-                                </div>
+                            <div class="card-img-wrapper rounded-top position-relative" style="height: 350px; overflow: hidden;">
+                                <span class="price-tag bg-primary fs-5 px-4 py-2 position-absolute top-0 start-0 z-3 m-3 rounded">${prop.price} ج.م</span>
+                                ${imagesHtml}
                             </div>
                             
                             <div class="card-body p-4 p-md-5 bg-white rounded-bottom">
@@ -506,30 +655,37 @@ document.addEventListener("DOMContentLoaded", () => {
                                 </div>
                                 <hr>
                                 
-                                <div class="row text-center mb-4 g-3">
-                                    <div class="col-6 col-md-3">
-                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 text-center mb-4 g-3">
+                                    <div class="col">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
                                             <i class="fa-solid fa-bed text-primary fs-3 mb-2"></i>
                                             <div class="fw-bold">الغرف</div>
                                             <div class="text-muted fs-5">${prop.rooms || '-'}</div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                    <div class="col">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
                                             <i class="fa-solid fa-bath text-primary fs-3 mb-2"></i>
                                             <div class="fw-bold">الحمامات</div>
                                             <div class="text-muted fs-5">${prop.bathrooms || '-'}</div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                    <div class="col">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
+                                            <i class="fa-solid fa-ruler-combined text-primary fs-3 mb-2"></i>
+                                            <div class="fw-bold">المساحة</div>
+                                            <div class="text-muted fs-5">${prop.area ? prop.area + ' م²' : '-'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
                                             <i class="fa-solid fa-calendar-days text-primary fs-3 mb-2"></i>
-                                            <div class="fw-bold">تاريخ النشر</div>
+                                            <div class="fw-bold">النشر</div>
                                             <div class="text-muted fs-6 mt-1">${timeStr}</div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="p-3 border rounded-3 bg-light shadow-sm">
+                                    <div class="col">
+                                        <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
                                             <i class="fa-solid fa-tag text-primary fs-3 mb-2"></i>
                                             <div class="fw-bold">النوع</div>
                                             <div class="text-muted fs-6 mt-1">${prop.property_type || '-'}</div>
@@ -817,11 +973,9 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             html += `
             <div class="col reveal active mb-4">
                 <div class="property-card h-100 d-flex flex-column">
-                    <div class="card-img-wrapper" style="height: 180px;">
-                        <span class="price-tag bg-primary">${prop.price} ج.م</span>
-                        <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100">
-                            <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
-                        </div>
+                    <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
+                        <span class="price-tag bg-primary position-absolute top-0 start-0 z-3 m-2 rounded">${prop.price} ج.م</span>
+                        ${(prop.images && prop.images.length > 0) ? `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
                     </div>
                     
                     <div class="card-body container-fluid p-3 flex-grow-1">
@@ -841,6 +995,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                         <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small text-muted">
                             <span title="عدد الغرف" class="fw-bold"><i class="fa-solid fa-bed text-primary ms-1"></i>${prop.rooms || '-'}</span>
                             <span title="عدد الحمامات" class="fw-bold"><i class="fa-solid fa-bath text-primary ms-1"></i>${prop.bathrooms || '-'}</span>
+                            <span title="المساحة" class="fw-bold"><i class="fa-solid fa-ruler-combined text-primary ms-1"></i>${prop.area ? prop.area + 'م²' : '-'}</span>
                             <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${prop.property_type || 'غير محدد'}</span>
                         </div>
                     </div>

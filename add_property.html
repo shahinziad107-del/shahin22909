@@ -73,14 +73,18 @@
                                 <input type="number" id="price" name="price" class="form-control px-3 py-2 border rounded-3" placeholder="0" required>
                             </div>
 
-                            <!-- Rooms & Bathrooms -->
-                            <div class="col-md-6">
+                            <!-- Rooms, Bathrooms & Area -->
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold">عدد الغرف <span class="text-danger">*</span></label>
                                 <input type="number" id="rooms" name="rooms" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: 3" required min="1">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold">عدد الحمامات <span class="text-danger">*</span></label>
                                 <input type="number" id="bathrooms" name="bathrooms" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: 2" required min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">المساحة (م²) <span class="text-danger">*</span></label>
+                                <input type="number" id="area" name="area" class="form-control px-3 py-2 border rounded-3" placeholder="مثال: 120" required min="1">
                             </div>
 
                             <!-- Governorate & City -->
@@ -110,14 +114,17 @@
                                 <textarea id="description" name="description" class="form-control px-3 py-2 border rounded-3" rows="5" placeholder="اكتب وصفاً دقيقاً حول عدد الغرف والمميزات..." required></textarea>
                             </div>
                             
-                            <!-- Image Upload (Dummy for Static) -->
+                            <!-- Image Upload -->
                             <div class="col-12">
-                                <label class="form-label fw-bold">صور العقار</label>
-                                <div class="border rounded-3 p-5 text-center bg-light" style="border-style: dashed !important; border-width: 2px !important;">
+                                <label class="form-label fw-bold">صور العقار (بحد أقصى 3 صور) <span class="text-danger">*</span></label>
+                                <div class="border rounded-3 p-4 text-center bg-light position-relative" style="border-style: dashed !important; border-width: 2px !important;" id="image-upload-area">
                                     <i class="fa-solid fa-cloud-arrow-up fs-1 text-muted mb-2"></i>
                                     <h5 class="text-muted">اضغط هنا أو اسحب الصور للإرفاق</h5>
-                                    <input type="file" class="d-none">
+                                    <p class="small text-muted mb-0">سيتم ضغط الصور تلقائياً لتوفير المساحة</p>
+                                    <input type="file" id="images-input" accept="image/*" multiple max="3" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" required>
                                 </div>
+                                <!-- Image Previews -->
+                                <div id="image-preview-container" class="d-flex flex-wrap gap-3 mt-3"></div>
                             </div>
                             
                             <!-- Submit -->
