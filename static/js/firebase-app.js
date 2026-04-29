@@ -941,12 +941,8 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
             let actionButtons = `<a href="property_detail.html?id=${prop.id}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-circle-info ms-1"></i> التفاصيل</a>`;
             
-            if (prop.whatsappNum && !userOnly) {
-                let formattedNum = prop.whatsappNum;
-                if(formattedNum.startsWith('0')) {
-                    formattedNum = '2' + formattedNum;
-                }
-                actionButtons += `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp fs-5 ms-1"></i> واتساب</a>`;
+            if (!userOnly) {
+                actionButtons += `<button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-comment-dots fs-5 ms-1"></i> تواصل بالموقع</button>`;
             }
 
             let controlsHtml = '';
