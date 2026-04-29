@@ -640,7 +640,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         container.innerHTML = `
                         <div class="property-card h-100 d-flex flex-column mb-4 pb-3" style="border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                             <div class="card-img-wrapper rounded-top position-relative" style="height: 350px; overflow: hidden;">
-                                <span class="price-tag bg-primary fs-5 px-4 py-2 position-absolute top-0 start-0 z-3 m-3 rounded">${prop.price} ج.م</span>
+                                <span class="price-tag bg-primary fs-5 px-4 py-2">${prop.price} ج.م</span>
                                 ${imagesHtml}
                             </div>
                             
@@ -974,7 +974,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             <div class="col reveal active mb-4">
                 <div class="property-card h-100 d-flex flex-column">
                     <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
-                        <span class="price-tag bg-primary position-absolute top-0 start-0 z-3 m-2 rounded">${prop.price} ج.م</span>
+                        <span class="price-tag bg-primary">${prop.price} ج.م</span>
                         ${(prop.images && prop.images.length > 0) ? `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
                     </div>
                     
