@@ -8,6 +8,14 @@ function initChatWidget(user) {
     if (chatInitialized) return;
     chatInitialized = true;
 
+    // Register Service Worker and Request Notification Permission
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+
     // Inject HTML
     const chatHtml = `
     <div id="global-chat-widget" class="chat-widget-container">
@@ -73,6 +81,29 @@ function initChatWidget(user) {
         if (typeof bootstrap !== 'undefined') {
             const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
             toast.show();
+        }
+
+        // Show System Notification
+        if ("Notification" in window && Notification.permission === "granted") {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+                navigator.serviceWorker.ready.then(function(registration) {
+                    registration.showNotification("رسالة جديدة من " + senderName, {
+                        body: message,
+                        icon: './static/img/logo.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'chat-message'
+                    });
+                });
+            } else {
+                const sysNotification = new Notification("رسالة جديدة من " + senderName, {
+                    body: message,
+                    icon: './static/img/logo.png'
+                });
+                sysNotification.onclick = function() {
+                    window.focus();
+                    this.close();
+                };
+            }
         }
     };
 
