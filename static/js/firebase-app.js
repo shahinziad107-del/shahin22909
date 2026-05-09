@@ -17,6 +17,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// XSS Prevention Helper
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag])
+    );
+}
+
 // Image Processing Helpers
 function resizeAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -646,12 +660,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             
                             <div class="card-body p-4 p-md-5 bg-white rounded-bottom">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <h1 class="card-title fw-bold fs-3 mb-0">${prop.title}</h1>
-                                    <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'} fs-6 px-3 py-2">${prop.property_type || 'غير محدد'}</span>
+                                    <h1 class="card-title fw-bold fs-3 mb-0">${escapeHTML(prop.title || '')}</h1>
+                                    <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'} fs-6 px-3 py-2">${escapeHTML(prop.property_type || 'غير محدد')}</span>
                                 </div>
                                 
                                 <div class="location-text mb-4 text-muted fs-5">
-                                    <i class="fa-solid fa-location-dot ms-1 text-danger"></i> ${prop.location}
+                                    <i class="fa-solid fa-location-dot ms-1 text-danger"></i> ${escapeHTML(prop.location || '')}
                                 </div>
                                 <hr>
                                 
@@ -699,11 +713,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                     </a>
                                     <div class="flex-grow-1">
                                         <span class="text-muted small d-block mb-1">صاحب الإعلان</span>
-                                        <a href="user_profile.html?id=${prop.owner}" class="fw-bold fs-5 d-block lh-1 text-primary text-decoration-none">${prop.authorName || 'مستخدم غير معروف'}</a>
+                                        <a href="user_profile.html?id=${prop.owner}" class="fw-bold fs-5 d-block lh-1 text-primary text-decoration-none">${escapeHTML(prop.authorName || 'مستخدم غير معروف')}</a>
                                     </div>
                                 </div>
                                 <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4">تفاصيل العقار</h3>
-                                <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${prop.description || 'لم يتم إضافة وصف لهذه المنشأة.'}</p>
+                                <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${escapeHTML(prop.description || 'لم يتم إضافة وصف لهذه المنشأة.')}</p>
                                 
                                 ${whatsappBtn}
                                 <button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-lg w-100 mt-3 shadow-sm fw-bold rounded-pill">
@@ -751,20 +765,20 @@ document.addEventListener("DOMContentLoaded", () => {
                             <div class="col">
                                 <div class="card h-100 shadow-sm border-0 border-top border-4 border-danger">
                                     <div class="card-body">
-                                        <h5 class="fw-bold text-truncate">${prop.title}</h5>
-                                        <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot ms-1"></i> ${prop.location}</p>
-                                        <p class="mb-1"><span class="fw-bold">السعر:</span> ${prop.price} ج.م</p>
-                                        <p class="mb-1"><span class="fw-bold">النوع:</span> ${prop.property_type || '-'}</p>
+                                        <h5 class="fw-bold text-truncate">${escapeHTML(prop.title || '')}</h5>
+                                        <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot ms-1"></i> ${escapeHTML(prop.location || '')}</p>
+                                        <p class="mb-1"><span class="fw-bold">السعر:</span> ${escapeHTML(String(prop.price || ''))} ج.م</p>
+                                        <p class="mb-1"><span class="fw-bold">النوع:</span> ${escapeHTML(prop.property_type || '-')}</p>
                                         <p class="mb-0 text-muted small"><i class="fa-solid fa-clock ms-1"></i> أضيف في: ${timeStr}</p>
                                         <hr class="my-2 text-danger">
                                         <div class="d-flex align-items-center mb-2">
                                             <div style="width: 30px; height: 30px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;" class="me-2 ms-2">
                                                 ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
                                             </div>
-                                            <span class="fw-bold small text-primary text-truncate">${prop.authorName || 'مستخدم'}</span>
+                                            <span class="fw-bold small text-primary text-truncate">${escapeHTML(prop.authorName || 'مستخدم')}</span>
                                         </div>
                                         <p class="mb-0 text-muted" style="font-size: 0.7rem;"><i class="fa-solid fa-mobile-screen-button ms-1"></i> جهاز الدخول:</p>
-                                        <p class="mb-0 text-muted text-break" style="font-size: 0.65rem; direction: ltr; text-align: left;">${prop.authorDevice || 'غير معروف'}</p>
+                                        <p class="mb-0 text-muted text-break" style="font-size: 0.65rem; direction: ltr; text-align: left;">${escapeHTML(prop.authorDevice || 'غير معروف')}</p>
                                     </div>
                                     <div class="card-footer bg-white border-0 p-3 pt-0 text-start">
                                         <button class="btn btn-danger btn-sm w-100 fw-bold admin-delete-btn" data-id="${id}">
@@ -981,18 +995,18 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                             </a>
                             <div class="text-truncate">
                                 <small class="text-muted d-block lh-1 mb-1" style="font-size: 0.7rem;">ناشر العقار</small>
-                                <a href="user_profile.html?id=${prop.owner}" class="fw-bold d-block lh-1 text-primary text-truncate text-decoration-none" style="font-size: 0.9rem;">${prop.authorName || 'مستخدم غير معروف'}</a>
+                                <a href="user_profile.html?id=${prop.owner}" class="fw-bold d-block lh-1 text-primary text-truncate text-decoration-none" style="font-size: 0.9rem;">${escapeHTML(prop.authorName || 'مستخدم غير معروف')}</a>
                             </div>
                         </div>
-                        <h4 class="card-title text-truncate mb-2 fs-5">${prop.title}</h4>
+                        <h4 class="card-title text-truncate mb-2 fs-5">${escapeHTML(prop.title || '')}</h4>
                         <div class="location-text mb-2 small text-muted">
-                            <i class="fa-solid fa-location-dot"></i> ${prop.location}
+                            <i class="fa-solid fa-location-dot"></i> ${escapeHTML(prop.location || '')}
                         </div>
                         <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small text-muted">
                             <span title="عدد الغرف" class="fw-bold"><i class="fa-solid fa-bed text-primary ms-1"></i>${prop.rooms || '-'}</span>
                             <span title="عدد الحمامات" class="fw-bold"><i class="fa-solid fa-bath text-primary ms-1"></i>${prop.bathrooms || '-'}</span>
                             <span title="المساحة" class="fw-bold"><i class="fa-solid fa-ruler-combined text-primary ms-1"></i>${prop.area ? prop.area + 'م²' : '-'}</span>
-                            <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${prop.property_type || 'غير محدد'}</span>
+                            <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${escapeHTML(prop.property_type || 'غير محدد')}</span>
                         </div>
                     </div>
                     
@@ -1247,13 +1261,13 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
             const otherUser = data.participantDetails && data.participantDetails[otherUid] ? data.participantDetails[otherUid] : {name: 'مستخدم', photo: ''};
             
             html += `
-            <div class="chat-list-item" data-id="${data.id}" data-other="${otherUid}" data-name="${otherUser.name || 'مستخدم'}">
+            <div class="chat-list-item" data-id="${data.id}" data-other="${otherUid}" data-name="${escapeHTML(otherUser.name || 'مستخدم')}">
                 <a href="user_profile.html?id=${otherUid}" class="chat-list-avatar" style="background-image: url('${otherUser.photo || ''}'); text-decoration:none;">
                     ${!otherUser.photo ? '<i class="fa-regular fa-user"></i>' : ''}
                 </a>
                 <div class="chat-list-info">
-                    <a href="user_profile.html?id=${otherUid}" class="chat-list-name d-block text-decoration-none">${otherUser.name || 'مستخدم'}</a>
-                    <div class="chat-list-lastmsg" style="cursor:pointer;">${data.lastMessage || '...'}</div>
+                    <a href="user_profile.html?id=${otherUid}" class="chat-list-name d-block text-decoration-none">${escapeHTML(otherUser.name || 'مستخدم')}</a>
+                    <div class="chat-list-lastmsg" style="cursor:pointer;">${escapeHTML(data.lastMessage || '...')}</div>
                 </div>
             </div>
             `;
@@ -1293,7 +1307,7 @@ function openChatThread(chatId, myUid, otherUid, otherName, body, footer, backBt
         snapshot.forEach(docSnap => {
             const msg = docSnap.data();
             const type = msg.senderId === myUid ? 'sent' : 'received';
-            html += `<div class="chat-message ${type}">${msg.text}</div>`;
+            html += `<div class="chat-message ${type}">${escapeHTML(msg.text || '')}</div>`;
         });
         
         if (snapshot.empty) {

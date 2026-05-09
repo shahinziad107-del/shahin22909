@@ -4,6 +4,19 @@ let currentChatId = null;
 let chatsUnsubscribe = null;
 let currentChatUnsubscribe = null;
 
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag])
+    );
+}
+
 function initChatWidget(user) {
     if (chatInitialized) return;
     chatInitialized = true;
@@ -227,8 +240,8 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
                     ${!otherUser.photo ? '<i class="fa-regular fa-user"></i>' : ''}
                 </div>
                 <div class="chat-list-info">
-                    <div class="chat-list-name">${otherUser.name || 'مستخدم'}</div>
-                    <div class="chat-list-lastmsg">${data.lastMessage || '...'}</div>
+                    <div class="chat-list-name">${escapeHTML(otherUser.name || 'مستخدم')}</div>
+                    <div class="chat-list-lastmsg">${escapeHTML(data.lastMessage || '...')}</div>
                 </div>
             </div>
             `;
@@ -267,7 +280,7 @@ function openChatThread(chatId, myUid, otherUid, otherName, body, footer, backBt
         snapshot.forEach(docSnap => {
             const msg = docSnap.data();
             const type = msg.senderId === myUid ? 'sent' : 'received';
-            html += `<div class="chat-message ${type}">${msg.text}</div>`;
+            html += `<div class="chat-message ${type}">${escapeHTML(msg.text || '')}</div>`;
         });
         
         if (snapshot.empty) {
