@@ -23,7 +23,7 @@
         }
 
         .scroll-container {
-            height: 400vh;
+            height: 200vh;
             width: 100%;
         }
 
@@ -274,10 +274,8 @@
             
             window.scrollTo(0, 0);
 
-            const SCENE1_END = 0.3; 
-            const SCENE2_END = 0.6; 
-            const SCENE3_END = 0.75; 
-            const SCENE4_END = 1.0; 
+            const SCENE1_END = 0.5; 
+            const SCENE2_END = 1.0; 
 
             // Scanner position logic
             let keyholeMarginLeft = window.innerWidth <= 768 ? -68 : -88;
@@ -297,7 +295,7 @@
                     scrollHint.style.opacity = '1';
                 }
 
-                // --- Scene 1: Keycard moves down & Text 1 Appears (0 to 0.3) ---
+                // --- Scene 1: Keycard alone & Texts (0 to 0.5) ---
                 if (progress <= SCENE1_END) {
                     const p = progress / SCENE1_END; 
                     
@@ -305,84 +303,49 @@
                     keyWrapper.style.marginLeft = '0px';
                     keyWrapper.style.transform = `translateX(-50%) scale(1.5) rotate(0deg)`;
                     
-                    if (p < 0.5) {
-                        text1.style.opacity = p * 2;
-                        text1.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 2)}px)`;
+                    if (p < 0.2) {
+                        text1.style.opacity = p * 5;
+                        text2.style.opacity = p * 5;
+                        text1.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 5)}px)`;
+                        text2.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 5)}px)`;
                     } else {
-                        text1.style.opacity = 2 - (p * 2);
+                        text1.style.opacity = '1';
+                        text2.style.opacity = '1';
                         text1.style.transform = `translateX(-50%) translateY(0px)`;
+                        text2.style.transform = `translateX(-50%) translateY(0px)`;
                     }
                     
-                    text2.style.opacity = '0';
                     doorFrame.style.opacity = '0';
                     doorFrame.style.transform = `translate(-50%, -50%) scale(0.8)`;
                     mainDoor.style.transform = 'rotateY(0deg)';
                     scannerScreen.classList.remove('granted');
+                    keyWrapper.style.opacity = '1';
+                    portalLight.style.opacity = '0';
                 }
 
-                // --- Scene 2: Keycard reaches scanner, Text 2 & Door Appears (0.3 to 0.6) ---
-                if (progress > SCENE1_END && progress <= SCENE2_END) {
+                // --- Scene 2: Keycard reaches scanner & Redirects (0.5 to 1.0) ---
+                if (progress > SCENE1_END) {
                     const p = (progress - SCENE1_END) / (SCENE2_END - SCENE1_END); 
                     
-                    text1.style.opacity = '0';
-                    
-                    if (p < 0.5) {
-                        text2.style.opacity = p * 2;
-                        text2.style.transform = `translateX(-50%) translateY(${20 - (20 * p * 2)}px)`;
-                    } else {
-                        text2.style.opacity = '1';
-                    }
+                    text1.style.opacity = Math.max(0, 1 - (p * 2));
+                    text2.style.opacity = Math.max(0, 1 - (p * 2));
 
-                    doorFrame.style.opacity = p;
-                    doorFrame.style.transform = `translate(-50%, -50%) scale(${0.8 + (0.2 * p)})`;
+                    doorFrame.style.opacity = Math.min(1, p * 2);
+                    doorFrame.style.transform = `translate(-50%, -50%) scale(${0.8 + (0.2 * Math.min(1, p * 1.5))})`;
                     mainDoor.style.transform = 'rotateY(0deg)';
-                    scannerScreen.classList.remove('granted');
 
                     // Keycard moves to exact scanner position and rotates slightly to "tap"
                     keyWrapper.style.top = `calc(${35 + (15 * p)}% + ${keyholeMarginTop * p}px)`;
                     keyWrapper.style.marginLeft = `${keyholeMarginLeft * p}px`;
                     keyWrapper.style.transform = `translateX(-50%) scale(${1.5 - (0.8 * p)}) rotate(${90 * p}deg)`; 
                     
-                    keyWrapper.style.opacity = '1';
-                }
-
-                // --- Scene 3: Access Granted, Text 2 Fades Out (0.6 to 0.75) ---
-                if (progress > SCENE2_END && progress <= SCENE3_END) {
-                    const p = (progress - SCENE2_END) / (SCENE3_END - SCENE2_END);
-                    
-                    text2.style.opacity = Math.max(0, 1 - (p * 1.5));
-                    
-                    doorFrame.style.opacity = '1';
-                    doorFrame.style.transform = `translate(-50%, -50%) scale(1)`;
-                    mainDoor.style.transform = 'rotateY(0deg)';
-                    
-                    // Access Granted!
-                    scannerScreen.classList.add('granted');
-                    
-                    // Keycard stays tapped for a moment then fades out
-                    keyWrapper.style.top = `calc(50% + ${keyholeMarginTop}px)`;
-                    keyWrapper.style.marginLeft = `${keyholeMarginLeft}px`;
-                    keyWrapper.style.transform = `translateX(-50%) scale(0.7) rotate(90deg)`;
-                    keyWrapper.style.opacity = Math.max(0, 1 - (p * 2));
-                    
-                    portalLight.style.opacity = p * 0.2;
-                }
-
-                // --- Scene 4: Sci-Fi Door Opens Inwards & Redirect (0.75 to 1.0) ---
-                if (progress > SCENE3_END) {
-                    const p = (progress - SCENE3_END) / (SCENE4_END - SCENE3_END);
-                    
-                    text2.style.opacity = '0';
-                    doorFrame.style.opacity = '1';
-                    
-                    doorFrame.style.transform = `translate(-50%, -50%) scale(${1 + (5 * p)})`;
-                    
-                    mainDoor.style.transform = `rotateY(${-100 * p}deg)`;
-                    
-                    keyWrapper.style.opacity = '0';
-                    scannerScreen.classList.add('granted');
-                    
-                    portalLight.style.opacity = 0.2 + (0.8 * p);
+                    if (p > 0.8) {
+                        scannerScreen.classList.add('granted');
+                        portalLight.style.opacity = (p - 0.8) * 5 * 0.2;
+                    } else {
+                        scannerScreen.classList.remove('granted');
+                        portalLight.style.opacity = '0';
+                    }
 
                     if (progress >= 0.99) {
                         if (!window.redirecting) {
