@@ -1055,8 +1055,53 @@ function initChatWidget(user) {
             </form>
         </div>
     </div>
+    
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+        <div id="chat-notification-toast" class="toast shadow-lg border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-primary text-white border-0">
+                <i class="fa-solid fa-comment-dots me-2 ms-2 fs-5"></i>
+                <strong class="me-auto fs-6" id="chat-toast-sender">رسالة جديدة</strong>
+                <small>الآن</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body bg-white text-dark text-truncate fs-6" id="chat-toast-message" style="cursor: pointer;">
+                ...
+            </div>
+        </div>
+    </div>
     `;
     document.body.insertAdjacentHTML('beforeend', chatHtml);
+    
+    window.showChatNotification = function(senderName, message, chatId, otherUid) {
+        const toastEl = document.getElementById('chat-notification-toast');
+        if (!toastEl) return;
+        document.getElementById('chat-toast-sender').innerText = senderName;
+        document.getElementById('chat-toast-message').innerText = message;
+        
+        const toastBody = document.getElementById('chat-toast-message');
+        toastBody.onclick = () => {
+            const widget = document.getElementById('global-chat-widget');
+            widget.classList.add('active');
+            const body = document.getElementById('chat-body');
+            const footer = document.getElementById('chat-footer');
+            const backBtn = document.getElementById('chat-back-btn');
+            const title = document.getElementById('chat-header-title');
+            
+            // hide toast
+            if (typeof bootstrap !== 'undefined') {
+                const toastInstance = bootstrap.Toast.getInstance(toastEl);
+                if(toastInstance) toastInstance.hide();
+            }
+            
+            openChatThread(chatId, user.uid, otherUid, senderName, body, footer, backBtn, title);
+        };
+        
+        if (typeof bootstrap !== 'undefined') {
+            const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            toast.show();
+        }
+    };
 
     const widget = document.getElementById('global-chat-widget');
     const closeBtn = document.getElementById('chat-close-btn');
@@ -1108,6 +1153,7 @@ function initChatWidget(user) {
             });
             await updateDoc(doc(db, "chats", currentChatId), {
                 lastMessage: text,
+                lastSenderId: user.uid,
                 updatedAt: serverTimestamp()
             });
         } catch(err) {
@@ -1128,6 +1174,23 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
     const q = query(collection(db, "chats"), where("participants", "array-contains", myUid));
     
     chatsUnsubscribe = onSnapshot(q, (snapshot) => {
+        // Detect new messages for toast notifications
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "modified") {
+                const data = change.doc.data();
+                if (data.lastSenderId && data.lastSenderId !== myUid) {
+                    if (currentChatId !== data.id) {
+                        const otherUid = (data.participants || []).find(id => id !== myUid) || 'unknown';
+                        const otherUser = data.participantDetails && data.participantDetails[otherUid] ? data.participantDetails[otherUid] : {name: 'مستخدم', photo: ''};
+                        
+                        if (typeof window.showChatNotification === 'function') {
+                            window.showChatNotification(otherUser.name, data.lastMessage, data.id, otherUid);
+                        }
+                    }
+                }
+            }
+        });
+
         if(currentChatId) return; 
 
         if (snapshot.empty) {
@@ -1249,6 +1312,7 @@ window.startChatWith = async function(otherUid, otherName, otherPhoto) {
                     [otherUid]: { name: otherName, photo: otherPhoto || '' }
                 },
                 lastMessage: '',
+                lastSenderId: '',
                 updatedAt: serverTimestamp()
             });
             existingChatId = newChat.id;
