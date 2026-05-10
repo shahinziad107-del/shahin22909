@@ -31,6 +31,112 @@ function escapeHTML(str) {
     );
 }
 
+// 30-Day Auto Check Logic
+async function checkExpiredProperties(uid) {
+    if (sessionStorage.getItem('expiredChecked_' + uid)) return;
+    sessionStorage.setItem('expiredChecked_' + uid, 'true');
+
+    try {
+        const q = query(collection(db, "properties"), where("owner", "==", uid));
+        const querySnapshot = await getDocs(q);
+        const now = Date.now();
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+        
+        let expiredProps = [];
+        querySnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.status !== 'sold' && data.createdAt) {
+                const age = now - data.createdAt.toMillis();
+                if (age > thirtyDaysMs) {
+                    expiredProps.push({ id: docSnap.id, ...data });
+                }
+            }
+        });
+
+        if (expiredProps.length > 0) {
+            let currentIndex = 0;
+
+            const showNextModal = () => {
+                if (currentIndex >= expiredProps.length) return;
+                const prop = expiredProps[currentIndex];
+                
+                const modalHtml = `
+                <div class="modal fade" id="expiredPropModal" tabindex="-1" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h5 class="modal-title"><i class="fa-solid fa-clock ms-2"></i> تحديث حالة العقار</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fa-solid fa-house-circle-exclamation text-warning" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">لقد مر 30 يوماً على إعلانك:</h5>
+                                <p class="text-primary fw-bold fs-5 mb-4">"${escapeHTML(prop.title || '')}"</p>
+                                <p class="text-muted">هل تم بيع أو تأجير هذا العقار؟</p>
+                            </div>
+                            <div class="modal-footer border-0 d-flex justify-content-center pb-4 gap-2">
+                                <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" id="btn-mark-sold">
+                                    <i class="fa-solid fa-check ms-1"></i> نعم، تم البيع
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" id="btn-keep-active">
+                                    <i class="fa-solid fa-rotate-right ms-1"></i> لا، ما زال متاحاً
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                const existing = document.getElementById('expiredPropModal');
+                if (existing) existing.remove();
+                
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                const modalEl = document.getElementById('expiredPropModal');
+                let modalInstance = null;
+                if (typeof bootstrap !== 'undefined') {
+                    modalInstance = new bootstrap.Modal(modalEl);
+                } else {
+                    return; // Bootstrap not loaded
+                }
+                
+                document.getElementById('btn-mark-sold').onclick = async () => {
+                    const btn = document.getElementById('btn-mark-sold');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري...';
+                    try {
+                        await updateDoc(doc(db, "properties", prop.id), { status: 'sold' });
+                        modalInstance.hide();
+                    } catch(err) { alert(err.message); btn.disabled = false; }
+                };
+
+                document.getElementById('btn-keep-active').onclick = async () => {
+                    const btn = document.getElementById('btn-keep-active');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري...';
+                    try {
+                        await updateDoc(doc(db, "properties", prop.id), { createdAt: serverTimestamp() });
+                        modalInstance.hide();
+                    } catch(err) { alert(err.message); btn.disabled = false; }
+                };
+
+                modalEl.addEventListener('hidden.bs.modal', () => {
+                    modalEl.remove();
+                    currentIndex++;
+                    showNextModal();
+                });
+
+                modalInstance.show();
+            };
+
+            // Delay slight to ensure DOM is ready and bootstap loaded
+            setTimeout(() => {
+                if (typeof bootstrap !== 'undefined') showNextModal();
+            }, 1000);
+        }
+    } catch(err) { console.error("Error checking expired props", err); }
+}
+
 // Image Processing Helpers
 function resizeAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -182,6 +288,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof initChatWidget === "function") {
                     initChatWidget(user);
                 }
+                
+                // Check for expired properties
+                checkExpiredProperties(user.uid);
             }).catch(err => console.error("Error checking ban status", err));
         }
 
@@ -613,8 +722,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         const prop = docSnap.data();
                         const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
                         
+                        const isSold = prop.status === 'sold';
+                        const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 2;"><span class="badge bg-danger px-4 py-2" style="font-size: 3rem; transform: rotate(-15deg); border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
+
                         let whatsappBtn = '';
-                        if (prop.whatsappNum) {
+                        if (prop.whatsappNum && !isSold) {
                             let formattedNum = prop.whatsappNum;
                             if(formattedNum.startsWith('0')) formattedNum = '2' + formattedNum;
                             whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-lg w-100 mt-4 shadow-sm fw-bold rounded-pill"><i class="fa-brands fa-whatsapp fs-3 ms-2 align-middle"></i> تواصل مع المالك واتساب</a>`;
@@ -652,8 +764,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         container.innerHTML = `
-                        <div class="property-card h-100 d-flex flex-column mb-4 pb-3" style="border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div class="property-card h-100 d-flex flex-column mb-4 pb-3" style="border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); ${isSold ? 'opacity: 0.9;' : ''}">
                             <div class="card-img-wrapper rounded-top position-relative" style="height: 350px; overflow: hidden;">
+                                ${soldOverlay}
                                 <span class="price-tag bg-primary fs-5 px-4 py-2">${prop.price} ج.م</span>
                                 ${imagesHtml}
                             </div>
@@ -720,9 +833,13 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${escapeHTML(prop.description || 'لم يتم إضافة وصف لهذه المنشأة.')}</p>
                                 
                                 ${whatsappBtn}
+                                ${!isSold ? `
                                 <button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-lg w-100 mt-3 shadow-sm fw-bold rounded-pill">
                                     <i class="fa-solid fa-comment-dots fs-4 ms-2 align-middle"></i> تواصل عبر الموقع
                                 </button>
+                                ` : `
+                                <div class="alert alert-danger text-center mt-4 fw-bold fs-5 rounded-pill"><i class="fa-solid fa-ban ms-2"></i> عذراً، هذا العقار تم بيعه أو تأجيره ولم يعد متاحاً للتواصل.</div>
+                                `}
                             </div>
                         </div>`;
                     } else {
@@ -955,19 +1072,27 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
             let actionButtons = `<a href="property_detail.html?id=${prop.id}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-circle-info ms-1"></i> التفاصيل</a>`;
             
-            if (!userOnly) {
+            const isSold = prop.status === 'sold';
+            const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 2;"><span class="badge bg-danger fs-3 px-4 py-2" style="transform: rotate(-15deg); border: 2px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
+
+            if (!userOnly && !isSold) {
                 actionButtons += `<button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-comment-dots fs-5 ms-1"></i> تواصل بالموقع</button>`;
             }
 
             let controlsHtml = '';
             if (userOnly) {
                 controlsHtml = `
-                <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2">
+                <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2 flex-wrap">
+                    ${!isSold ? `
                     <a href="edit_property.html?id=${prop.id}" class="btn btn-sm btn-warning rounded-pill flex-grow-1 text-white fw-bold">
                         <i class="fa-regular fa-pen-to-square ms-1"></i> تعديل
                     </a>
-                    <button class="btn btn-sm btn-danger rounded-pill delete-prop-btn shadow-sm" data-id="${prop.id}">
-                        <i class="fa-regular fa-trash-can"></i>
+                    <button class="btn btn-sm btn-success rounded-pill mark-sold-btn flex-grow-1 shadow-sm fw-bold" data-id="${prop.id}">
+                        <i class="fa-solid fa-check ms-1"></i> تحديد كمباع
+                    </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-danger rounded-pill delete-prop-btn shadow-sm" data-id="${prop.id}" ${isSold ? 'style="flex-grow:1;"' : ''}>
+                        <i class="fa-regular fa-trash-can"></i> ${isSold ? 'حذف العقار' : ''}
                     </button>
                 </div>`;
             } else {
@@ -982,8 +1107,9 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
 
             html += `
             <div class="col reveal active mb-4">
-                <div class="property-card h-100 d-flex flex-column">
+                <div class="property-card h-100 d-flex flex-column" ${isSold ? 'style="opacity:0.9;"' : ''}>
                     <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
+                        ${soldOverlay}
                         <span class="price-tag bg-primary">${prop.price} ج.م</span>
                         ${(prop.images && prop.images.length > 0) ? `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
                     </div>
@@ -1017,6 +1143,27 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
         container.innerHTML = html;
 
         if (userOnly) {
+            document.querySelectorAll('.mark-sold-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if(confirm("هل تم بيع/تأجير هذا العقار بالفعل؟ سيظهر للعامة كـ (مباع).")) {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        const currentBtn = e.currentTarget;
+                        currentBtn.disabled = true;
+                        currentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري...';
+                        try {
+                            await updateDoc(doc(db, "properties", id), {
+                                status: 'sold'
+                            });
+                            // Reload to show the badge
+                            loadProperties(container, true, uid);
+                        } catch (err) {
+                            alert("حدث خطأ: " + err.message);
+                            currentBtn.disabled = false;
+                        }
+                    }
+                });
+            });
+
             document.querySelectorAll('.delete-prop-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     if(confirm("هل أنت متأكد من حذف هذا العقار حقاً؟ لا يمكن التراجع عن هذا الإجراء.")) {
