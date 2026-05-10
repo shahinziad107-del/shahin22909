@@ -841,7 +841,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <div class="alert alert-danger text-center mt-4 fw-bold fs-5 rounded-pill"><i class="fa-solid fa-ban ms-2"></i> عذراً، هذا العقار تم بيعه أو تأجيره ولم يعد متاحاً للتواصل.</div>
                                 `}
                             </div>
-                        </div>`;
+                        </div>
+                        <div id="similar-properties-container" class="mt-5 pt-4"></div>`;
+                        
+                        loadSimilarProperties(prop, propId);
                     } else {
                         container.innerHTML = '<div class="alert alert-danger text-center fs-5">عذراً، هذا العقار لم يعد متوفراً.</div>';
                     }
@@ -1646,6 +1649,85 @@ if (window.location.pathname.includes('user_profile.html')) {
         }
         
         loadUserProfile();
+    }
+}
+
+// --- Similar Properties Logic ---
+async function loadSimilarProperties(prop, currentPropId) {
+    const container = document.getElementById('similar-properties-container');
+    if (!container) return;
+    
+    if (!prop.governorate) {
+        return;
+    }
+
+    container.innerHTML = '<div class="text-center text-muted"><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث عن عقارات مشابهة...</div>';
+
+    try {
+        const q = query(collection(db, "properties"), where("governorate", "==", prop.governorate));
+        const querySnapshot = await getDocs(q);
+        
+        let similarProps = [];
+        querySnapshot.forEach(docSnap => {
+            if (docSnap.id !== currentPropId) {
+                const data = docSnap.data();
+                if (data.status !== 'sold') {
+                    let score = 0;
+                    if (data.city === prop.city) score += 10;
+                    if (data.property_type === prop.property_type) score += 5;
+                    
+                    if (data.price && prop.price) {
+                        const diff = Math.abs(data.price - prop.price);
+                        const diffRatio = diff / prop.price;
+                        if (diffRatio < 0.2) score += 8;
+                        else if (diffRatio < 0.5) score += 3;
+                    }
+                    
+                    similarProps.push({ id: docSnap.id, data: data, score: score });
+                }
+            }
+        });
+
+        similarProps.sort((a, b) => b.score - a.score);
+        const topSimilar = similarProps.slice(0, 3);
+        
+        if (topSimilar.length === 0) {
+            container.innerHTML = ''; 
+            return;
+        }
+
+        let html = `
+        <h3 class="fw-bold mb-4 mt-2"><i class="fa-solid fa-house-chimney text-primary ms-2"></i> عقارات مشابهة في ${escapeHTML(prop.city || prop.governorate)}</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">`;
+        
+        topSimilar.forEach(item => {
+            const p = item.data;
+            const price = p.price ? parseInt(p.price).toLocaleString('ar-EG') : 'غير محدد';
+            const firstImg = (p.images && p.images.length > 0) ? p.images[0] : '';
+            
+            html += `
+            <div class="col reveal active">
+                <div class="card h-100 shadow-sm border-0 property-card">
+                    <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
+                        <span class="price-tag bg-primary small px-3 py-1">${price} ج.م</span>
+                        <div class="property-image h-100 w-100" style="background-image: url('${firstImg}'); background-size: cover; background-position: center; ${!firstImg ? 'background-color: var(--secondary-color); display:flex; justify-content:center; align-items:center;' : ''}">
+                            ${!firstImg ? '<i class="fa-solid fa-image fs-1 text-white opacity-50"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="card-body p-3 d-flex flex-column">
+                        <h6 class="card-title text-truncate fw-bold mb-2 fs-5">${escapeHTML(p.title || 'بدون عنوان')}</h6>
+                        <div class="text-muted small mb-3 text-truncate"><i class="fa-solid fa-location-dot text-danger"></i> ${escapeHTML(p.location || '')}</div>
+                        <a href="property_detail.html?id=${item.id}" class="btn btn-outline-primary w-100 rounded-pill mt-auto fw-bold"><i class="fa-solid fa-eye ms-1"></i> عرض التفاصيل</a>
+                    </div>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error("Error loading similar properties", err);
+        container.innerHTML = '';
     }
 }
 
