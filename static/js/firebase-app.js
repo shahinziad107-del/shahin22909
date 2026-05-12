@@ -987,6 +987,44 @@ document.addEventListener("DOMContentLoaded", () => {
                     }, 400);
                 });
             }
+            
+            const summerSearchForm = document.getElementById('summer-search-form');
+            if (summerSearchForm) {
+                summerSearchForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const regionFilter = document.getElementById('summer-search-region').value;
+                    const areaFilter = document.getElementById('summer-search-area').value;
+                    const minPriceFilter = document.getElementById('summer-search-min-price').value;
+                    const maxPriceFilter = document.getElementById('summer-search-max-price').value;
+                    
+                    loadProperties(container, false, null, {
+                        governorate: regionFilter,
+                        city: areaFilter,
+                        minPrice: minPriceFilter ? parseFloat(minPriceFilter) : null,
+                        maxPrice: maxPriceFilter ? parseFloat(maxPriceFilter) : null
+                    });
+                    
+                    // Close the modal
+                    const summerSearchModalEl = document.getElementById('summerSearchModal');
+                    if (summerSearchModalEl) {
+                        if (typeof bootstrap !== 'undefined') {
+                            const modalInstance = bootstrap.Modal.getInstance(summerSearchModalEl);
+                            if (modalInstance) modalInstance.hide();
+                        } else {
+                            const closeBtn = summerSearchModalEl.querySelector('.btn-close');
+                            if (closeBtn) closeBtn.click();
+                        }
+                    }
+                    
+                    setTimeout(() => {
+                        const target = document.getElementById('properties-container');
+                        if (target) {
+                            const y = target.getBoundingClientRect().top + window.scrollY - 100;
+                            window.scrollTo({top: y, behavior: 'smooth'});
+                        }
+                    }, 400);
+                });
+            }
         }
     }
 
