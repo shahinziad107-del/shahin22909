@@ -388,10 +388,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 indicator.style.width = closest.offsetWidth + 10 + 'px';
                 indicator.style.left = closest.offsetLeft - 5 + 'px';
                 const href = closest.getAttribute('href');
-                if(href !== '#' && closest !== activeItem) {
-                    setTimeout(() => {
-                        window.location.href = href;
-                    }, 400);
+                if (closest !== activeItem) {
+                    if (href !== '#') {
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 400);
+                    } else {
+                        setTimeout(() => {
+                            closest.click();
+                        }, 150);
+                    }
                 }
                 activeItem = closest;
             }
