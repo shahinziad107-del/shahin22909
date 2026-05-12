@@ -420,36 +420,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 5. Summer Resort Banner Injection
-    const existingBanner = document.getElementById('summerBanner');
-    if (!existingBanner) {
-        const bannerHTML = `
-            <div class="summer-resort-banner" id="summerBanner">
-                <button class="close-banner" id="closeSummerBanner" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
-                <div class="banner-content" data-bs-toggle="modal" data-bs-target="#summerSearchModal">
-                    <div class="banner-icon-wrapper">
-                        <i class="fa-solid fa-umbrella-beach fa-bounce"></i>
-                    </div>
-                    <div class="banner-text">
-                        <strong>صيّف معانا! 🌊</strong>
-                        <span>احجز شاليهك في الساحل ومارينا الآن بأفضل الأسعار.</span>
+    const currentPath = window.location.pathname.split('/').pop();
+    const allowedPages = ['home.html', 'login.html', '', '/', 'index.html'];
+    if (allowedPages.includes(currentPath)) {
+        const existingBanner = document.getElementById('summerBanner');
+        if (!existingBanner) {
+            const bannerHTML = `
+                <div class="summer-resort-banner" id="summerBanner">
+                    <button class="close-banner" id="closeSummerBanner" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="banner-content" data-bs-toggle="modal" data-bs-target="#summerSearchModal">
+                        <div class="banner-icon-wrapper">
+                            <i class="fa-solid fa-umbrella-beach fa-bounce"></i>
+                        </div>
+                        <div class="banner-text">
+                            <strong>صيّف معانا! 🌊</strong>
+                            <span>احجز شاليهك في الساحل ومارينا الآن بأفضل الأسعار.</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', bannerHTML);
-        
-        document.getElementById('closeSummerBanner').addEventListener('click', (e) => {
-            e.stopPropagation();
-            const b = document.getElementById('summerBanner');
-            if(window.innerWidth <= 768) {
-                b.style.transform = 'translate(-50%, 120%)';
-            } else {
-                b.style.transform = 'translateX(-120%)';
-            }
-            setTimeout(() => {
-                if(b) b.remove();
-            }, 400);
-        });
+            `;
+            document.body.insertAdjacentHTML('beforeend', bannerHTML);
+            
+            document.getElementById('closeSummerBanner').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const b = document.getElementById('summerBanner');
+                if(window.innerWidth <= 768) {
+                    b.style.transform = 'translate(-50%, 120%)';
+                } else {
+                    b.style.transform = 'translateX(-120%)';
+                }
+                setTimeout(() => {
+                    if(b) b.remove();
+                }, 400);
+            });
+        }
     }
 
 });
