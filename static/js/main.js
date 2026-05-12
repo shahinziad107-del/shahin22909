@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Summer Resort Banner Injection
     const currentPath = window.location.pathname.split('/').pop();
-    const allowedPages = ['home.html', 'login.html', '', '/', 'index.html'];
+    const allowedPages = ['home.html', '', '/', 'index.html'];
     if (allowedPages.includes(currentPath)) {
         const existingBanner = document.getElementById('summerBanner');
         if (!existingBanner) {
