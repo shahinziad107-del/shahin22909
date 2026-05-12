@@ -44,6 +44,36 @@
             box-shadow: none;
             border-color: var(--secondary-color);
         }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+                border-radius: 28px;
+                margin: 0 20px;
+                background: rgba(255, 255, 255, 0.85);
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+            .login-card h2 {
+                font-size: 1.4rem;
+            }
+            .login-card p {
+                font-size: 0.9rem;
+            }
+            img[alt="Logo"] {
+                height: 50px !important;
+                margin-bottom: 10px !important;
+            }
+            .btn-primary, .btn-outline-primary {
+                padding: 12px !important;
+                font-size: 1.1rem !important;
+                border-radius: 16px !important;
+            }
+            .form-control {
+                padding: 10px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -92,15 +122,6 @@
 
     <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
-
-    </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-phone"></i>
-        </a>
-        <a href="account.html" class="nav-item">
-            <i class="fa-regular fa-user"></i>
-        </a>
-    </div>
 
 </body>
 </html>
