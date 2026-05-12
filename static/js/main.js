@@ -374,4 +374,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 5. Summer Resort Banner Injection
+    const existingBanner = document.getElementById('summerBanner');
+    if (!existingBanner && !sessionStorage.getItem('summerBannerDismissed')) {
+        const bannerHTML = `
+            <div class="summer-resort-banner" id="summerBanner">
+                <button class="close-banner" id="closeSummerBanner" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+                <div class="banner-content" data-bs-toggle="modal" data-bs-target="#searchModal">
+                    <div class="banner-icon-wrapper">
+                        <i class="fa-solid fa-umbrella-beach fa-bounce"></i>
+                    </div>
+                    <div class="banner-text">
+                        <strong>صيّف معانا! 🌊</strong>
+                        <span>احجز شاليهك في الساحل ومارينا الآن بأفضل الأسعار.</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', bannerHTML);
+        
+        document.getElementById('closeSummerBanner').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const b = document.getElementById('summerBanner');
+            if(window.innerWidth <= 768) {
+                b.style.transform = 'translate(-50%, 120%)';
+            } else {
+                b.style.transform = 'translateX(-120%)';
+            }
+            setTimeout(() => {
+                if(b) b.remove();
+            }, 400);
+            sessionStorage.setItem('summerBannerDismissed', 'true');
+        });
+        
+        const bannerContent = document.querySelector('#summerBanner .banner-content');
+        if (bannerContent) {
+            bannerContent.addEventListener('click', () => {
+                const govSelect = document.getElementById('search-governorate');
+                if (govSelect) {
+                    govSelect.value = 'مطروح';
+                    govSelect.dispatchEvent(new Event('change'));
+                    setTimeout(() => {
+                        const citySelect = document.getElementById('search-city');
+                        if (citySelect) {
+                            citySelect.value = 'مرسى مطروح';
+                        }
+                    }, 100);
+                }
+            });
+        }
+    }
+
 });

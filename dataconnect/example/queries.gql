@@ -1,0 +1,39 @@
+query ListAllListings @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  listings {
+    id
+    title
+    description
+    price
+    location
+    owner {
+      uid
+      email
+    }
+  }
+}
+
+query GetMyListings @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  listings(where: {ownerUid: {eq_expr: "auth.uid"}}) {
+    id
+    title
+    price
+    status
+  }
+}
+
+mutation CreateNewListing($title: String!, $description: String!, $price: Float!, $location: String!) @auth(level: USER) {
+  listing_insert(data: {
+    title: $title,
+    description: $description,
+    price: $price,
+    location: $location,
+    ownerUid_expr: "auth.uid",
+    status: "available"
+  })
+}
+
+mutation UpdateListingStatus($id: UUID!, $newStatus: String!) @auth(level: USER) {
+  listing_update(key: {id: $id}, data: {
+    status: $newStatus
+  })
+}

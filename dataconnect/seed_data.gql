@@ -1,0 +1,64 @@
+mutation CreateDemoData @auth(level: USER, insecureReason: "This operation is for seeding demo data and should only be run by authenticated users.") @transaction {
+  property_insertMany(data: [
+    {
+      id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      address: "123 Main St",
+      city: "Anytown",
+      state: "CA",
+      zipCode: "90210",
+      price: 500000.00,
+      bedrooms: 3,
+      bathrooms: 2.5,
+      squareFootage: 1800,
+      propertyType: "HOUSE",
+      description: "A lovely single-family home with a spacious backyard.",
+      yearBuilt: 1995
+    },
+    {
+      id: "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
+      address: "456 Elm Ave",
+      city: "Anytown",
+      state: "CA",
+      zipCode: "90210",
+      price: 350000.00,
+      bedrooms: 2,
+      bathrooms: 2.0,
+      squareFootage: 1200,
+      propertyType: "CONDO",
+      description: "Modern condo in the heart of the city.",
+      yearBuilt: 2010
+    }
+  ])
+  agent_insertMany(data: [
+    {
+      id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      firstName: "Alice",
+      lastName: "Smith",
+      email: "alice.smith@example.com",
+      phone: "555-123-4567"
+    },
+    {
+      id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      firstName: "Bob",
+      lastName: "Johnson",
+      email: "bob.johnson@example.com",
+      phone: "555-987-6543"
+    }
+  ])
+  listing_insertMany(data: [
+    {
+      id: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55",
+      propertyId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      agentId: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      status: "ACTIVE",
+      listDate: "2023-01-15T00:00:00Z"
+    },
+    {
+      id: "f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66",
+      propertyId: "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
+      agentId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      status: "ACTIVE",
+      listDate: "2023-02-01T00:00:00Z"
+    }
+  ])
+}

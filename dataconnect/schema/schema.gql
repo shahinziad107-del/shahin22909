@@ -1,0 +1,41 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  preferredLanguage: String
+}
+
+type Language @table {
+  name: String!
+  code: String!
+}
+
+type Deck @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+  user: User
+  sourceLanguage: Language
+  targetLanguage: Language
+}
+
+type Flashcard @table {
+  frontText: String!
+  backText: String!
+  createdAt: Timestamp!
+  exampleSentence: String
+  pronunciationGuide: String
+  lastReviewedAt: Timestamp
+  isLearned: Boolean
+  difficultyLevel: Int
+  deck: Deck
+}
+
+type QuizResult @table {
+  quizDate: Timestamp!
+  isCorrect: Boolean!
+  quizType: String
+  user: User
+  flashcard: Flashcard
+}
