@@ -231,6 +231,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize for Search Modal
     initLocationSelects('search-governorate', 'search-city', 'كل المدن');
 
+    // 3.5 Summer Resorts Dynamic Logic
+    const summerLocations = {
+        "الساحل الشمالي (الطيب)": ["مارينا", "مراقيا", "ماربيلا", "سيدي كرير", "عايدة", "بلبع", "الأحلام", "زمردة", "مرسيليا"],
+        "الساحل الشمالي (الشرير)": ["مراسي", "هاسيندا باي", "هاسيندا وايت", "أمواج", "سيشل", "فوكا باي", "تلال", "سيدي عبد الرحمن", "بو أيلاند"],
+        "مطروح": ["مرسى مطروح", "عجيبة", "الأبيض", "روميل", "كليوباترا", "الفيروز", "السلوم"],
+        "الإسكندرية": ["المعمورة", "المنتزه", "ميامي", "بيانكي", "العجمي", "سيدي بشر", "الساحل الشمالي للإسكندرية"],
+        "البحر الأحمر": ["الغردقة", "الجونة", "مكادي باي", "سهل حشيش", "سفاجا", "سوما باي"],
+        "جنوب سيناء": ["شرم الشيخ", "دهب", "نويبع", "طابا", "رأس سدر", "خليج نعمة"],
+        "العين السخنة": ["بورتو السخنة", "المونت جلالة", "أزها", "تلال السخنة", "بلومار", "بوهو", "لافيستا"]
+    };
+
+    function initSummerSelects(regionId, areaId, defaultAreaText) {
+        const regionSelect = document.getElementById(regionId);
+        const areaSelect = document.getElementById(areaId);
+
+        if (regionSelect && areaSelect) {
+            Object.keys(summerLocations).forEach(region => {
+                const option = document.createElement('option');
+                option.value = region;
+                option.textContent = region;
+                regionSelect.appendChild(option);
+            });
+
+            regionSelect.addEventListener('change', () => {
+                const selectedRegion = regionSelect.value;
+                areaSelect.innerHTML = `<option value="" selected>${defaultAreaText}</option>`; // Reset
+                
+                if (summerLocations[selectedRegion]) {
+                    summerLocations[selectedRegion].forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area;
+                        option.textContent = area;
+                        areaSelect.appendChild(option);
+                    });
+                    areaSelect.disabled = false; 
+                } else {
+                    areaSelect.disabled = true;
+                }
+            });
+        }
+    }
+
+    // Initialize for Summer Search Modal
+    initSummerSelects('summer-search-region', 'summer-search-area', 'كل القرى والمنتجعات');
+
     // 4. Mobile Bottom Nav Interactive Dragging & Animations
     const mobileNav = document.querySelector('.mobile-bottom-nav');
     if (mobileNav) {
@@ -380,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bannerHTML = `
             <div class="summer-resort-banner" id="summerBanner">
                 <button class="close-banner" id="closeSummerBanner" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
-                <div class="banner-content" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <div class="banner-content" data-bs-toggle="modal" data-bs-target="#summerSearchModal">
                     <div class="banner-icon-wrapper">
                         <i class="fa-solid fa-umbrella-beach fa-bounce"></i>
                     </div>
@@ -406,23 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 400);
             sessionStorage.setItem('summerBannerDismissed', 'true');
         });
-        
-        const bannerContent = document.querySelector('#summerBanner .banner-content');
-        if (bannerContent) {
-            bannerContent.addEventListener('click', () => {
-                const govSelect = document.getElementById('search-governorate');
-                if (govSelect) {
-                    govSelect.value = 'مطروح';
-                    govSelect.dispatchEvent(new Event('change'));
-                    setTimeout(() => {
-                        const citySelect = document.getElementById('search-city');
-                        if (citySelect) {
-                            citySelect.value = 'مرسى مطروح';
-                        }
-                    }, 100);
-                }
-            });
-        }
     }
 
 });
