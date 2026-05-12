@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Summer Resort Banner Injection
     const existingBanner = document.getElementById('summerBanner');
-    if (!existingBanner && !sessionStorage.getItem('summerBannerDismissed')) {
+    if (!existingBanner) {
         const bannerHTML = `
             <div class="summer-resort-banner" id="summerBanner">
                 <button class="close-banner" id="closeSummerBanner" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
@@ -449,7 +449,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if(b) b.remove();
             }, 400);
-            sessionStorage.setItem('summerBannerDismissed', 'true');
         });
     }
 
