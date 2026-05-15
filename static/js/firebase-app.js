@@ -137,6 +137,85 @@ async function checkExpiredProperties(uid) {
     } catch(err) { console.error("Error checking expired props", err); }
 }
 
+// Support & Report logic
+window.showReportModal = function(reportedUserId) {
+    const modalHtml = `
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title"><i class="fa-solid fa-flag ms-2"></i> إبلاغ عن مستخدم</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <form id="report-form">
+                        <input type="hidden" id="report-user-id" value="${reportedUserId}">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">سبب الإبلاغ</label>
+                            <select class="form-select" id="report-reason" required>
+                                <option value="" selected disabled>اختر...</option>
+                                <option value="نصب واحتيال">نصب واحتيال</option>
+                                <option value="سمسار غير مصرح">سمسار غير مصرح</option>
+                                <option value="إزعاج ومضايقة">إزعاج ومضايقة</option>
+                                <option value="محتوى غير لائق">محتوى غير لائق</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">تفاصيل الإبلاغ</label>
+                            <textarea class="form-control" id="report-details" rows="3" placeholder="يرجى توضيح المشكلة..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold" id="submit-report-btn">
+                            إرسال البلاغ <i class="fa-regular fa-paper-plane ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    const existing = document.getElementById('reportModal');
+    if (existing) existing.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modalEl = document.getElementById('reportModal');
+    let modalInstance = null;
+    if (typeof bootstrap !== 'undefined') {
+        modalInstance = new bootstrap.Modal(modalEl);
+    }
+    
+    document.getElementById('report-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!auth.currentUser) {
+            alert('يجب تسجيل الدخول لتقديم بلاغ.');
+            window.location.href = 'login.html';
+            return;
+        }
+        const btn = document.getElementById('submit-report-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري الإرسال...';
+        
+        try {
+            await addDoc(collection(db, "reports"), {
+                reportedUserId: reportedUserId,
+                reporterId: auth.currentUser.uid,
+                reporterEmail: auth.currentUser.email,
+                reason: document.getElementById('report-reason').value,
+                details: document.getElementById('report-details').value,
+                createdAt: serverTimestamp()
+            });
+            alert("تم إرسال البلاغ بنجاح. سيقوم فريق الإدارة بمراجعته قريباً.");
+            if (modalInstance) modalInstance.hide();
+        } catch(err) {
+            alert("حدث خطأ: " + err.message);
+            btn.disabled = false;
+            btn.innerHTML = 'إرسال البلاغ <i class="fa-regular fa-paper-plane ms-2"></i>';
+        }
+    });
+
+    if (modalInstance) modalInstance.show();
+};
+
 // Image Processing Helpers
 function resizeAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -256,6 +335,42 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }, true);
+
+    // --- Support Logic ---
+    const supportForm = document.getElementById('support-form');
+    if (supportForm) {
+        supportForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!auth.currentUser) {
+                alert('يجب تسجيل الدخول لإرسال تذكرة دعم.');
+                return;
+            }
+            const btn = document.getElementById('submit-support-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i> جاري الإرسال...';
+            
+            try {
+                await addDoc(collection(db, "support_tickets"), {
+                    userId: auth.currentUser.uid,
+                    userEmail: auth.currentUser.email,
+                    userName: auth.currentUser.displayName || 'بدون اسم',
+                    type: document.getElementById('support-type').value,
+                    message: document.getElementById('support-message').value,
+                    createdAt: serverTimestamp()
+                });
+                alert("تم إرسال رسالتك بنجاح! سيتواصل معك فريق الدعم قريباً.");
+                supportForm.reset();
+                const modalEl = document.getElementById('supportModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            } catch (err) {
+                alert("حدث خطأ: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'إرسال الرسالة <i class="fa-regular fa-paper-plane ms-2"></i>';
+            }
+        });
+    }
 
     // --- Auth Protection ---
     onAuthStateChanged(auth, (user) => {
@@ -828,6 +943,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                         <span class="text-muted small d-block mb-1">صاحب الإعلان</span>
                                         <a href="user_profile.html?id=${prop.owner}" class="fw-bold fs-5 d-block lh-1 text-primary text-decoration-none">${escapeHTML(prop.authorName || 'مستخدم غير معروف')}</a>
                                     </div>
+                                    <div class="ms-auto ps-3 border-start d-flex align-items-center">
+                                        <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="showReportModal('${prop.owner}')">
+                                            <i class="fa-solid fa-flag ms-1"></i> إبلاغ
+                                        </button>
+                                    </div>
                                 </div>
                                 <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4">تفاصيل العقار</h3>
                                 <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${escapeHTML(prop.description || 'لم يتم إضافة وصف لهذه المنشأة.')}</p>
@@ -933,6 +1053,81 @@ document.addEventListener("DOMContentLoaded", () => {
                                 }
                             });
                         });
+
+                        // --- Load Reports ---
+                        const reportsContainer = document.getElementById('admin-reports-container');
+                        const reportsCountEl = document.getElementById('reports-count');
+                        if (reportsContainer) {
+                            try {
+                                const repQ = query(collection(db, "reports"), orderBy("createdAt", "desc"));
+                                const repSnap = await getDocs(repQ);
+                                if (reportsCountEl) reportsCountEl.innerText = repSnap.size;
+                                
+                                if (repSnap.empty) {
+                                    reportsContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted fs-5">لا توجد بلاغات حالياً.</p></div>';
+                                } else {
+                                    let repHtml = '';
+                                    repSnap.forEach(docSnap => {
+                                        const r = docSnap.data();
+                                        const rDate = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleString('ar-EG') : 'غير معروف';
+                                        repHtml += `
+                                        <div class="col">
+                                            <div class="card shadow-sm border-0 border-start border-4 border-danger">
+                                                <div class="card-body">
+                                                    <h5 class="fw-bold text-danger"><i class="fa-solid fa-flag ms-1"></i> ${escapeHTML(r.reason || '')}</h5>
+                                                    <p class="text-muted small mb-2"><i class="fa-solid fa-clock ms-1"></i> ${rDate}</p>
+                                                    <p class="mb-2"><span class="fw-bold">المبلِّغ:</span> ${escapeHTML(r.reporterEmail || r.reporterId)}</p>
+                                                    <p class="mb-2"><span class="fw-bold">المُبلَّغ عنه (ID):</span> <a href="user_profile.html?id=${r.reportedUserId}" target="_blank" class="text-decoration-none">${r.reportedUserId}</a></p>
+                                                    <div class="bg-light p-3 rounded text-dark mt-2" style="white-space: pre-wrap;">${escapeHTML(r.details || '')}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    });
+                                    reportsContainer.innerHTML = repHtml;
+                                }
+                            } catch(e) {
+                                console.error(e);
+                                reportsContainer.innerHTML = '<div class="text-danger text-center w-100">خطأ في جلب البلاغات.</div>';
+                            }
+                        }
+
+                        // --- Load Support Tickets ---
+                        const supportContainer = document.getElementById('admin-support-container');
+                        const supportCountEl = document.getElementById('support-count');
+                        if (supportContainer) {
+                            try {
+                                const supQ = query(collection(db, "support_tickets"), orderBy("createdAt", "desc"));
+                                const supSnap = await getDocs(supQ);
+                                if (supportCountEl) supportCountEl.innerText = supSnap.size;
+                                
+                                if (supSnap.empty) {
+                                    supportContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted fs-5">لا توجد رسائل دعم حالياً.</p></div>';
+                                } else {
+                                    let supHtml = '';
+                                    supSnap.forEach(docSnap => {
+                                        const s = docSnap.data();
+                                        const sDate = s.createdAt ? new Date(s.createdAt.toDate()).toLocaleString('ar-EG') : 'غير معروف';
+                                        supHtml += `
+                                        <div class="col">
+                                            <div class="card shadow-sm border-0 border-start border-4 border-success">
+                                                <div class="card-body">
+                                                    <h5 class="fw-bold text-success"><i class="fa-solid fa-headset ms-1"></i> ${escapeHTML(s.type || '')}</h5>
+                                                    <p class="text-muted small mb-2"><i class="fa-solid fa-clock ms-1"></i> ${sDate}</p>
+                                                    <p class="mb-2"><span class="fw-bold">المرسل:</span> ${escapeHTML(s.userName || '')} (<a href="mailto:${escapeHTML(s.userEmail || '')}">${escapeHTML(s.userEmail || '')}</a>)</p>
+                                                    <div class="bg-light p-3 rounded text-dark mt-2" style="white-space: pre-wrap;">${escapeHTML(s.message || '')}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    });
+                                    supportContainer.innerHTML = supHtml;
+                                }
+                            } catch(e) {
+                                console.error(e);
+                                supportContainer.innerHTML = '<div class="text-danger text-center w-100">خطأ في جلب رسائل الدعم.</div>';
+                            }
+                        }
 
                     } catch (error) {
                         console.error(error);
@@ -1585,21 +1780,32 @@ if (window.location.pathname.includes('user_profile.html')) {
                 const userDoc = await getDoc(doc(db, "users", targetUid));
                 let userName = 'مستخدم';
                 let userPhoto = '';
+                let isBanned = false;
                 
                 if (userDoc.exists()) {
                     userName = userDoc.data().name || 'مستخدم';
                     userPhoto = userDoc.data().photo || '';
+                    isBanned = userDoc.data().banned === true;
                 }
 
                 // Render Header
                 let banBtnHtml = '';
                 if (auth.currentUser && auth.currentUser.email === "shahinziad107@gmail.com" && targetUid !== auth.currentUser.uid) {
-                    banBtnHtml = `
-                    <div class="mt-3 w-100">
-                        <button id="admin-ban-btn" class="btn btn-danger btn-sm w-100 fw-bold rounded-pill shadow-sm">
-                            <i class="fa-solid fa-ban ms-1"></i> حظر هذا المستخدم
-                        </button>
-                    </div>`;
+                    if (isBanned) {
+                        banBtnHtml = `
+                        <div class="mt-3 w-100">
+                            <button id="admin-unban-btn" class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                                <i class="fa-solid fa-unlock ms-1"></i> فك الحظر عن هذا المستخدم
+                            </button>
+                        </div>`;
+                    } else {
+                        banBtnHtml = `
+                        <div class="mt-3 w-100">
+                            <button id="admin-ban-btn" class="btn btn-danger btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                                <i class="fa-solid fa-ban ms-1"></i> حظر هذا المستخدم
+                            </button>
+                        </div>`;
+                    }
                 }
 
                 if (profileHeader) {
@@ -1621,10 +1827,26 @@ if (window.location.pathname.includes('user_profile.html')) {
                                 try {
                                     await updateDoc(doc(db, "users", targetUid), { banned: true });
                                     alert("تم حظر المستخدم بنجاح.");
-                                    window.location.href = 'home.html';
+                                    window.location.reload();
                                 } catch(err) {
                                     console.error("Error banning user", err);
                                     alert("حدث خطأ أثناء الحظر.");
+                                }
+                            }
+                        });
+                    }
+
+                    const adminUnbanBtn = document.getElementById('admin-unban-btn');
+                    if (adminUnbanBtn) {
+                        adminUnbanBtn.addEventListener('click', async () => {
+                            if(confirm("هل أنت متأكد من فك الحظر عن هذا المستخدم؟ سيتمكن من دخول الموقع بحرية مرة أخرى.")) {
+                                try {
+                                    await updateDoc(doc(db, "users", targetUid), { banned: false });
+                                    alert("تم فك الحظر بنجاح.");
+                                    window.location.reload();
+                                } catch(err) {
+                                    console.error("Error unbanning user", err);
+                                    alert("حدث خطأ أثناء فك الحظر.");
                                 }
                             }
                         });

@@ -79,6 +79,14 @@
                                 </div>
                                 <i class="fa-solid fa-chevron-left text-muted"></i>
                             </a>
+
+                            <!-- Support Link -->
+                            <a href="#" class="btn btn-light border p-3 rounded-3 text-start d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#supportModal">
+                                <div>
+                                    <i class="fa-solid fa-headset text-success ms-2 fs-5"></i> التواصل مع الدعم
+                                </div>
+                                <i class="fa-solid fa-chevron-left text-muted"></i>
+                            </a>
                             
                             <!-- Admin Panel Link (Hidden by default) -->
                             <a href="admin_panel.html" id="admin-panel-link" class="btn border border-warning p-3 rounded-3 text-start d-none align-items-center justify-content-between" style="background-color: #fff3cd;">
@@ -105,6 +113,40 @@
             <p class="mb-0">© 2026 أجرلي Ajarli. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
+
+    <!-- Support Modal -->
+    <div class="modal fade" id="supportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-success text-white border-0">
+                    <h5 class="modal-title"><i class="fa-solid fa-headset ms-2"></i> التواصل مع الدعم الفني</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <form id="support-form">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">نوع المشكلة</label>
+                            <select class="form-select" id="support-type" required>
+                                <option value="" selected disabled>اختر...</option>
+                                <option value="مشكلة تقنية">مشكلة تقنية بالموقع</option>
+                                <option value="استفسار عام">استفسار عام</option>
+                                <option value="مشكلة في حسابي">مشكلة في حسابي</option>
+                                <option value="اقتراح">اقتراح تطوير</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">نص الرسالة</label>
+                            <textarea class="form-control" id="support-message" rows="4" placeholder="اكتب تفاصيل المشكلة أو الاستفسار هنا بوضوح..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold" id="submit-support-btn">
+                            إرسال الرسالة <i class="fa-regular fa-paper-plane ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

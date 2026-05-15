@@ -19,8 +19,8 @@ service cloud.firestore {
     match /users/{userId} {
       // Anyone can read basic profiles
       allow read: if true;
-      // Only the user themselves can write to their profile
-      allow write: if isOwner(userId);
+      // Only the user themselves can write to their profile, or the admin can update it
+      allow write: if isOwner(userId) || isAdmin();
     }
 
     // 2. Properties Collection
@@ -56,6 +56,18 @@ service cloud.firestore {
                       && request.resource.data.senderId == request.auth.uid 
                       && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
       }
+    }
+
+    // 4. Support Tickets Collection
+    match /support_tickets/{ticketId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 5. Reports Collection
+    match /reports/{reportId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
   }
 }

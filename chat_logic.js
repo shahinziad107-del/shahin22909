@@ -35,6 +35,7 @@ function initChatWidget(user) {
         <div class="chat-header">
             <div class="fw-bold" id="chat-header-title"><i class="fa-solid fa-comment-dots ms-2"></i> الرسائل</div>
             <div>
+                <button class="chat-back-btn d-none text-danger me-1" id="chat-report-btn" title="إبلاغ"><i class="fa-solid fa-flag"></i></button>
                 <button class="chat-back-btn d-none" id="chat-back-btn" title="رجوع"><i class="fa-solid fa-arrow-right"></i></button>
                 <button class="chat-back-btn" id="chat-close-btn" title="إغلاق"><i class="fa-solid fa-times"></i></button>
             </div>
@@ -184,6 +185,9 @@ function initChatWidget(user) {
 function loadChatsList(myUid, body, footer, backBtn, title) {
     footer.classList.add('d-none');
     backBtn.classList.add('d-none');
+    const reportBtn = document.getElementById('chat-report-btn');
+    if (reportBtn) reportBtn.classList.add('d-none');
+    
     title.innerHTML = '<i class="fa-solid fa-comment-dots ms-2"></i> الرسائل';
     body.innerHTML = '<div class="text-center text-muted mt-5"><i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...</div>';
 
@@ -266,6 +270,17 @@ function openChatThread(chatId, myUid, otherUid, otherName, body, footer, backBt
     currentChatId = chatId;
     title.innerText = otherName;
     backBtn.classList.remove('d-none');
+    
+    const reportBtn = document.getElementById('chat-report-btn');
+    if (reportBtn) {
+        reportBtn.classList.remove('d-none');
+        reportBtn.onclick = () => {
+            if (typeof showReportModal === 'function') {
+                showReportModal(otherUid);
+            }
+        };
+    }
+    
     footer.classList.remove('d-none');
     body.innerHTML = '<div class="text-center text-muted mt-5"><i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...</div>';
 
