@@ -12,7 +12,7 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return request.auth.token.email == "shahinziad107@gmail.com";
+      return request.auth.token.email in ["shahinziad107@gmail.com", "omarafrecano888@gmail.com"];
     }
 
     // 1. Users Collection

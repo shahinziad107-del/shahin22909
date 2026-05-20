@@ -303,7 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const isHomePage = window.location.pathname.includes('home.html');
     const path = window.location.pathname;
 
-    const ADMIN_EMAIL = "shahinziad107@gmail.com";
+    const ADMIN_EMAILS = ["shahinziad107@gmail.com", "omarafrecano888@gmail.com"];
+    function isAdminEmail(email) {
+        return email && ADMIN_EMAILS.includes(email);
+    }
 
     // --- Guest Mode Interceptor ---
     document.body.addEventListener('click', (e) => {
@@ -411,12 +414,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- Admin Authorization ---
         if (path.includes('admin_panel.html')) {
-            if (!user || user.email !== ADMIN_EMAIL) {
+            if (!user || !isAdminEmail(user.email)) {
                 window.location.href = "home.html"; // Kick unauthorized
             }
         }
 
-        if (user && user.email === ADMIN_EMAIL && !path.includes('admin_panel.html')) {
+        if (user && isAdminEmail(user.email) && !path.includes('admin_panel.html')) {
             // Add Admin button to navbar automatically
             const navAuthButtons = document.querySelector('.d-flex.gx-2');
             if (navAuthButtons && !document.getElementById('admin-nav-btn')) {
@@ -984,7 +987,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (container) {
             onAuthStateChanged(auth, async (user) => {
                 // Double check safety
-                if (user && user.email === "shahinziad107@gmail.com") {
+                if (user && isAdminEmail(user.email)) {
                     try {
                         const q = query(collection(db, "properties"), orderBy("createdAt", "desc"));
                         const querySnapshot = await getDocs(q);
@@ -1788,9 +1791,25 @@ if (window.location.pathname.includes('user_profile.html')) {
                     isBanned = userDoc.data().banned === true;
                 }
 
+                // Fetch Properties early to fallback user info and count them
+                let querySnapshot = null;
+                if (propertiesContainer) {
+                    const q = query(collection(db, "properties"), where("owner", "==", targetUid));
+                    querySnapshot = await getDocs(q);
+                    
+                    if (totalCountEl) totalCountEl.innerText = querySnapshot.size;
+
+                    // Fallback to extract name and photo from their first property if not in users collection
+                    if (!querySnapshot.empty && (userName === 'مستخدم' || !userName)) {
+                        const firstProp = querySnapshot.docs[0].data();
+                        userName = firstProp.authorName || 'مستخدم';
+                        userPhoto = userPhoto || firstProp.authorPhoto || '';
+                    }
+                }
+
                 // Render Header
                 let banBtnHtml = '';
-                if (auth.currentUser && auth.currentUser.email === "shahinziad107@gmail.com" && targetUid !== auth.currentUser.uid) {
+                if (auth.currentUser && isAdminEmail(auth.currentUser.email) && targetUid !== auth.currentUser.uid) {
                     if (isBanned) {
                         banBtnHtml = `
                         <div class="mt-3 w-100">
@@ -1825,7 +1844,7 @@ if (window.location.pathname.includes('user_profile.html')) {
                         adminBanBtn.addEventListener('click', async () => {
                             if(confirm("هل أنت متأكد من حظر هذا المستخدم نهائياً؟ لن يتمكن من دخول الموقع أو نشر عقارات مرة أخرى.")) {
                                 try {
-                                    await updateDoc(doc(db, "users", targetUid), { banned: true });
+                                    await setDoc(doc(db, "users", targetUid), { banned: true }, { merge: true });
                                     alert("تم حظر المستخدم بنجاح.");
                                     window.location.reload();
                                 } catch(err) {
@@ -1841,7 +1860,7 @@ if (window.location.pathname.includes('user_profile.html')) {
                         adminUnbanBtn.addEventListener('click', async () => {
                             if(confirm("هل أنت متأكد من فك الحظر عن هذا المستخدم؟ سيتمكن من دخول الموقع بحرية مرة أخرى.")) {
                                 try {
-                                    await updateDoc(doc(db, "users", targetUid), { banned: false });
+                                    await setDoc(doc(db, "users", targetUid), { banned: false }, { merge: true });
                                     alert("تم فك الحظر بنجاح.");
                                     window.location.reload();
                                 } catch(err) {
@@ -1862,14 +1881,9 @@ if (window.location.pathname.includes('user_profile.html')) {
                     };
                 }
 
-                // Fetch Properties
+                // Render Properties
                 if (propertiesContainer) {
-                    const q = query(collection(db, "properties"), where("owner", "==", targetUid));
-                    const querySnapshot = await getDocs(q);
-                    
-                    if (totalCountEl) totalCountEl.innerText = querySnapshot.size;
-
-                    if (querySnapshot.empty) {
+                    if (!querySnapshot || querySnapshot.empty) {
                         propertiesContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5 mb-5"><i class="fa-solid fa-folder-open fs-1 mb-3"></i><br>هذا المستخدم لم يقم بنشر أي عقارات بعد.</div>';
                         return;
                     }
