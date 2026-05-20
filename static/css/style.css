@@ -370,7 +370,15 @@ footer {
     100% { transform: translateX(0); }
 }
 .search-scan {
-    animation: scanLeftRight 1.5s ease-in-out infinite;
+    animation: scanLeftRight 1.5s ease-in-out 1;
+}
+
+/* Limit mobile bottom nav icon animations to a single iteration */
+.mobile-bottom-nav .nav-item i.fa-bounce,
+.mobile-bottom-nav .nav-item i.fa-shake,
+.mobile-bottom-nav .nav-item i.fa-beat {
+    animation-iteration-count: 1 !important;
+    --fa-animation-iteration-count: 1 !important;
 }
 
 @media (max-width: 991px) {
