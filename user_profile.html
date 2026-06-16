@@ -69,10 +69,13 @@
     <!-- Main Content -->
     <main class="container py-5 mt-4" style="min-height: 80vh;">
         
-        <div class="row g-4">
-            <!-- Profile Info Sidebar -->
-            <div class="col-lg-4">
-                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle text-center sticky-top" style="top: 100px; z-index: 10;">
+        <!-- User Profile Banner -->
+        <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle mb-5 position-relative overflow-hidden">
+            <!-- Decorative background element -->
+            <div class="position-absolute top-0 end-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%); z-index: 0;"></div>
+            
+            <div class="row align-items-center position-relative" style="z-index: 1;">
+                <div class="col-md-8">
                     <div id="user-profile-header">
                         <div class="d-flex align-items-center flex-column">
                             <div class="spinner-border text-primary my-4" role="status">
@@ -80,29 +83,29 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <button id="profile-chat-btn" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold mt-2">
-                        <i class="fa-solid fa-comment-dots ms-2"></i> تواصل معي
+                </div>
+                <div class="col-md-4 text-md-start mt-4 mt-md-0 d-flex flex-column align-items-md-start align-items-center border-md-end pe-md-4">
+                    <button id="profile-chat-btn" class="btn btn-primary btn-lg rounded-pill shadow-lg fw-bold px-4 py-3 w-100" style="transition: all 0.3s ease; max-width: 300px;">
+                        <i class="fa-solid fa-comment-dots ms-2 fs-5"></i> تواصل معي
                     </button>
-                    
-                    <hr class="my-4 text-muted">
-                    
-                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
-                        <span class="text-muted fw-bold">إجمالي العقارات</span>
+                    <div class="mt-4 text-muted fw-bold d-flex justify-content-between align-items-center w-100" style="max-width: 300px; background: rgba(0,0,0,0.02); padding: 10px 20px; border-radius: 15px;">
+                        <span>إجمالي العقارات</span>
                         <span class="badge bg-secondary rounded-pill fs-6" id="user-total-properties">0</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- User Properties -->
-            <div class="col-lg-8">
-                <h3 class="fw-bold border-bottom pb-3 mb-4 text-primary"><i class="fa-solid fa-building ms-2"></i> عقارات المستخدم</h3>
-                
-                <div class="row row-cols-1 row-cols-md-2 g-4" id="user-properties-container">
-                    <div class="col-12 text-center text-muted mt-5">
-                        <i class="fa-solid fa-spinner fa-spin fs-1 mb-3"></i>
-                        <br>جاري تحميل العقارات...
-                    </div>
+        <!-- User Properties Full Width -->
+        <div>
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+                <h3 class="fw-bold text-primary m-0"><i class="fa-solid fa-building ms-2"></i> عقارات المستخدم</h3>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="user-properties-container">
+                <div class="col-12 text-center text-muted mt-5">
+                    <i class="fa-solid fa-spinner fa-spin fs-1 mb-3"></i>
+                    <br>جاري تحميل العقارات...
                 </div>
             </div>
         </div>

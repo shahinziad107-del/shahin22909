@@ -1873,13 +1873,15 @@ if (window.location.pathname.includes('user_profile.html')) {
 
                 if (profileHeader) {
                     profileHeader.innerHTML = `
-                        <div class="d-flex align-items-center flex-column">
-                            <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('${userPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 15px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                        <div class="d-flex align-items-center flex-column flex-md-row gap-4">
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('${userPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); flex-shrink: 0;">
                                 ${!userPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
                             </div>
-                            <h2 class="fw-bold">${userName}</h2>
-                            <p class="text-muted mb-4">عضو في أجرلي</p>
-                            ${banBtnHtml}
+                            <div class="text-center text-md-end">
+                                <h2 class="fw-bold mb-1">${userName}</h2>
+                                <p class="text-muted mb-3 fs-5">عضو مسجل في أجرلي</p>
+                                ${banBtnHtml}
+                            </div>
                         </div>
                     `;
 
