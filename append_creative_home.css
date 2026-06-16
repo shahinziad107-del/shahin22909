@@ -1,0 +1,90 @@
+
+/* Creative Home Button for Account Page */
+.creative-home-btn {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+[data-theme="dark"] .creative-home-btn {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+}
+
+.creative-home-btn i {
+    font-size: 1.4rem;
+    transition: transform 0.4s ease;
+    animation: gentleBounce 2s infinite ease-in-out;
+}
+
+.creative-home-btn span {
+    max-width: 0;
+    opacity: 0;
+    white-space: nowrap;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding-left: 0;
+}
+
+.creative-home-btn:hover {
+    transform: translateX(-5px) scale(1.05);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+}
+
+.creative-home-btn:hover span {
+    max-width: 150px;
+    opacity: 1;
+    padding-left: 5px;
+}
+
+.creative-home-btn:hover i {
+    animation: none;
+    transform: scale(1.2) rotate(-10deg);
+}
+
+.creative-home-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to left, transparent, rgba(255,255,255,0.5), transparent);
+    transform: skewX(-20deg);
+    animation: shineEffect 4s infinite;
+}
+
+@keyframes shineEffect {
+    0% { right: -100%; }
+    20% { right: 200%; }
+    100% { right: 200%; }
+}
+
+@keyframes gentleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@media (max-width: 991px) {
+    .creative-home-btn {
+        display: none !important;
+    }
+}
