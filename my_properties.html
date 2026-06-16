@@ -43,45 +43,38 @@
     </nav>
 
     <!-- Main Content -->
-    <main style="padding-top: 80px; min-height: 80vh;">
-        <div class="container reveal mt-4 pb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                <h2 class="fw-bold fs-3 text-dark mb-0">
-                    <i class="fa-solid fa-building-user text-primary ms-2"></i> إدارة عقاراتي
-                </h2>
-                <a href="add_property.html" class="btn btn-outline-primary rounded-pill fw-bold">
-                    <i class="fa-solid fa-plus ms-1"></i> إضافة عقار جديد
-                </a>
-            </div>
-
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="properties-container">
-                <!-- Dummy Property -->
-                <div class="col reveal">
-                    <div class="property-card">
-                        <div class="card-img-wrapper" style="height: 180px;">
-                            <span class="price-tag bg-primary">2,500,000 ج.م</span>
-                            <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
-                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
-                            </div>
+    <main class="container py-5 mt-4" style="min-height: 80vh;">
+        <!-- Modern Page Header Banner -->
+        <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle mb-5 position-relative overflow-hidden">
+            <!-- Decorative background element -->
+            <div class="position-absolute top-0 end-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); z-index: 0;"></div>
+            
+            <div class="row align-items-center position-relative" style="z-index: 1;">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width: 70px; height: 70px; font-size: 2rem;">
+                            <i class="fa-solid fa-house-chimney"></i>
                         </div>
-                        <div class="card-body container-fluid p-3">
-                            <h4 class="card-title text-truncate mb-2 fs-5">فيلا مع مسبح خاص</h4>
-                            <div class="location-text mb-0 small">
-                                <i class="fa-solid fa-location-dot"></i> القاهرة الجديدة
-                            </div>
-                        </div>
-                        <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2">
-                            <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill flex-grow-1">
-                                <i class="fa-regular fa-eye ms-1"></i> عرض
-                            </a>
-                            <button class="btn btn-sm btn-warning rounded-pill flex-grow-1 text-white">
-                                <i class="fa-regular fa-pen-to-square ms-1"></i> تعديل
-                            </button>
-                            <button class="btn btn-sm btn-danger rounded-pill">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
+                        <div>
+                            <h2 class="fw-bold fs-3 text-dark mb-1">عقاراتي المعروضة</h2>
+                            <p class="text-muted mb-0">لوحة تحكم لإدارة وعرض عقاراتك ومتابعة حالتها</p>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-4 mt-md-0 d-flex flex-column align-items-md-end align-items-center border-md-start ps-md-4">
+                    <a href="add_property.html" class="btn btn-primary btn-lg rounded-pill shadow-lg fw-bold px-4 py-3 w-100 hover-lift" style="transition: all 0.3s ease; max-width: 300px;">
+                        <i class="fa-solid fa-plus ms-2 fs-5"></i> إضافة عقار جديد
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container px-0 reveal">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="properties-container">
+                <!-- Dummy Property -->
+                <div class="col text-center mt-5 mb-5 w-100">
+                    <i class="fa-solid fa-spinner fa-spin fs-1 text-primary"></i>
+                    <p class="mt-2 text-muted fw-bold">جاري تحميل العقارات...</p>
                 </div>
             </div>
         </div>

@@ -64,52 +64,80 @@
     </a>
 
     <!-- Main Content -->
-    <main style="padding-top: 80px; min-height: 80vh;">
-        <div class="container reveal mt-5 pt-3">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <div class="detail-card text-center pb-5">
-                        <div class="mb-4">
-                            <div id="account-avatar" style="width: 120px; height: 120px; border-radius: 50%; background: var(--secondary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; box-shadow: var(--shadow-md); background-size: cover; background-position: center;">
-                                <i class="fa-regular fa-user"></i>
-                            </div>
+    <main class="container py-5 mt-4" style="min-height: 80vh;">
+        
+        <!-- Account Profile Banner -->
+        <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle mb-5 position-relative overflow-hidden">
+            <!-- Decorative background element -->
+            <div class="position-absolute top-0 end-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%); z-index: 0;"></div>
+            
+            <div class="row align-items-center position-relative" style="z-index: 1;">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center flex-column flex-md-row gap-4">
+                        <div id="account-avatar" style="width: 120px; height: 120px; border-radius: 50%; background: var(--secondary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); flex-shrink: 0; background-size: cover; background-position: center;">
+                            <i class="fa-regular fa-user"></i>
                         </div>
-                        
-                        <h2 class="fw-bold mb-1" id="user-name">جارٍ التحميل...</h2>
-                        <p class="text-muted fs-5 mb-4 border-bottom pb-4">
-                            <i class="fa-solid fa-envelope mx-2"></i>
-                            <span id="user-email">جارٍ التحميل...</span>
-                        </p>
-
-                        <!-- Profile Actions -->
-                        <div class="d-flex flex-column gap-3 px-4">
-                            <a href="my_properties.html" class="btn btn-light border p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
-                                <div>
-                                    <i class="fa-solid fa-house text-primary ms-2 fs-5"></i> عقاراتي
-                                </div>
-                                <i class="fa-solid fa-chevron-left text-muted"></i>
-                            </a>
-
-                            <!-- Support Link -->
-                            <a href="#" class="btn btn-light border p-3 rounded-3 text-start d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#supportModal">
-                                <div>
-                                    <i class="fa-solid fa-headset text-success ms-2 fs-5"></i> التواصل مع الدعم
-                                </div>
-                                <i class="fa-solid fa-chevron-left text-muted"></i>
-                            </a>
-                            
-                            <!-- Admin Panel Link (Hidden by default) -->
-                            <a href="admin_panel.html" id="admin-panel-link" class="btn border border-warning p-3 rounded-3 text-start d-none align-items-center justify-content-between" style="background-color: #fff3cd;">
-                                <div class="text-dark fw-bold">
-                                    <i class="fa-solid fa-shield-halved text-danger ms-2 fs-5"></i> لوحة الإدارة
-                                </div>
-                                <i class="fa-solid fa-chevron-left text-muted"></i>
-                            </a>
+                        <div class="text-center text-md-end">
+                            <h2 class="fw-bold mb-1" id="user-name">جارٍ التحميل...</h2>
+                            <p class="text-muted fs-5 mb-0" id="user-email"><i class="fa-solid fa-envelope mx-2"></i>...</p>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4 text-md-end mt-4 mt-md-0 d-flex flex-column align-items-md-end align-items-center border-md-start ps-md-4">
+                    <!-- Liquid Glass Support Button (Top Left) -->
+                    <button class="liquid-search-btn rounded-pill shadow-lg fw-bold px-4 py-3 w-100" style="transition: all 0.3s ease; max-width: 300px; background: rgba(59, 130, 246, 0.15); color: var(--primary-color); border: 1px solid rgba(59, 130, 246, 0.4);" data-bs-toggle="modal" data-bs-target="#supportModal">
+                        <i class="fa-solid fa-headset ms-2 fs-5"></i> التواصل مع الدعم
+                    </button>
+                    
+                    <!-- Admin Panel Link (Hidden by default) -->
+                    <a href="admin_panel.html" id="admin-panel-link" class="btn btn-warning mt-3 rounded-pill fw-bold w-100 d-none shadow-sm" style="max-width: 300px;">
+                        <i class="fa-solid fa-shield-halved ms-2"></i> لوحة الإدارة
+                    </a>
+                </div>
             </div>
         </div>
+
+        <!-- Dashboard Actions -->
+        <div>
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+                <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-gauge ms-2 text-primary"></i> لوحة التحكم</h3>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+                <!-- My Properties Card -->
+                <div class="col">
+                    <a href="my_properties.html" class="text-decoration-none">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border border-light-subtle h-100 d-flex align-items-center hover-lift" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
+                                <i class="fa-solid fa-house fs-3"></i>
+                            </div>
+                            <div class="ms-3 flex-grow-1 text-end">
+                                <h4 class="fw-bold text-dark mb-1">إدارة عقاراتي</h4>
+                                <p class="text-muted mb-0 small">تعديل، حذف، وإضافة عقارات جديدة</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-left text-muted fs-4"></i>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Settings Card -->
+                <div class="col">
+                    <a href="settings.html" class="text-decoration-none">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border border-light-subtle h-100 d-flex align-items-center hover-lift" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
+                                <i class="fa-solid fa-gear fs-3"></i>
+                            </div>
+                            <div class="ms-3 flex-grow-1 text-end">
+                                <h4 class="fw-bold text-dark mb-1">إعدادات الحساب</h4>
+                                <p class="text-muted mb-0 small">تغيير كلمة المرور وتعديل البيانات</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-left text-muted fs-4"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </main>
 
         <!-- Footer -->
