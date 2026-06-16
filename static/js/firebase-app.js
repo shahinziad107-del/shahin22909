@@ -1853,7 +1853,8 @@ if (window.location.pathname.includes('user_profile.html')) {
 
                 // Render Header
                 let banBtnHtml = '';
-                if (auth.currentUser && isAdminEmail(auth.currentUser.email) && targetUid !== auth.currentUser.uid) {
+                const isAdminEmail = (email) => { return ["shahinziad107@gmail.com", "omarafrecano888@gmail.com"].includes(email); };
+                if (auth.currentUser && auth.currentUser.email && isAdminEmail(auth.currentUser.email) && targetUid !== auth.currentUser.uid) {
                     if (isBanned) {
                         banBtnHtml = `
                         <div class="mt-3 w-100">
