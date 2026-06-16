@@ -678,32 +678,43 @@ document.addEventListener("DOMContentLoaded", () => {
                     const selectedCity = addForm.city.value;
                     
                     const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-                    const userPhoto = userDoc.exists() ? userDoc.data().photo : (auth.currentUser.photoURL || null);
+                    let userPhoto = null;
+                    if (userDoc.exists() && userDoc.data().photo) {
+                        userPhoto = userDoc.data().photo;
+                    } else if (auth.currentUser.photoURL) {
+                        userPhoto = auth.currentUser.photoURL;
+                    }
 
                     const base64Images = imagesInput && imagesInput.base64Images ? imagesInput.base64Images : [];
+                    
+                    const price = parseFloat(addForm.price.value) || 0;
+                    const rooms = parseInt(addForm.rooms.value) || 0;
+                    const bathrooms = parseInt(addForm.bathrooms.value) || 0;
+                    const area = parseInt(addForm.area.value) || 0;
 
                     await addDoc(collection(db, "properties"), {
-                        title: addForm.title.value,
-                        price: parseFloat(addForm.price.value),
-                        property_type: addForm.property_type.value,
-                        rooms: parseInt(addForm.rooms.value),
-                        bathrooms: parseInt(addForm.bathrooms.value),
-                        area: parseInt(addForm.area.value),
+                        title: addForm.title.value || 'بدون عنوان',
+                        price: price,
+                        property_type: addForm.property_type.value || 'غير محدد',
+                        rooms: rooms,
+                        bathrooms: bathrooms,
+                        area: area,
                         images: base64Images,
-                        governorate: selectedGov,
-                        city: selectedCity,
-                        location: `${selectedCity}، ${selectedGov}`,
-                        whatsappNum: addForm.whatsapp.value,
-                        description: addForm.description.value,
+                        governorate: selectedGov || 'غير محدد',
+                        city: selectedCity || 'غير محدد',
+                        location: `${selectedCity || ''}، ${selectedGov || ''}`,
+                        whatsappNum: addForm.whatsapp.value || '',
+                        description: addForm.description.value || '',
                         owner: auth.currentUser.uid,
                         authorName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
                         authorPhoto: userPhoto,
-                        authorDevice: navigator.userAgent,
+                        authorDevice: navigator.userAgent || 'unknown',
                         createdAt: serverTimestamp()
                     });
                     window.location.href = 'home.html';
                 } catch (error) {
                     alert('خطأ في إضافة العقار: ' + error.message);
+                    console.error("Add Property Error:", error);
                     btn.disabled = false;
                     btn.innerHTML = 'نشر العقار الآن <i class="fa-regular fa-paper-plane ms-2"></i>';
                 }
@@ -790,20 +801,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     const imagesInput = document.getElementById('images-input');
                     const base64Images = imagesInput && imagesInput.base64Images ? imagesInput.base64Images : [];
                     
+                    const price = parseFloat(editForm.price.value) || 0;
+                    const rooms = parseInt(editForm.rooms.value) || 0;
+                    const bathrooms = parseInt(editForm.bathrooms.value) || 0;
+
                     const updateData = {
-                        title: editForm.title.value,
-                        price: parseFloat(editForm.price.value),
-                        property_type: editForm.property_type.value,
-                        rooms: parseInt(editForm.rooms.value),
-                        bathrooms: parseInt(editForm.bathrooms.value),
-                        governorate: selectedGov,
-                        city: selectedCity,
-                        location: `${selectedCity}، ${selectedGov}`,
-                        whatsappNum: editForm.whatsapp.value,
-                        description: editForm.description.value
+                        title: editForm.title.value || 'بدون عنوان',
+                        price: price,
+                        property_type: editForm.property_type.value || 'غير محدد',
+                        rooms: rooms,
+                        bathrooms: bathrooms,
+                        governorate: selectedGov || 'غير محدد',
+                        city: selectedCity || 'غير محدد',
+                        location: `${selectedCity || ''}، ${selectedGov || ''}`,
+                        whatsappNum: editForm.whatsapp.value || '',
+                        description: editForm.description.value || ''
                     };
                     if (editForm.area && editForm.area.value) {
-                        updateData.area = parseInt(editForm.area.value);
+                        updateData.area = parseInt(editForm.area.value) || 0;
                     }
                     if (base64Images.length > 0) {
                         updateData.images = base64Images;
@@ -813,6 +828,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.location.href = 'my_properties.html';
                 } catch (error) {
                     alert('خطأ في التعديل: ' + error.message);
+                    console.error("Edit Property Error:", error);
                     btn.disabled = false;
                     btn.innerHTML = 'حفظ التعديلات <i class="fa-regular fa-floppy-disk ms-2"></i>';
                 }
