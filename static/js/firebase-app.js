@@ -1658,10 +1658,19 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
         });
 
         let html = '';
+        let unreadCount = 0;
+        let hoverHtml = '';
+
         chatsData.forEach(data => {
             const otherUid = (data.participants || []).find(id => id !== myUid) || 'unknown';
             const otherUser = data.participantDetails && data.participantDetails[otherUid] ? data.participantDetails[otherUid] : {name: 'مستخدم', photo: ''};
             
+            if (data.lastSenderId && data.lastSenderId !== myUid) {
+                unreadCount++;
+            }
+
+            hoverHtml += `<li><span class="dropdown-item fw-bold" onclick="const w = document.getElementById('global-chat-widget'); if(w && !w.classList.contains('active')) document.querySelector('.chat-toggle-btn').click();" style="cursor: pointer;"><i class="fa-regular fa-user text-primary ms-2"></i>${escapeHTML(otherUser.name || 'مستخدم')} <small class="text-muted d-block" style="font-size:0.75rem;">${escapeHTML(data.lastMessage || '...')}</small></span></li>`;
+
             html += `
             <div class="chat-list-item" data-id="${data.id}" data-other="${otherUid}" data-name="${escapeHTML(otherUser.name || 'مستخدم')}">
                 <a href="user_profile.html?id=${otherUid}" class="chat-list-avatar" style="background-image: url('${otherUser.photo || ''}'); text-decoration:none;">
@@ -1675,6 +1684,25 @@ function loadChatsList(myUid, body, footer, backBtn, title) {
             `;
         });
         body.innerHTML = html;
+
+        // Update badge
+        document.querySelectorAll('#chat-unread-count').forEach(badge => {
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+        });
+
+        // Update dropdown
+        document.querySelectorAll('#chat-hover-dropdown').forEach(dropdown => {
+            if (chatsData.length > 0) {
+                dropdown.innerHTML = hoverHtml;
+            } else {
+                dropdown.innerHTML = '<li><span class="dropdown-item text-muted text-center">لا توجد رسائل</span></li>';
+            }
+        });
 
         body.querySelectorAll('.chat-list-item').forEach(item => {
             item.addEventListener('click', (e) => {

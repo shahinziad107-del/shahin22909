@@ -1,8 +1,8 @@
 /* --- In-App Chat Widget --- */
 .chat-widget-container {
     position: fixed;
-    bottom: 80px;
-    left: 20px;
+    top: 80px;
+    left: 50%;
     width: 350px;
     height: 500px;
     max-height: 80vh;
@@ -16,13 +16,13 @@
     flex-direction: column;
     z-index: 1050;
     overflow: hidden;
-    transform: translateY(20px) scale(0.95);
+    transform: translateX(-50%) translateY(-50px) scale(0.95);
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .chat-widget-container.active {
-    transform: translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
     opacity: 1;
     pointer-events: auto;
 }

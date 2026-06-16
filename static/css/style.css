@@ -1061,3 +1061,25 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
     visibility: hidden !important;
     transition: all 0.3s ease;
 }
+
+
+/* Chat Hover Dropdown */
+.chat-hover-wrapper:hover .chat-hover-dropdown {
+    display: block;
+    animation: fadeInDown 0.3s ease;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.chat-hover-dropdown .dropdown-item {
+    border-radius: 10px;
+    margin: 0 5px;
+    padding: 10px 15px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.chat-hover-dropdown .dropdown-item:hover {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-color);
+}
