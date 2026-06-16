@@ -97,43 +97,20 @@
             </div>
         </div>
 
-        <!-- Dashboard Actions -->
+        <!-- Dashboard Actions & Properties -->
         <div>
             <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-                <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-gauge ms-2 text-primary"></i> لوحة التحكم</h3>
+                <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-building ms-2 text-primary"></i> عقاراتي المعروضة</h3>
+                <a href="settings.html" class="btn btn-outline-secondary rounded-pill fw-bold btn-sm">
+                    <i class="fa-solid fa-gear ms-1"></i> إعدادات الحساب
+                </a>
             </div>
             
-            <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
-                <!-- My Properties Card -->
-                <div class="col">
-                    <a href="my_properties.html" class="text-decoration-none">
-                        <div class="bg-white p-4 rounded-4 shadow-sm border border-light-subtle h-100 d-flex align-items-center hover-lift" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
-                                <i class="fa-solid fa-house fs-3"></i>
-                            </div>
-                            <div class="ms-3 flex-grow-1 text-end">
-                                <h4 class="fw-bold text-dark mb-1">إدارة عقاراتي</h4>
-                                <p class="text-muted mb-0 small">تعديل، حذف، وإضافة عقارات جديدة</p>
-                            </div>
-                            <i class="fa-solid fa-chevron-left text-muted fs-4"></i>
-                        </div>
-                    </a>
-                </div>
-                
-                <!-- Settings Card -->
-                <div class="col">
-                    <a href="settings.html" class="text-decoration-none">
-                        <div class="bg-white p-4 rounded-4 shadow-sm border border-light-subtle h-100 d-flex align-items-center hover-lift" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
-                                <i class="fa-solid fa-gear fs-3"></i>
-                            </div>
-                            <div class="ms-3 flex-grow-1 text-end">
-                                <h4 class="fw-bold text-dark mb-1">إعدادات الحساب</h4>
-                                <p class="text-muted mb-0 small">تغيير كلمة المرور وتعديل البيانات</p>
-                            </div>
-                            <i class="fa-solid fa-chevron-left text-muted fs-4"></i>
-                        </div>
-                    </a>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="properties-container">
+                <!-- Properties will be injected here by firebase-app.js -->
+                <div class="col text-center mt-5 mb-5 w-100">
+                    <i class="fa-solid fa-spinner fa-spin fs-1 text-primary"></i>
+                    <p class="mt-2 text-muted fw-bold">جاري تحميل العقارات...</p>
                 </div>
             </div>
         </div>

@@ -1242,8 +1242,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // --- Load Properties in My Properties ---
-    if (path.includes('my_properties.html')) {
+    // --- Load Properties in My Properties & Account ---
+    if (path.includes('my_properties.html') || path.includes('account.html')) {
         const container = document.getElementById('properties-container');
         if (container) {
             // Need to wait for auth state specifically for this
