@@ -303,6 +303,179 @@ document.addEventListener("DOMContentLoaded", () => {
     const isHomePage = window.location.pathname.includes('home.html');
     const path = window.location.pathname;
 
+    // --- Map Modal & Picker Initializer ---
+    const mapModalEl = document.getElementById('mapModal');
+    if (mapModalEl) {
+        let map = null;
+        let marker = null;
+        const defaultLat = 30.0444;
+        const defaultLng = 31.2357;
+        const zoom = 6;
+
+        // Resolve Leaflet CDN default marker path issue
+        if (typeof L !== 'undefined') {
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            });
+        }
+
+        function updateLocationBadge(lat, lng) {
+            const badge = document.getElementById('location-badge');
+            if (badge) {
+                if (lat && lng) {
+                    badge.classList.remove('bg-secondary');
+                    badge.classList.add('bg-success');
+                    badge.innerText = 'تم تحديد الموقع بنجاح';
+                } else {
+                    badge.classList.remove('bg-success');
+                    badge.classList.add('bg-secondary');
+                    badge.innerText = 'لم يتم تحديد الموقع';
+                }
+            }
+        }
+
+        function setLocation(lat, lng, updateMap = true) {
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            document.getElementById('coords-text').innerText = `${lat.toFixed(6)}، ${lng.toFixed(6)}`;
+            document.getElementById('coords-display').style.display = 'block';
+            updateLocationBadge(lat, lng);
+
+            if (map) {
+                if (updateMap) {
+                    map.setView([lat, lng], 15);
+                }
+
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                    marker.on('dragend', function (e) {
+                        const position = marker.getLatLng();
+                        setLocation(position.lat, position.lng, false);
+                    });
+                }
+            }
+        }
+
+        function clearLocation() {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('coords-display').style.display = 'none';
+            document.getElementById('map-link-input').value = '';
+            updateLocationBadge(null, null);
+
+            if (marker && map) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+            if (map) {
+                map.setView([defaultLat, defaultLng], zoom);
+            }
+        }
+
+        // Initialize map only when modal is fully visible to prevent layout bugs
+        mapModalEl.addEventListener('shown.bs.modal', () => {
+            if (typeof L === 'undefined') return;
+            
+            if (!map) {
+                map = L.map('map-modal-container').setView([defaultLat, defaultLng], zoom);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                map.on('click', function (e) {
+                    setLocation(e.latlng.lat, e.latlng.lng, false);
+                });
+            } else {
+                map.invalidateSize();
+            }
+
+            const savedLatVal = document.getElementById('latitude').value;
+            const savedLngVal = document.getElementById('longitude').value;
+            if (savedLatVal && savedLngVal) {
+                const lat = parseFloat(savedLatVal);
+                const lng = parseFloat(savedLngVal);
+                setLocation(lat, lng, true);
+            }
+        });
+
+        // Geolocation "Locate Me" Button
+        const locateBtn = document.getElementById('locate-me-btn');
+        if (locateBtn) {
+            locateBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    locateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ms-1"></i>جاري التحديد...';
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            setLocation(lat, lng, true);
+                            locateBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs ms-1"></i>تحديد موقعي الحالي';
+                        },
+                        (error) => {
+                            alert("تعذر الحصول على موقعك الحالي. يرجى التحديد يدوياً على الخريطة.");
+                            locateBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs ms-1"></i>تحديد موقعي الحالي';
+                        }
+                    );
+                } else {
+                    alert("ميزة تحديد الموقع غير مدعومة في متصفحك.");
+                }
+            });
+        }
+
+        // Paste URL Link Parser
+        const linkInput = document.getElementById('map-link-input');
+        if (linkInput) {
+            linkInput.addEventListener('input', (e) => {
+                const val = e.target.value.trim();
+                if (!val) {
+                    clearLocation();
+                    return;
+                }
+
+                let lat = null;
+                let lng = null;
+
+                const atMatch = val.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                const qMatch = val.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+                const rawMatch = val.match(/^([+-]?\d+\.\d+)\s*,\s*([+-]?\d+\.\d+)$/);
+
+                if (atMatch) {
+                    lat = parseFloat(atMatch[1]);
+                    lng = parseFloat(atMatch[2]);
+                } else if (qMatch) {
+                    lat = parseFloat(qMatch[1]);
+                    lng = parseFloat(qMatch[2]);
+                } else if (rawMatch) {
+                    lat = parseFloat(rawMatch[1]);
+                    lng = parseFloat(rawMatch[2]);
+                }
+
+                if (lat !== null && lng !== null) {
+                    setLocation(lat, lng, true);
+                } else if (val.includes('maps.app.goo.gl')) {
+                    alert("الروابط المختصرة (maps.app.goo.gl) غير مدعومة مباشرة للقراءة التلقائية بسبب قيود الحماية. يرجى النقر على الخريطة لتحديد الموقع يدوياً، أو استخدام زر 'تحديد موقعي الحالي'.");
+                }
+            });
+        }
+
+        const clearBtn = document.getElementById('clear-location-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearLocation);
+        }
+
+        window.setMapCoordinates = function (lat, lng) {
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            updateLocationBadge(lat, lng);
+        };
+    }
+
     const ADMIN_EMAILS = ["shahinziad107@gmail.com", "omarafrecano888@gmail.com"];
     function isAdminEmail(email) {
         return email && ADMIN_EMAILS.includes(email);
@@ -692,7 +865,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     const bathrooms = parseInt(addForm.bathrooms.value) || 0;
                     const area = parseInt(addForm.area.value) || 0;
 
-                    await addDoc(collection(db, "properties"), {
+                    const latVal = document.getElementById('latitude') ? document.getElementById('latitude').value : '';
+                    const lngVal = document.getElementById('longitude') ? document.getElementById('longitude').value : '';
+
+                    const propertyData = {
                         title: addForm.title.value || 'بدون عنوان',
                         price: price,
                         property_type: addForm.property_type.value || 'غير محدد',
@@ -710,7 +886,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         authorPhoto: userPhoto,
                         authorDevice: navigator.userAgent || 'unknown',
                         createdAt: serverTimestamp()
-                    });
+                    };
+
+                    if (latVal && lngVal) {
+                        propertyData.latitude = parseFloat(latVal);
+                        propertyData.longitude = parseFloat(lngVal);
+                    }
+
+                    await addDoc(collection(db, "properties"), propertyData);
                     window.location.href = 'home.html';
                 } catch (error) {
                     alert('خطأ في إضافة العقار: ' + error.message);
@@ -777,6 +960,17 @@ document.addEventListener("DOMContentLoaded", () => {
                                     editForm.city.value = data.city;
                                 }
                             }
+
+                            // Load coordinates if they exist
+                            if (data.latitude && data.longitude) {
+                                if (window.setMapCoordinates) {
+                                    window.setMapCoordinates(data.latitude, data.longitude);
+                                } else {
+                                    setTimeout(() => {
+                                        if (window.setMapCoordinates) window.setMapCoordinates(data.latitude, data.longitude);
+                                    }, 500);
+                                }
+                            }
                         } else {
                             alert("لا تملك صلاحية لتعديل هذا العقار أو العقار غير موجود");
                             window.location.href = 'my_properties.html';
@@ -823,6 +1017,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (base64Images.length > 0) {
                         updateData.images = base64Images;
                     }
+
+                    const latVal = document.getElementById('latitude') ? document.getElementById('latitude').value : '';
+                    const lngVal = document.getElementById('longitude') ? document.getElementById('longitude').value : '';
+
+                    if (latVal && lngVal) {
+                        updateData.latitude = parseFloat(latVal);
+                        updateData.longitude = parseFloat(lngVal);
+                    } else {
+                        updateData.latitude = null;
+                        updateData.longitude = null;
+                    }
                     
                     await updateDoc(docRef, updateData);
                     window.location.href = 'my_properties.html';
@@ -847,6 +1052,114 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (container) {
+            const initMapDisplay = (prop, isSold) => {
+                const mapSection = document.getElementById('map-location-section');
+                if (!mapSection) return;
+
+                const renderMapHtml = () => {
+                    if (!prop.latitude || !prop.longitude) {
+                        mapSection.innerHTML = '';
+                        return;
+                    }
+                    
+                    const currentUser = auth.currentUser;
+                    const isOwner = currentUser && currentUser.uid === prop.owner;
+                    const isAdmin = currentUser && isAdminEmail(currentUser.email);
+                    const isOwnerOrAdmin = isOwner || isAdmin;
+                    
+                    if (isSold && !isOwnerOrAdmin) {
+                        mapSection.innerHTML = '';
+                        return;
+                    }
+                    
+                    mapSection.innerHTML = `
+                    <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4"><i class="fa-solid fa-map-location-dot text-primary ms-2"></i>موقع العقار</h3>
+                    <div class="modern-map-wrapper position-relative mb-4" id="modern-map-wrapper">
+                        <div class="modern-map-trigger d-flex align-items-center gap-3 p-3 rounded-4 border shadow-sm" id="map-trigger-btn" style="cursor: pointer; background: var(--glass-bg); transition: all 0.3s ease;">
+                            <div class="map-icon-circle d-flex align-items-center justify-content-center bg-primary text-white rounded-circle animate-pulse" style="width: 50px; height: 50px; font-size: 1.5rem; transition: transform 0.3s ease;">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <div class="text-start">
+                                <h5 class="fw-bold mb-1 fs-6">موقع العقار على الخريطة</h5>
+                                <span class="text-muted small">انقر أو مرر مؤشر الماوس هنا لعرض الخريطة التفاعلية</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down ms-auto text-muted fs-6" id="map-chevron-icon"></i>
+                        </div>
+                        
+                        <!-- Floating Map Popover -->
+                        <div class="modern-map-popover shadow-lg border rounded-4 overflow-hidden" id="map-popover-card">
+                            <div class="position-relative">
+                                <iframe src="https://maps.google.com/maps?q=${prop.latitude},${prop.longitude}&hl=ar&z=15&output=embed" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                                <div class="p-3 bg-light text-center border-top d-flex gap-2 justify-content-center">
+                                    <a href="https://www.google.com/maps?q=${prop.latitude},${prop.longitude}" target="_blank" class="btn btn-primary btn-sm rounded-pill px-4">
+                                        <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i> فتح في خرائط جوجل
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    
+                    const trigger = document.getElementById('map-trigger-btn');
+                    const popover = document.getElementById('map-popover-card');
+                    const chevron = document.getElementById('map-chevron-icon');
+                    const wrapper = document.getElementById('modern-map-wrapper');
+                    
+                    if (!trigger || !popover) return;
+                    
+                    let isLockedOpen = false;
+                    let hoverTimeout;
+                    
+                    const showMapPopover = () => {
+                        clearTimeout(hoverTimeout);
+                        popover.classList.add('active');
+                        trigger.classList.add('active');
+                        if (chevron) {
+                            chevron.classList.remove('fa-chevron-down');
+                            chevron.classList.add('fa-chevron-up');
+                        }
+                    };
+                    
+                    const hideMapPopover = () => {
+                        if (isLockedOpen) return;
+                        hoverTimeout = setTimeout(() => {
+                            popover.classList.remove('active');
+                            trigger.classList.remove('active');
+                            if (chevron) {
+                                chevron.classList.remove('fa-chevron-up');
+                                chevron.classList.add('fa-chevron-down');
+                            }
+                        }, 200);
+                    };
+                    
+                    wrapper.addEventListener('mouseenter', showMapPopover);
+                    wrapper.addEventListener('mouseleave', hideMapPopover);
+                    
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        isLockedOpen = !isLockedOpen;
+                        if (isLockedOpen) {
+                            showMapPopover();
+                        } else {
+                            hideMapPopover();
+                        }
+                    });
+                    
+                    document.addEventListener('click', (e) => {
+                        if (!wrapper.contains(e.target)) {
+                            isLockedOpen = false;
+                            hideMapPopover();
+                        }
+                    });
+                };
+
+                renderMapHtml();
+
+                onAuthStateChanged(auth, () => {
+                    renderMapHtml();
+                });
+            };
+
             const loadDetail = async () => {
                 try {
                     const docRef = doc(db, "properties", propId);
@@ -971,6 +1284,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <h3 class="fw-bold border-bottom pb-2 mb-3 mt-4">تفاصيل العقار</h3>
                                 <p class="text-muted lh-lg fs-5" style="white-space: pre-wrap;">${escapeHTML(prop.description || 'لم يتم إضافة وصف لهذه المنشأة.')}</p>
                                 
+                                <div id="map-location-section"></div>
+
                                 ${whatsappBtn}
                                 ${!isSold ? `
                                 <button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-lg w-100 mt-3 shadow-sm fw-bold rounded-pill">
@@ -983,6 +1298,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                         <div id="similar-properties-container" class="mt-5 pt-4"></div>`;
                         
+                        initMapDisplay(prop, isSold);
                         loadSimilarProperties(prop, propId);
                     } else {
                         container.innerHTML = '<div class="alert alert-danger text-center fs-5">عذراً، هذا العقار لم يعد متوفراً.</div>';

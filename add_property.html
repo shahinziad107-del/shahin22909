@@ -13,6 +13,9 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/style.css">
 </head>
@@ -98,6 +101,21 @@
                                 </select>
                             </div>
                             
+                            <!-- Property Location Selector -->
+                            <div class="col-12">
+                                <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light">
+                                    <div>
+                                        <span class="fw-bold d-block mb-1"><i class="fa-solid fa-map-location-dot text-primary ms-2"></i>موقع العقار على الخريطة <span class="text-muted fs-6 fw-normal">(اختياري)</span></span>
+                                        <span id="location-badge" class="badge bg-secondary map-status-badge">لم يتم تحديد الموقع</span>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#mapModal">
+                                        <i class="fa-solid fa-location-dot ms-1"></i> تحديد الموقع
+                                    </button>
+                                </div>
+                                <input type="hidden" id="latitude" name="latitude">
+                                <input type="hidden" id="longitude" name="longitude">
+                            </div>
+                            
                             <!-- WhatsApp Number -->
                             <div class="col-12">
                                 <label class="form-label fw-bold">رقم الواتساب للتواصل <span class="text-danger">*</span></label>
@@ -144,6 +162,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
 
@@ -168,10 +188,43 @@
         </a>
     </div>
 
-
     <!-- Floating Desktop Search Button -->
     <button class="liquid-search-btn floating-search-btn d-none d-lg-flex" data-bs-toggle="modal" data-bs-target="#searchModal" title="بحث" id="desktop-floating-search">
         <i class="fa-solid fa-magnifying-glass"></i>
     </button>
+
+    <!-- Map Picker Modal -->
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="mapModalLabel"><i class="fa-solid fa-map-location-dot ms-2"></i>تحديد موقع العقار على الخريطة</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-link text-muted"></i></span>
+                        <input type="url" id="map-link-input" class="form-control px-3 py-2 border border-start-0" placeholder="ألصق رابط موقع جوجل ماب هنا أو حدد بالأسفل">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small text-muted"><i class="fa-solid fa-circle-info ms-1"></i>انقر على الخريطة مباشرة لتحديد مكان العقار:</span>
+                        <button type="button" id="locate-me-btn" class="btn btn-outline-primary btn-sm rounded-pill px-3"><i class="fa-solid fa-location-crosshairs ms-1"></i>تحديد موقعي الحالي</button>
+                    </div>
+                    
+                    <!-- Map Canvas -->
+                    <div id="map-modal-container" class="mb-3"></div>
+                    
+                    <div class="text-muted small" id="coords-display" style="display: none;">
+                        <i class="fa-solid fa-circle-check text-success ms-1"></i> الموقع المختار: <strong id="coords-text"></strong>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 justify-content-center gap-2">
+                    <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold" data-bs-dismiss="modal">تأكيد وحفظ الموقع</button>
+                    <button type="button" id="clear-location-btn" class="btn btn-outline-danger rounded-pill px-4">مسح الموقع</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

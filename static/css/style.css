@@ -1209,3 +1209,126 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.4);
     }
 }
+
+/* Property Map and Modal Styles */
+.map-status-badge {
+    transition: all var(--transition-fast);
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+#map-modal-container {
+    height: 350px;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+[data-theme="dark"] #map-modal-container {
+    border-color: rgba(255,255,255,0.1);
+}
+
+.map-container iframe {
+    transition: all var(--transition-smooth);
+}
+
+/* Ensure Leaflet tiles and zoom controls look clean and don't overflow */
+.leaflet-container {
+    font-family: 'Cairo', sans-serif !important;
+}
+
+[data-theme="dark"] .leaflet-tile {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3);
+}
+
+[data-theme="dark"] .leaflet-bar a,
+[data-theme="dark"] .leaflet-control-attribution {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Modern Map Popover Styles */
+.modern-map-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+.modern-map-trigger {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.modern-map-trigger:hover, .modern-map-trigger.active {
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15) !important;
+    background-color: var(--card-bg) !important;
+}
+
+.map-icon-circle {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    transition: transform 0.3s ease;
+}
+
+.modern-map-trigger:hover .map-icon-circle, .modern-map-trigger.active .map-icon-circle {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.modern-map-popover {
+    position: absolute;
+    bottom: 110%; /* Place it above the trigger card */
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background: var(--card-bg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px) scale(0.95);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    pointer-events: none;
+}
+
+.modern-map-popover.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* On small screens, fit it below the trigger or keep it relative to make it mobile friendly */
+@media (max-width: 576px) {
+    .modern-map-popover {
+        position: static;
+        margin-top: 15px;
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        transform: none;
+        transition: all 0.3s ease;
+    }
+    .modern-map-popover.active {
+        opacity: 1;
+        visibility: visible;
+        max-height: 500px;
+    }
+}
+
+/* Pulse animation for the map icon */
+@keyframes mapPulse {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.animate-pulse {
+    animation: mapPulse 2.5s infinite;
+}
+
+
