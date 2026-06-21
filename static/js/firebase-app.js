@@ -1336,33 +1336,52 @@ document.addEventListener("DOMContentLoaded", () => {
                             const prop = docSnap.data();
                             const id = docSnap.id;
                             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'غير معروف';
-                            html += `
-                            <div class="col">
-                                <div class="card h-100 shadow-sm border-0 border-top border-4 border-danger">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-truncate">${escapeHTML(prop.title || '')}</h5>
-                                        <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot ms-1"></i> ${escapeHTML(prop.location || '')}</p>
-                                        <p class="mb-1"><span class="fw-bold">السعر:</span> ${escapeHTML(String(prop.price || ''))} ج.م</p>
-                                        <p class="mb-1"><span class="fw-bold">النوع:</span> ${escapeHTML(prop.property_type || '-')}</p>
-                                        <p class="mb-0 text-muted small"><i class="fa-solid fa-clock ms-1"></i> أضيف في: ${timeStr}</p>
-                                        <hr class="my-2 text-danger">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div style="width: 30px; height: 30px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;" class="me-2 ms-2">
-                                                ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
-                                            </div>
-                                            <span class="fw-bold small text-primary text-truncate">${escapeHTML(prop.authorName || 'مستخدم')}</span>
-                                        </div>
-                                        <p class="mb-0 text-muted" style="font-size: 0.7rem;"><i class="fa-solid fa-mobile-screen-button ms-1"></i> جهاز الدخول:</p>
-                                        <p class="mb-0 text-muted text-break" style="font-size: 0.65rem; direction: ltr; text-align: left;">${escapeHTML(prop.authorDevice || 'غير معروف')}</p>
-                                    </div>
-                                    <div class="card-footer bg-white border-0 p-3 pt-0 text-start">
-                                        <button class="btn btn-danger btn-sm w-100 fw-bold admin-delete-btn" data-id="${id}">
-                                            <i class="fa-solid fa-trash-can ms-1"></i> حذف هذا العقار
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
+                                                         html += `
+                             <div class="col">
+                                 <div class="card h-100 admin-glass-card border-0">
+                                     <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                         <div>
+                                             <div class="d-flex justify-content-between align-items-start mb-3">
+                                                 <span class="badge bg-primary rounded-pill px-3 py-2 small">${escapeHTML(prop.property_type || '-')}</span>
+                                                 <span class="text-muted small"><i class="fa-solid fa-clock ms-1"></i> ${timeStr}</span>
+                                             </div>
+                                             <h5 class="fw-bold text-truncate mb-2" style="color: var(--text-main);">${escapeHTML(prop.title || '')}</h5>
+                                             <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot ms-1 text-primary"></i> ${escapeHTML(prop.location || '')}</p>
+                                             
+                                             <div class="p-3 rounded-4 mb-3" style="background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.04);">
+                                                 <div class="d-flex justify-content-between align-items-center mb-1">
+                                                     <span class="text-muted small">السعر المطلوب:</span>
+                                                     <span class="fw-bold fs-5 text-primary">${escapeHTML(String(prop.price || ''))} <span class="fs-7 text-muted fw-normal">ج.م</span></span>
+                                                 </div>
+                                             </div>
+
+                                             <hr class="my-3 opacity-25">
+                                             
+                                             <div class="d-flex align-items-center mb-3">
+                                                 <div style="width: 38px; height: 38px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; border: 2px solid white; box-shadow: var(--shadow-sm); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;" class="me-2 ms-2">
+                                                     ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                                                 </div>
+                                                 <div class="text-start">
+                                                     <p class="fw-bold mb-0 text-dark small text-truncate" style="max-width: 150px;">${escapeHTML(prop.authorName || 'مستخدم')}</p>
+                                                     <span class="text-muted" style="font-size: 0.65rem;">المعلن</span>
+                                                 </div>
+                                             </div>
+
+                                             <div class="mb-3 text-start">
+                                                 <span class="d-block text-muted mb-1" style="font-size: 0.7rem;"><i class="fa-solid fa-mobile-screen-button ms-1"></i> جهاز الدخول:</span>
+                                                 <span class="device-badge text-break">${escapeHTML(prop.authorDevice || 'غير معروف')}</span>
+                                             </div>
+                                         </div>
+
+                                         <div class="mt-auto">
+                                             <button class="btn btn-outline-danger btn-sm w-100 fw-bold admin-delete-btn rounded-pill py-2 mt-2" data-id="${id}" style="transition: all 0.3s ease;">
+                                                 <i class="fa-solid fa-trash-can ms-1"></i> حذف هذا العقار
+                                             </button>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             `;
                         });
                         container.innerHTML = html;
 
@@ -1397,6 +1416,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 const repQ = query(collection(db, "reports"), orderBy("createdAt", "desc"));
                                 const repSnap = await getDocs(repQ);
                                 if (reportsCountEl) reportsCountEl.innerText = repSnap.size;
+                                const reportsCountCard = document.getElementById('total-reports-count-card');
+                                if (reportsCountCard) reportsCountCard.innerText = repSnap.size;
                                 
                                 if (repSnap.empty) {
                                     reportsContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted fs-5">لا توجد بلاغات حالياً.</p></div>';
@@ -1406,18 +1427,37 @@ document.addEventListener("DOMContentLoaded", () => {
                                         const r = docSnap.data();
                                         const rDate = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleString('ar-EG') : 'غير معروف';
                                         repHtml += `
-                                        <div class="col">
-                                            <div class="card shadow-sm border-0 border-start border-4 border-danger">
-                                                <div class="card-body">
-                                                    <h5 class="fw-bold text-danger"><i class="fa-solid fa-flag ms-1"></i> ${escapeHTML(r.reason || '')}</h5>
-                                                    <p class="text-muted small mb-2"><i class="fa-solid fa-clock ms-1"></i> ${rDate}</p>
-                                                    <p class="mb-2"><span class="fw-bold">المبلِّغ:</span> ${escapeHTML(r.reporterEmail || r.reporterId)}</p>
-                                                    <p class="mb-2"><span class="fw-bold">المُبلَّغ عنه (ID):</span> <a href="user_profile.html?id=${r.reportedUserId}" target="_blank" class="text-decoration-none">${r.reportedUserId}</a></p>
-                                                    <div class="bg-light p-3 rounded text-dark mt-2" style="white-space: pre-wrap;">${escapeHTML(r.details || '')}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        `;
+                                         <div class="col">
+                                             <div class="card admin-glass-card border-0">
+                                                 <div class="card-body p-4">
+                                                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                                         <h5 class="fw-bold text-danger mb-0"><i class="fa-solid fa-triangle-exclamation ms-2"></i> ${escapeHTML(r.reason || '')}</h5>
+                                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 small"><i class="fa-solid fa-clock ms-1"></i> ${rDate}</span>
+                                                     </div>
+                                                     
+                                                     <div class="row g-3 mb-3 text-start">
+                                                         <div class="col-sm-6">
+                                                             <div class="p-2 rounded bg-opacity-10 bg-secondary" style="border: 1px dashed rgba(0,0,0,0.1);">
+                                                                 <span class="d-block text-muted small"><i class="fa-solid fa-user-pen ms-1"></i> المبلِّغ:</span>
+                                                                 <span class="fw-bold text-dark text-break small">${escapeHTML(r.reporterEmail || r.reporterId)}</span>
+                                                             </div>
+                                                         </div>
+                                                         <div class="col-sm-6">
+                                                             <div class="p-2 rounded bg-opacity-10 bg-secondary" style="border: 1px dashed rgba(0,0,0,0.1);">
+                                                                 <span class="d-block text-muted small"><i class="fa-solid fa-user-slash ms-1"></i> المُبلَّغ عنه (ID):</span>
+                                                                 <a href="user_profile.html?id=${r.reportedUserId}" target="_blank" class="fw-bold text-primary text-break small text-decoration-none">${r.reportedUserId}</a>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                     
+                                                     <div class="p-3 rounded-4 bg-light-subtle text-dark border" style="white-space: pre-wrap; font-size: 0.95rem; border-left: 4px solid var(--danger) !important; background: rgba(0,0,0,0.01);">
+                                                         <strong class="d-block mb-1 text-muted small"><i class="fa-solid fa-message ms-1"></i> تفاصيل البلاغ:</strong>
+                                                         ${escapeHTML(r.details || 'لا توجد تفاصيل إضافية.')}
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         `;
                                     });
                                     reportsContainer.innerHTML = repHtml;
                                 }
@@ -1435,6 +1475,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 const supQ = query(collection(db, "support_tickets"), orderBy("createdAt", "desc"));
                                 const supSnap = await getDocs(supQ);
                                 if (supportCountEl) supportCountEl.innerText = supSnap.size;
+                                const supportCountCard = document.getElementById('total-support-count-card');
+                                if (supportCountCard) supportCountCard.innerText = supSnap.size;
                                 
                                 if (supSnap.empty) {
                                     supportContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted fs-5">لا توجد رسائل دعم حالياً.</p></div>';
@@ -1444,17 +1486,35 @@ document.addEventListener("DOMContentLoaded", () => {
                                         const s = docSnap.data();
                                         const sDate = s.createdAt ? new Date(s.createdAt.toDate()).toLocaleString('ar-EG') : 'غير معروف';
                                         supHtml += `
-                                        <div class="col">
-                                            <div class="card shadow-sm border-0 border-start border-4 border-success">
-                                                <div class="card-body">
-                                                    <h5 class="fw-bold text-success"><i class="fa-solid fa-headset ms-1"></i> ${escapeHTML(s.type || '')}</h5>
-                                                    <p class="text-muted small mb-2"><i class="fa-solid fa-clock ms-1"></i> ${sDate}</p>
-                                                    <p class="mb-2"><span class="fw-bold">المرسل:</span> ${escapeHTML(s.userName || '')} (<a href="mailto:${escapeHTML(s.userEmail || '')}">${escapeHTML(s.userEmail || '')}</a>)</p>
-                                                    <div class="bg-light p-3 rounded text-dark mt-2" style="white-space: pre-wrap;">${escapeHTML(s.message || '')}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        `;
+                                         <div class="col">
+                                             <div class="card admin-glass-card border-0">
+                                                 <div class="card-body p-4">
+                                                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                                         <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-headset ms-2"></i> ${escapeHTML(s.type || '')}</h5>
+                                                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 small"><i class="fa-solid fa-clock ms-1"></i> ${sDate}</span>
+                                                     </div>
+                                                     
+                                                     <div class="p-3 rounded-4 mb-3 text-start" style="background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.04);">
+                                                         <div class="row g-2">
+                                                             <div class="col-md-6">
+                                                                 <span class="text-muted small">اسم المرسل:</span>
+                                                                 <strong class="d-block text-dark fw-bold">${escapeHTML(s.userName || '')}</strong>
+                                                             </div>
+                                                             <div class="col-md-6">
+                                                                 <span class="text-muted small">البريد الإلكتروني:</span>
+                                                                 <a href="mailto:${escapeHTML(s.userEmail || '')}" class="d-block text-primary text-decoration-none fw-bold">${escapeHTML(s.userEmail || '')}</a>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                     
+                                                     <div class="p-3 rounded-4 bg-light-subtle text-dark border" style="white-space: pre-wrap; font-size: 0.95rem; border-left: 4px solid var(--accent-color) !important; background: rgba(0,0,0,0.01);">
+                                                         <strong class="d-block mb-1 text-muted small"><i class="fa-solid fa-comment-dots ms-1"></i> الرسالة:</strong>
+                                                         ${escapeHTML(s.message || '')}
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         `;
                                     });
                                     supportContainer.innerHTML = supHtml;
                                 }

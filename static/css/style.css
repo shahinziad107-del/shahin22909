@@ -1331,4 +1331,157 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
     animation: mapPulse 2.5s infinite;
 }
 
+/* =========================================
+   Liquid Glass Admin Dashboard Styles
+   ========================================= */
+.admin-panel-bg {
+    background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.05), transparent 45%),
+                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.05), transparent 45%),
+                var(--bg-color) !important;
+    min-height: 100vh;
+}
+
+.admin-glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 24px !important;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-fast);
+    overflow: hidden;
+}
+
+[data-theme="dark"] .admin-glass-card {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.admin-glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Stats Cards styling */
+.admin-stats-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .admin-stats-card {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.admin-stats-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+}
+
+.admin-stats-card.card-blue::after { background: var(--secondary-color); }
+.admin-stats-card.card-red::after { background: #ef4444; }
+.admin-stats-card.card-green::after { background: var(--accent-color); }
+
+.admin-stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.icon-blue { background: rgba(59, 130, 246, 0.1); color: var(--secondary-color); }
+.icon-red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.icon-green { background: rgba(16, 185, 129, 0.1); color: var(--accent-color); }
+
+/* Custom Admin Tabs */
+.admin-tabs-nav {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    gap: 10px;
+}
+
+[data-theme="dark"] .admin-tabs-nav {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.admin-tab-btn {
+    border: 1px solid transparent !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 12px 24px !important;
+    font-weight: 700 !important;
+    color: var(--text-muted) !important;
+    background: transparent !important;
+    transition: all var(--transition-fast) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab-btn:hover {
+    color: var(--text-main) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.admin-tab-btn.active {
+    color: var(--text-main) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.3) transparent !important;
+    border-top: 3px solid var(--secondary-color) !important;
+}
+
+[data-theme="dark"] .admin-tab-btn.active {
+    border-color: rgba(255, 255, 255, 0.08) rgba(255, 255, 255, 0.08) transparent !important;
+}
+
+/* Device badge details */
+.device-badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+    font-family: monospace;
+    direction: ltr;
+    display: inline-block;
+    max-width: 100%;
+    word-break: break-all;
+}
+
+[data-theme="dark"] .device-badge {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-navbar {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .admin-navbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+
 
