@@ -1,132 +1,69 @@
+<!-- Ajarli Product Editorial login: clear task hierarchy, authentic brand context, and mobile-first glass detail. -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <link rel="icon" type="image/png" href="./static/img/logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - أجرلي Ajarli</title>
-    
-    <!-- Bootstrap RTL -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <!-- Google Fonts: Cairo -->
+    <meta name="theme-color" content="#1a2d26">
+    <title>تسجيل الدخول - أجرلي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/style.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            overflow: hidden;
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            text-align: center;
-        }
-        .form-control {
-            border-radius: 12px;
-            padding: 12px 20px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: var(--secondary-color);
-        }
-        
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            .login-card {
-                padding: 2rem 1.5rem;
-                border-radius: 28px;
-                margin: 0 20px;
-                background: rgba(255, 255, 255, 0.85);
-                border: 1px solid rgba(255, 255, 255, 0.4);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            }
-            .login-card h2 {
-                font-size: 1.4rem;
-            }
-            .login-card p {
-                font-size: 0.9rem;
-            }
-            img[alt="Logo"] {
-                height: 50px !important;
-                margin-bottom: 10px !important;
-            }
-            .btn-primary, .btn-outline-primary {
-                padding: 12px !important;
-                font-size: 1.1rem !important;
-                border-radius: 16px !important;
-            }
-            .form-control {
-                padding: 10px 15px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./static/css/ajarli-refined.css">
 </head>
-<body>
+<body class="ajarli-login">
+    <div class="ajarli-login-shell">
+        <aside class="ajarli-login-context">
+            <a class="ajarli-wordmark" href="index.html" aria-label="العودة إلى بوابة أجرلي">
+                <img src="./static/img/logo.png" alt="شعار أجرلي">
+                <span>أجرلي</span>
+            </a>
 
-    <div class="login-card reveal shadow-lg">
-        <div class="mb-4">
-             <img src="./static/img/logo.png" alt="Logo" height="60" style="border-radius: 12px; margin-bottom: 15px;">
-             <h2 class="fw-bold mb-0">أهلاً بك في أجرلي</h2>
-             <p class="text-muted">قم بتسجيل الدخول لتصفح العقارات</p>
-        </div>
-
-        <form id="login-form">
-            <div class="mb-3 text-start">
-                <label class="form-label fw-bold text-muted small">البريد الإلكتروني</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
-                    <input type="email" class="form-control border-start-0" placeholder="admin@ajarli.com" required>
-                </div>
-            </div>
-            
-            <div class="mb-4 text-start">
-                <label class="form-label fw-bold text-muted small d-flex justify-content-between">
-                    كلمة المرور
-                    <a href="#" class="text-decoration-none">نسيت كلمة المرور؟</a>
-                </label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" class="form-control border-start-0" placeholder="••••••••" required>
-                </div>
+            <div class="ajarli-login-statement">
+                <span class="ajarli-kicker">كل ما يخص عقارك، في مكان واحد</span>
+                <h1>ادخل إلى مساحة عقارك.</h1>
+                <p>تابع إعلاناتك، تواصل حول التفاصيل، واحتفظ بكل خطوة مرتبة وواضحة.</p>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm mb-3">
-                تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
-            </button>
-        </form>
-        
-        <div class="position-relative mb-4 mt-4 text-center">
-            <hr class="text-muted">
-            <span class="position-absolute top-50 start-50 translate-middle px-3 text-muted small" style="background: rgba(255, 255, 255, 0.95);">ليس لديك حساب؟</span>
-        </div>
+            <div class="ajarli-login-note"><i class="fa-solid fa-shield-halved"></i><span>جلسة دخول محمية لحسابك في أجرلي.</span></div>
+        </aside>
 
-        <a href="register.html" class="btn btn-outline-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm">
-            إنشاء حساب جديد <i class="fa-solid fa-user-plus ms-2"></i>
-        </a>
+        <main class="ajarli-login-task">
+            <section class="ajarli-login-card" aria-labelledby="login-title">
+                <span class="login-card-kicker"><i class="fa-solid fa-lock"></i> بوابة الحساب</span>
+                <h2 id="login-title">مرحبًا بعودتك.</h2>
+                <p>سجّل الدخول لإكمال رحلتك في البحث أو إدارة إعلانك.</p>
+
+                <form id="login-form" class="ajarli-login-form">
+                    <div class="login-field">
+                        <label for="login-email">البريد الإلكتروني</label>
+                        <div class="login-input-wrap">
+                            <i class="fa-regular fa-envelope"></i>
+                            <input id="login-email" dir="ltr" type="email" autocomplete="email" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="login-field">
+                        <div class="login-field-head">
+                            <label for="login-password">كلمة المرور</label>
+                            <a href="#" aria-label="استعادة كلمة المرور">نسيت كلمة المرور؟</a>
+                        </div>
+                        <div class="login-input-wrap">
+                            <i class="fa-solid fa-key"></i>
+                            <input id="login-password" dir="ltr" type="password" autocomplete="current-password" placeholder="••••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-submit">تسجيل الدخول <i class="fa-solid fa-arrow-left ms-2"></i></button>
+                </form>
+
+                <div class="login-card-divider"><span>أو ابدأ من هنا</span></div>
+                <a href="register.html" class="account-create-link"><i class="fa-solid fa-user-plus ms-2"></i> إنشاء حساب جديد</a>
+                <p class="login-policy">بالاستمرار، ستصل إلى أدوات حسابك وإعلاناتك عبر تجربة مرتبة وواضحة.</p>
+            </section>
+        </main>
     </div>
-
-    <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
-
-
-    <!-- Floating Desktop Search Button -->
-    <button class="liquid-search-btn floating-search-btn d-none d-lg-flex" data-bs-toggle="modal" data-bs-target="#searchModal" title="بحث" id="desktop-floating-search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
 </body>
 </html>

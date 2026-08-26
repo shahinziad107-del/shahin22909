@@ -1,3 +1,4 @@
+<!-- Ajarli Product Editorial home: search-first real-estate hierarchy with restrained Liquid Glass. -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -15,8 +16,9 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/style.css">
+    <link rel="stylesheet" href="./static/css/ajarli-refined.css">
 </head>
-<body>
+<body class="ajarli-page">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg smart-scroll py-2">
@@ -69,24 +71,31 @@
     <!-- Main Content -->
     <main style="padding-top: 80px; min-height: 80vh;">
         <div class="container">
-            <!-- Hero Section -->
-            <div class="hero-wrapper reveal">
-                <div class="hero-content">
-                    <h1 class="hero-title">ابحث عن منزل أحلامك</h1>
-                    <p class="hero-subtitle mb-4">اكتشف أفضل العقارات المتاحة للبيع أو للإيجار بأسعار لا تقبل المنافسة وبخطوات بسيطة.</p>
-                    
-                    <!-- Search Form Button -->
-                    <div class="mt-5">
-                        <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg fs-4 search-trigger-btn" data-bs-toggle="modal" data-bs-target="#searchModal">
-                            <i class="fa-solid fa-magnifying-glass ms-2"></i> ابحث عن عقارك الآن
-                        </button>
+            <!-- Search-first Hero Section -->
+            <section class="ajarli-home-hero reveal" aria-labelledby="home-hero-title">
+                <div class="ajarli-hero-copy">
+                    <span class="ajarli-kicker">بحث منظم، وخطوة أوضح</span>
+                    <h1 class="ajarli-hero-title" id="home-hero-title">اكتشف مكانك <em>بهدوء.</em></h1>
+                    <p class="ajarli-hero-text">اختر المنطقة والميزانية التي تناسبك، ثم ابدأ من النتائج التي تهمك بدلًا من الضياع بين التفاصيل.</p>
+                    <div class="ajarli-hero-actions">
+                        <button class="hero-search-action search-trigger-btn" type="button" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-2"></i> ابدأ البحث</button>
+                        <a class="hero-add-action" href="add_property.html"><i class="fa-solid fa-plus ms-2"></i> أضف عقارك</a>
+                    </div>
+                    <div class="ajarli-hero-proof" aria-label="مزايا المنصة">
+                        <span><i class="fa-solid fa-location-dot"></i> بحث حسب الموقع</span><i></i><span><i class="fa-solid fa-comments"></i> تواصل مباشر</span>
                     </div>
                 </div>
-            </div>
+                <div class="ajarli-hero-object" aria-hidden="true">
+                    <div class="ajarli-property-silhouette">
+                        <div class="ajarli-property-label"><b>01</b><span>تركيز على ما يهم</span></div>
+                        <div class="ajarli-property-outline"></div>
+                    </div>
+                </div>
+            </section>
 
             <!-- Properties Section -->
-            <div class="d-flex justify-content-between align-items-center mt-5 mb-4 reveal">
-                <h2 class="fw-bold fs-3 text-dark mb-0">أحدث العقارات المضافة</h2>
+            <div class="ajarli-listing-intro d-flex justify-content-between align-items-center mb-4 reveal">
+                <h2 class="fw-bold text-dark mb-0">أحدث العقارات المضافة</h2>
                 <a href="#" class="text-decoration-none fw-bold" style="color: var(--secondary-color)">عرض الكل <i class="fa-solid fa-arrow-left ps-1"></i></a>
             </div>
 
