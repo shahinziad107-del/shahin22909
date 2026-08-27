@@ -17,6 +17,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/style.css">
     <link rel="stylesheet" href="./static/css/ajarli-refined.css">
+    <link rel="stylesheet" href="./static/css/rental-tools.css">
 </head>
 <body class="ajarli-page">
 
@@ -81,6 +82,11 @@
                         <button class="hero-search-action search-trigger-btn" type="button" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa-solid fa-magnifying-glass ms-2"></i> ابدأ البحث</button>
                         <a class="hero-add-action" href="add_property.html"><i class="fa-solid fa-plus ms-2"></i> أضف عقارك</a>
                     </div>
+                    <div class="ajarli-quick-searches" aria-label="اختصارات بحث شائعة">
+                        <button type="button" data-quick-rental="إيجار"><i class="fa-solid fa-key ms-1"></i> للإيجار</button>
+                        <button type="button" data-quick-rental="تمليك"><i class="fa-solid fa-house ms-1"></i> للتمليك</button>
+                        <button type="button" data-quick-rooms="3"><i class="fa-solid fa-bed ms-1"></i> 3 غرف فأكثر</button>
+                    </div>
                     <div class="ajarli-hero-proof" aria-label="مزايا المنصة">
                         <span><i class="fa-solid fa-location-dot"></i> بحث حسب الموقع</span><i></i><span><i class="fa-solid fa-comments"></i> تواصل مباشر</span>
                     </div>
@@ -98,6 +104,11 @@
                 <h2 class="fw-bold text-dark mb-0">أحدث العقارات المضافة</h2>
                 <a href="#" class="text-decoration-none fw-bold" style="color: var(--secondary-color)">عرض الكل <i class="fa-solid fa-arrow-left ps-1"></i></a>
             </div>
+
+            <section class="ajarli-saved-searches" id="ajarli-saved-searches" aria-live="polite">
+                <div class="ajarli-saved-searches-head"><span><i class="fa-regular fa-bookmark"></i> عمليات بحث محفوظة على هذا الجهاز</span></div>
+                <div class="ajarli-saved-searches-list" id="ajarli-saved-searches-list"></div>
+            </section>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 pb-5" id="properties-container">
                 
@@ -234,6 +245,24 @@
                             </select>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-key text-success ms-1"></i> نوع العرض</label>
+                            <select id="search-property-type" class="form-select">
+                                <option value="" selected>إيجار أو تمليك</option>
+                                <option value="إيجار">إيجار</option>
+                                <option value="تمليك">تمليك</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-bed text-primary ms-1"></i> عدد الغرف</label>
+                            <select id="search-min-rooms" class="form-select">
+                                <option value="" selected>أي عدد من الغرف</option>
+                                <option value="1">غرفة واحدة فأكثر</option>
+                                <option value="2">غرفتان فأكثر</option>
+                                <option value="3">3 غرف فأكثر</option>
+                                <option value="4">4 غرف فأكثر</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label fw-bold"><i class="fa-solid fa-money-bill-wave text-success ms-1"></i> السعر من (ج.م)</label>
                             <input type="number" id="search-min-price" class="form-control" placeholder="الحد الأدنى للسعر">
                         </div>
@@ -245,6 +274,7 @@
                             <button type="submit" class="btn btn-primary btn-search-submit w-100 py-3">
                                 <i class="fa-solid fa-rocket ms-2"></i> ابدأ البحث
                             </button>
+                            <button type="button" class="search-save-action" id="save-current-search"><i class="fa-regular fa-bookmark"></i> حفظ هذا البحث على هذا الجهاز</button>
                         </div>
                     </form>
                 </div>

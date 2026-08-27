@@ -31,6 +31,111 @@ function escapeHTML(str) {
     );
 }
 
+function safeImageUrl(value) {
+    if (typeof value !== 'string') return '';
+    const url = value.trim();
+    const inlineImage = /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i;
+    const remoteImage = /^https:\/\/[^\s"'<>]+$/i;
+    return inlineImage.test(url) || remoteImage.test(url) ? url : '';
+}
+
+const AJARLI_FAVORITES_KEY = 'ajarli.favoriteProperties.v1';
+const AJARLI_SAVED_SEARCHES_KEY = 'ajarli.savedSearches.v1';
+
+function readLocalCollection(key) {
+    try {
+        const items = JSON.parse(localStorage.getItem(key) || '[]');
+        return Array.isArray(items) ? items : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function writeLocalCollection(key, items) {
+    localStorage.setItem(key, JSON.stringify(items));
+}
+
+function getFavoritePropertyIds() {
+    return new Set(readLocalCollection(AJARLI_FAVORITES_KEY).filter(id => typeof id === 'string'));
+}
+
+function toggleFavoriteProperty(propertyId) {
+    const ids = getFavoritePropertyIds();
+    if (ids.has(propertyId)) ids.delete(propertyId);
+    else ids.add(propertyId);
+    writeLocalCollection(AJARLI_FAVORITES_KEY, [...ids].slice(-120));
+    return ids.has(propertyId);
+}
+
+function normalizeSearchFilters(filters) {
+    return {
+        governorate: typeof filters.governorate === 'string' ? filters.governorate : '',
+        city: typeof filters.city === 'string' ? filters.city : '',
+        propertyType: typeof filters.propertyType === 'string' ? filters.propertyType : '',
+        minRooms: Number.isFinite(filters.minRooms) ? filters.minRooms : null,
+        minPrice: Number.isFinite(filters.minPrice) ? filters.minPrice : null,
+        maxPrice: Number.isFinite(filters.maxPrice) ? filters.maxPrice : null
+    };
+}
+
+function searchLabel(filters) {
+    const parts = [];
+    if (filters.propertyType) parts.push(filters.propertyType);
+    if (filters.governorate) parts.push(filters.governorate);
+    if (filters.city) parts.push(filters.city);
+    if (filters.minRooms) parts.push(`${filters.minRooms}+ غرف`);
+    if (filters.minPrice || filters.maxPrice) parts.push('سعر محدد');
+    return parts.length ? parts.join(' · ') : 'كل العقارات';
+}
+
+function getSavedSearches() {
+    return readLocalCollection(AJARLI_SAVED_SEARCHES_KEY)
+        .filter(item => item && typeof item === 'object' && item.filters)
+        .slice(0, 8);
+}
+
+function saveSearch(filters) {
+    const normalized = normalizeSearchFilters(filters);
+    const existing = getSavedSearches().filter(item => JSON.stringify(item.filters) !== JSON.stringify(normalized));
+    writeLocalCollection(AJARLI_SAVED_SEARCHES_KEY, [{ filters: normalized, label: searchLabel(normalized), createdAt: Date.now() }, ...existing].slice(0, 8));
+}
+
+function renderSavedSearches(container) {
+    const section = document.getElementById('ajarli-saved-searches');
+    const list = document.getElementById('ajarli-saved-searches-list');
+    if (!section || !list || !container) return;
+    const searches = getSavedSearches();
+    section.classList.toggle('has-items', searches.length > 0);
+    list.innerHTML = searches.map((item, index) => `<button type="button" class="saved-search-chip" data-saved-search="${index}"><span>${escapeHTML(item.label || 'بحث محفوظ')}</span><span class="saved-search-remove" data-remove-saved-search="${index}" title="حذف البحث"><i class="fa-solid fa-xmark"></i></span></button>`).join('');
+    list.querySelectorAll('[data-saved-search]').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const index = Number(button.dataset.savedSearch);
+            const current = getSavedSearches();
+            if (event.target.closest('[data-remove-saved-search]')) {
+                current.splice(index, 1);
+                writeLocalCollection(AJARLI_SAVED_SEARCHES_KEY, current);
+                renderSavedSearches(container);
+                return;
+            }
+            if (current[index]) loadProperties(container, false, null, current[index].filters);
+        });
+    });
+}
+
+function bindFavoriteButtons(container) {
+    container.querySelectorAll('.favorite-property-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const propertyId = button.dataset.propertyId;
+            if (!propertyId) return;
+            const isSaved = toggleFavoriteProperty(propertyId);
+            button.classList.toggle('is-saved', isSaved);
+            button.setAttribute('aria-pressed', String(isSaved));
+            button.setAttribute('title', isSaved ? 'إزالة من المفضلة' : 'حفظ في المفضلة');
+            button.innerHTML = `<i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>`;
+        });
+    });
+}
+
 // 30-Day Auto Check Logic
 async function checkExpiredProperties(uid) {
     if (sessionStorage.getItem('expiredChecked_' + uid)) return;
@@ -1168,25 +1273,29 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (docSnap.exists()) {
                         const prop = docSnap.data();
                         const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
+                        const detailImages = Array.isArray(prop.images) ? prop.images.map(safeImageUrl).filter(Boolean) : [];
+                        const detailAuthorPhoto = safeImageUrl(prop.authorPhoto || '');
                         
                         const isSold = prop.status === 'sold';
                         const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 2;"><span class="badge bg-danger px-4 py-2" style="font-size: 3rem; transform: rotate(-15deg); border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
 
                         let whatsappBtn = '';
                         if (prop.whatsappNum && !isSold) {
-                            let formattedNum = prop.whatsappNum;
+                            let formattedNum = String(prop.whatsappNum).replace(/[^0-9]/g, '');
                             if(formattedNum.startsWith('0')) formattedNum = '2' + formattedNum;
-                            whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" class="btn btn-success btn-lg w-100 mt-4 shadow-sm fw-bold rounded-pill"><i class="fa-brands fa-whatsapp fs-3 ms-2 align-middle"></i> تواصل مع المالك واتساب</a>`;
+                            if (formattedNum.length >= 8 && formattedNum.length <= 16) {
+                                whatsappBtn = `<a href="https://wa.me/${formattedNum}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-lg w-100 mt-4 shadow-sm fw-bold rounded-pill"><i class="fa-brands fa-whatsapp fs-3 ms-2 align-middle"></i> تواصل مع المالك واتساب</a>`;
+                            }
                         }
 
                         let imagesHtml = '';
-                        if (prop.images && prop.images.length > 0) {
-                            if (prop.images.length === 1) {
-                                imagesHtml = `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>`;
+                        if (detailImages.length > 0) {
+                            if (detailImages.length === 1) {
+                                imagesHtml = `<div class="property-image h-100 w-100" style="background-image: url('${detailImages[0]}'); background-size: cover; background-position: center;"></div>`;
                             } else {
                                 let indicators = '';
                                 let items = '';
-                                prop.images.forEach((img, i) => {
+                                detailImages.forEach((img, i) => {
                                     indicators += `<button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="${i}" class="${i===0?'active':''}"></button>`;
                                     items += `<div class="carousel-item h-100 w-100 ${i===0?'active':''}" style="background-image: url('${img}'); background-size: cover; background-position: center;"></div>`;
                                 });
@@ -1268,8 +1377,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 </div>
                                 
                                 <div class="d-flex align-items-center mb-4 bg-light p-3 rounded-4 border">
-                                    <a href="user_profile.html?id=${prop.owner}" style="width: 55px; height: 55px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; text-decoration:none;" class="me-3 ms-3">
-                                        ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                                    <a href="user_profile.html?id=${prop.owner}" style="width: 55px; height: 55px; border-radius: 50%; background-image: url('${detailAuthorPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; text-decoration:none;" class="me-3 ms-3">
+                                        ${!detailAuthorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
                                     </a>
                                     <div class="flex-grow-1">
                                         <span class="text-muted small d-block mb-1">صاحب الإعلان</span>
@@ -1541,19 +1650,17 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const searchForm = document.getElementById('search-form');
             if (searchForm) {
+                const getSearchFilters = () => normalizeSearchFilters({
+                    governorate: document.getElementById('search-governorate').value,
+                    city: document.getElementById('search-city').value,
+                    propertyType: document.getElementById('search-property-type').value,
+                    minRooms: document.getElementById('search-min-rooms').value ? parseInt(document.getElementById('search-min-rooms').value) : null,
+                    minPrice: document.getElementById('search-min-price').value ? parseFloat(document.getElementById('search-min-price').value) : null,
+                    maxPrice: document.getElementById('search-max-price').value ? parseFloat(document.getElementById('search-max-price').value) : null
+                });
                 searchForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const govFilter = document.getElementById('search-governorate').value;
-                    const cityFilter = document.getElementById('search-city').value;
-                    const minPriceFilter = document.getElementById('search-min-price').value;
-                    const maxPriceFilter = document.getElementById('search-max-price').value;
-                    
-                    loadProperties(container, false, null, {
-                        governorate: govFilter,
-                        city: cityFilter,
-                        minPrice: minPriceFilter ? parseFloat(minPriceFilter) : null,
-                        maxPrice: maxPriceFilter ? parseFloat(maxPriceFilter) : null
-                    });
+                    loadProperties(container, false, null, getSearchFilters());
                     
                     // Close the modal
                     const searchModalEl = document.getElementById('searchModal');
@@ -1576,7 +1683,30 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }, 400);
                 });
+
+                const saveCurrentSearch = document.getElementById('save-current-search');
+                if (saveCurrentSearch) {
+                    saveCurrentSearch.addEventListener('click', () => {
+                        saveSearch(getSearchFilters());
+                        renderSavedSearches(container);
+                        saveCurrentSearch.innerHTML = '<i class="fa-solid fa-check"></i> تم حفظ البحث';
+                        setTimeout(() => { saveCurrentSearch.innerHTML = '<i class="fa-regular fa-bookmark"></i> حفظ هذا البحث على هذا الجهاز'; }, 1800);
+                    });
+                }
             }
+
+            document.querySelectorAll('[data-quick-rental], [data-quick-rooms]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const filters = normalizeSearchFilters({
+                        propertyType: button.dataset.quickRental || '',
+                        minRooms: button.dataset.quickRooms ? parseInt(button.dataset.quickRooms) : null
+                    });
+                    loadProperties(container, false, null, filters);
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            renderSavedSearches(container);
             
             const summerSearchForm = document.getElementById('summer-search-form');
             if (summerSearchForm) {
@@ -1685,6 +1815,13 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                 if (filters.maxPrice !== null && !isNaN(filters.maxPrice)) {
                     if (prop.price > filters.maxPrice) match = false;
                 }
+                if (filters.propertyType) {
+                    const propertyType = prop.property_type === 'تمليك (بيع)' ? 'تمليك' : prop.property_type;
+                    if (propertyType !== filters.propertyType) match = false;
+                }
+                if (filters.minRooms !== null && !isNaN(filters.minRooms)) {
+                    if ((Number(prop.rooms) || 0) < filters.minRooms) match = false;
+                }
                 return match;
             });
 
@@ -1699,15 +1836,18 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
         }
 
         let html = '';
+        const favoriteIds = getFavoritePropertyIds();
         properties.forEach((prop) => {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
             let actionButtons = `<a href="property_detail.html?id=${prop.id}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-circle-info ms-1"></i> التفاصيل</a>`;
             
             const isSold = prop.status === 'sold';
             const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 2;"><span class="badge bg-danger fs-3 px-4 py-2" style="transform: rotate(-15deg); border: 2px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
+            const propertyImage = safeImageUrl(prop.images && prop.images.length ? prop.images[0] : '');
+            const authorPhoto = safeImageUrl(prop.authorPhoto || '');
 
             if (!userOnly && !isSold) {
-                actionButtons += `<button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${(prop.authorPhoto || '').replace(/'/g, "\\'")}')" class="btn btn-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-comment-dots fs-5 ms-1"></i> تواصل بالموقع</button>`;
+                actionButtons += `<button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${authorPhoto.replace(/'/g, "\\'")}')" class="btn btn-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-comment-dots fs-5 ms-1"></i> تواصل بالموقع</button>`;
             }
 
             let controlsHtml = '';
@@ -1727,11 +1867,13 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                     </button>
                 </div>`;
             } else {
+                const isFavorite = favoriteIds.has(prop.id);
                 controlsHtml = `
                 <div class="card-footer bg-light border-top-0 p-3">
                     <div class="text-muted small mb-3"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</div>
                     <div class="d-flex gap-2">
                         ${actionButtons}
+                        <button type="button" class="favorite-property-btn ${isFavorite ? 'is-saved' : ''}" data-property-id="${escapeHTML(String(prop.id))}" aria-pressed="${isFavorite}" title="${isFavorite ? 'إزالة من المفضلة' : 'حفظ في المفضلة'}"><i class="${isFavorite ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
                     </div>
                 </div>`;
             }
@@ -1742,13 +1884,13 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                     <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
                         ${soldOverlay}
                         <span class="price-tag bg-primary">${prop.price} ج.م</span>
-                        ${(prop.images && prop.images.length > 0) ? `<div class="property-image h-100 w-100" style="background-image: url('${prop.images[0]}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
+                        ${propertyImage ? `<div class="property-image h-100 w-100" style="background-image: url('${propertyImage}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
                     </div>
                     
                     <div class="card-body container-fluid p-3 flex-grow-1">
                         <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
-                            <a href="user_profile.html?id=${prop.owner}" style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${prop.authorPhoto || ''}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; text-decoration:none;" class="me-2 ms-2">
-                                ${!prop.authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                            <a href="user_profile.html?id=${prop.owner}" style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${authorPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; text-decoration:none;" class="me-2 ms-2">
+                                ${!authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
                             </a>
                             <div class="text-truncate">
                                 <small class="text-muted d-block lh-1 mb-1" style="font-size: 0.7rem;">ناشر العقار</small>
@@ -1772,6 +1914,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             </div>`;
         });
         container.innerHTML = html;
+        bindFavoriteButtons(container);
 
         if (userOnly) {
             document.querySelectorAll('.mark-sold-btn').forEach(btn => {
@@ -2427,5 +2570,3 @@ async function loadSimilarProperties(prop, currentPropId) {
         container.innerHTML = '';
     }
 }
-
-
