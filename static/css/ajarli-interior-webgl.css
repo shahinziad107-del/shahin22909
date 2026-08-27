@@ -2,7 +2,7 @@
 .ajarli-house-intro { background: #08140f; }
 .ajarli-house-sticky { background: #08140f; }
 .ajarli-house-sticky::before { display: none; }
-.ajarli-house-sticky::after { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(4, 13, 9, .04) 0%, rgba(4, 13, 9, .15) 35%, rgba(4, 13, 9, .84) 83%, rgba(4, 13, 9, .95) 100%); }
+.ajarli-house-sticky::after { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(4, 13, 9, .02) 0%, rgba(4, 13, 9, .07) 35%, rgba(4, 13, 9, .34) 74%, rgba(4, 13, 9, .62) 100%); }
 .ajarli-house-nav, .ajarli-house-main, .ajarli-house-footer { z-index: 3; }
 .ajarli-house-nav { padding-top: 2px; }
 .ajarli-house-main { position: relative; display: block; min-height: 0; }

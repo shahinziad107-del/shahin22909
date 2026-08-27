@@ -105,8 +105,8 @@ function buildInterior(canvas) {
     scene.add(pillars);
 
     const walls = new THREE.Group();
-    walls.add(makeBox(3.75, 4.25, .28, wallMaterial, [-2.45, 2.13, -4.05]));
-    walls.add(makeBox(3.75, 4.25, .28, wallMaterial, [2.45, 2.13, -4.05]));
+    walls.add(makeBox(3.32, 4.25, .28, wallMaterial, [-2.78, 2.13, -4.05]));
+    walls.add(makeBox(3.32, 4.25, .28, wallMaterial, [2.78, 2.13, -4.05]));
     walls.add(makeBox(9.1, 4.25, .26, wallMaterial, [-4.42, 2.13, -1.0]));
     walls.add(makeBox(9.1, 4.25, .26, wallMaterial, [4.42, 2.13, -1.0]));
     scene.add(walls);
@@ -134,12 +134,12 @@ function buildInterior(canvas) {
     doorPivot.position.set(0, 0, -3.85);
     const doorwayLight = new THREE.Mesh(
         new THREE.PlaneGeometry(1.76, 2.55),
-        new THREE.MeshBasicMaterial({ color: '#cbe790', transparent: true, opacity: .93 })
+        new THREE.MeshBasicMaterial({ color: '#fff7c7', transparent: true, opacity: .93, depthWrite: false, side: THREE.DoubleSide, toneMapped: false })
     );
     doorwayLight.position.set(0, 1.29, -4.18);
     scene.add(doorwayLight);
     const doorwayGlow = new THREE.PointLight('#d9ef9e', 0, 8, 2);
-    doorwayGlow.position.set(0, 1.8, -3.4);
+    doorwayGlow.position.set(0, 1.8, -3.15);
     scene.add(doorwayGlow);
     const door = makeBox(1.48, 2.52, .12, woodMaterial, [.74, 1.26, 0]);
     doorPivot.add(door);
@@ -187,10 +187,10 @@ function buildInterior(canvas) {
     function render() {
         state.progress += (state.target - state.progress) * .085;
         elements.forEach((item) => setBuild(item.object, item.start, item.end, item.y));
-        const finished = ease(clamp01((state.progress - .82) / .18));
+        const finished = ease(clamp01((state.progress - .74) / .16));
         doorPivot.rotation.y = -finished * 1.28;
-        doorwayLight.material.opacity = finished * .93;
-        doorwayGlow.intensity = finished * 1.15;
+        doorwayLight.material.opacity = finished;
+        doorwayGlow.intensity = finished * 3.25;
         sun.intensity = .18 + state.progress * 1.6;
         fill.intensity = .08 + state.progress * .4;
         camera.position.set(.08 * Math.sin(state.progress * 4), 1.74 + state.progress * .12, 2.72 - state.progress * .88);
