@@ -81,21 +81,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Swipe/Drag functionality
         let isDraggingTheme = false;
+        let capturedThemePointer = null;
         let startXTheme = 0;
 
         themeToggleContainer.addEventListener('pointerdown', (e) => {
-            isDraggingTheme = true;
+            isDraggingTheme = false;
             startXTheme = e.clientX;
-            themeToggleContainer.setPointerCapture(e.pointerId);
-            // Disable touch scrolling while interacting with switch
-            e.preventDefault();
+            capturedThemePointer = e.pointerId;
         });
 
         themeToggleContainer.addEventListener('pointermove', (e) => {
-            if (!isDraggingTheme) return;
             const diffX = e.clientX - startXTheme;
+            if (e.pointerId !== capturedThemePointer || Math.abs(diffX) <= 20) return;
+            if (!isDraggingTheme) {
+                isDraggingTheme = true;
+                themeToggleContainer.setPointerCapture(e.pointerId);
+            }
             
             if (diffX > 20) { // Dragged right
+                e.preventDefault();
                 if (currentThemeIndex < 2) {
                     currentThemeIndex++;
                     const themes = ['light', 'dark', 'auto'];
@@ -104,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     startXTheme = e.clientX;
                 }
             } else if (diffX < -20) { // Dragged left
+                e.preventDefault();
                 if (currentThemeIndex > 0) {
                     currentThemeIndex--;
                     const themes = ['light', 'dark', 'auto'];
@@ -115,12 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         themeToggleContainer.addEventListener('pointerup', (e) => {
+            if (isDraggingTheme && themeToggleContainer.hasPointerCapture(e.pointerId)) {
+                themeToggleContainer.releasePointerCapture(e.pointerId);
+            }
             isDraggingTheme = false;
-            themeToggleContainer.releasePointerCapture(e.pointerId);
+            capturedThemePointer = null;
         });
         
         themeToggleContainer.addEventListener('pointercancel', () => {
             isDraggingTheme = false;
+            capturedThemePointer = null;
         });
         
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
