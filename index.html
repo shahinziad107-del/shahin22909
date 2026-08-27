@@ -1,51 +1,101 @@
-<!-- Ajarli Product Editorial entry: direct real-estate purpose with calm Liquid Glass, not a cinematic AI portal. -->
+<!-- Ajarli House Journey: a concise scroll-built home that reveals a practical rental value at each step. -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <link rel="icon" type="image/png" href="./static/img/logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#15271f">
+    <meta name="theme-color" content="#10291d">
+    <meta name="description" content="أجرلي — ابحث عن عقارك خطوة بخطوة.">
     <title>أجرلي - ابحث عن عقارك</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./static/css/style.css">
     <link rel="stylesheet" href="./static/css/ajarli-refined.css">
+    <link rel="stylesheet" href="./static/css/ajarli-house-intro.css">
 </head>
-<body class="ajarli-entry">
-    <div class="ajarli-entry-shell">
-        <header class="ajarli-entry-nav">
-            <a class="ajarli-wordmark" href="home.html" aria-label="الانتقال إلى الصفحة الرئيسية لأجرلي">
-                <img src="./static/img/logo.png" alt="شعار أجرلي">
-                <span>أجرلي</span>
-            </a>
-            <a class="ajarli-entry-login" href="login.html"><i class="fa-regular fa-user ms-1"></i> تسجيل الدخول</a>
-        </header>
-
-        <main class="ajarli-entry-main">
-            <section class="ajarli-entry-copy" aria-labelledby="entry-title">
-                <span class="ajarli-kicker">منصة عقارات أبسط</span>
-                <h1 id="entry-title">العقار المناسب.<br><em>بخطوة أوضح.</em></h1>
-                <p>استكشف عقارات للبيع أو للإيجار، تابع تفاصيلها بهدوء، وانشر إعلانك في مساحة مصممة لتُظهر المهم أولاً.</p>
-                <div class="ajarli-entry-actions">
-                    <a class="ajarli-entry-primary" href="home.html"><i class="fa-solid fa-magnifying-glass ms-2"></i> استكشف العقارات</a>
-                    <a class="ajarli-entry-secondary" href="register.html"><i class="fa-solid fa-arrow-left ms-2"></i> أنشئ حسابًا</a>
+<body class="ajarli-entry ajarli-house-intro" data-scene="0">
+    <div class="ajarli-house-scroll" id="house-journey">
+        <div class="ajarli-house-sticky">
+            <header class="ajarli-house-nav">
+                <a class="ajarli-wordmark" href="home.html" aria-label="الانتقال مباشرة إلى الصفحة الرئيسية لأجرلي">
+                    <img src="./static/img/logo.png" alt="شعار أجرلي">
+                    <span>أجرلي</span>
+                </a>
+                <div class="ajarli-house-nav-actions">
+                    <a class="ajarli-house-skip" href="home.html">تخطي المقدمة <i class="fa-solid fa-arrow-left"></i></a>
+                    <a class="ajarli-house-login" href="login.html"><i class="fa-regular fa-user"></i><span>تسجيل الدخول</span></a>
                 </div>
-            </section>
+            </header>
 
-            <div class="ajarli-entry-object" aria-hidden="true">
-                <div class="ajarli-entry-key">
-                    <div class="ajarli-entry-key-icon"><i class="fa-solid fa-house"></i></div>
-                    <div class="ajarli-entry-key-lines"><span></span><span></span><span></span></div>
-                </div>
-            </div>
-        </main>
+            <main class="ajarli-house-main">
+                <section class="ajarli-house-copy" aria-live="polite" aria-atomic="true">
+                    <span class="ajarli-house-index" id="scene-index">01 <i></i> 04</span>
+                    <div class="ajarli-house-stages">
+                        <article class="ajarli-house-stage is-active" data-copy-stage="0">
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-location-dot"></i> نبدأ من الأرض</span>
+                            <h1>مكانك،<br><em>بداية الحكاية.</em></h1>
+                            <p>حدد المنطقة والميزانية، ثم دع البحث يقترب من احتياجك الحقيقي.</p>
+                        </article>
+                        <article class="ajarli-house-stage" data-copy-stage="1" aria-hidden="true">
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-cubes-stacked"></i> غرفة وراء غرفة</span>
+                            <h2>تفاصيل تبني<br><em>قرارًا أوضح.</em></h2>
+                            <p>عدد الغرف والمساحة ونوع العرض تظهر في مكانها، من دون بحث طويل.</p>
+                        </article>
+                        <article class="ajarli-house-stage" data-copy-stage="2" aria-hidden="true">
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-shield-heart"></i> تواصل بثقة</span>
+                            <h2>كل ما تحتاجه<br><em>قبل الخطوة التالية.</em></h2>
+                            <p>شاهد الصور، اقرأ التفاصيل، ثم تواصل عبر المسار الذي يناسبك.</p>
+                        </article>
+                        <article class="ajarli-house-stage" data-copy-stage="3" aria-hidden="true">
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-tag"></i> السعر أمامك</span>
+                            <h2>العقار المناسب.<br><em>بخطوة أوضح.</em></h2>
+                            <p>ابدأ بما يناسب ميزانيتك، واحفظ ما يهمك قبل أن تتواصل.</p>
+                            <div class="ajarli-house-final-actions">
+                                <a href="home.html" class="ajarli-house-enter">ادخل إلى أجرلي <i class="fa-solid fa-arrow-left"></i></a>
+                                <a href="register.html" class="ajarli-house-register">أنشئ حسابًا</a>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="ajarli-house-scroll-hint"><span>مرّر لتكمل البناء</span><i class="fa-solid fa-arrow-down"></i></div>
+                </section>
 
-        <footer class="ajarli-entry-footer">
-            <span>أجرلي — مساحة منظمة للعقار.</span>
-            <span>© 2026 Ajarli</span>
-        </footer>
+                <section class="ajarli-house-visual" aria-label="بيت أجرلي يتشكل على مراحل">
+                    <div class="ajarli-house-sun" aria-hidden="true"></div>
+                    <div class="ajarli-house-grid" aria-hidden="true"></div>
+                    <div class="ajarli-house-model" aria-hidden="true">
+                        <div class="ajarli-house-shadow"></div>
+                        <div class="ajarli-house-plot"></div>
+                        <div class="ajarli-house-foundation"></div>
+                        <div class="ajarli-house-level house-level-ground">
+                            <div class="house-wall house-wall-front"></div>
+                            <div class="house-wall house-wall-side"></div>
+                            <div class="house-door"><span></span></div>
+                            <div class="house-window window-one"></div>
+                            <div class="house-window window-two"></div>
+                        </div>
+                        <div class="ajarli-house-level house-level-top">
+                            <div class="house-wall house-wall-front"></div>
+                            <div class="house-wall house-wall-side"></div>
+                            <div class="house-window window-three"></div>
+                            <div class="house-window window-four"></div>
+                        </div>
+                        <div class="house-roof"><i></i></div>
+                        <div class="house-price-card"><span>السعر حسب</span><strong>ميزانيتك</strong><small>كل التفاصيل قبل التواصل</small></div>
+                    </div>
+                    <div class="ajarli-house-marker marker-one"><span>01</span><i></i><em>موقع واضح</em></div>
+                    <div class="ajarli-house-marker marker-two"><span>02</span><i></i><em>تفاصيل دقيقة</em></div>
+                    <div class="ajarli-house-marker marker-three"><span>03</span><i></i><em>سعر ظاهر</em></div>
+                </section>
+            </main>
+
+            <footer class="ajarli-house-footer">
+                <span>أجرلي — البحث المنظم يبدأ هنا.</span>
+                <div class="ajarli-house-progress" aria-label="تقدم المقدمة"><i id="house-progress-bar"></i></div>
+                <span>© 2026 Ajarli</span>
+            </footer>
+        </div>
     </div>
-    <script type="module" src="./static/js/firebase-app.js"></script>
+    <script src="./static/js/ajarli-house-intro.js" defer></script>
 </body>
 </html>
