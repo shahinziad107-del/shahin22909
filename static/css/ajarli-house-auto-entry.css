@@ -1,0 +1,20 @@
+/* Auto-entry status: a quiet final cue, visible only after the house reaches its completed stage. */
+.ajarli-house-auto-entry {
+  display: block;
+  margin-top: 12px;
+  color: rgba(220, 245, 199, 0.48);
+  font-size: 0.61rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.28s cubic-bezier(.23, 1, .32, 1), transform 0.28s cubic-bezier(.23, 1, .32, 1);
+}
+
+.ajarli-house-intro[data-scene="3"] .ajarli-house-auto-entry {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ajarli-house-auto-entry { display: none; }
+}
