@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./static/css/ajarli-house-intro.css">
     <link rel="stylesheet" href="./static/css/ajarli-house-auto-entry.css">
     <link rel="stylesheet" href="./static/css/ajarli-interior-webgl.css">
+    <link rel="stylesheet" href="./static/css/ajarli-interior-controls.css">
 </head>
 <body class="ajarli-entry ajarli-house-intro" data-scene="0">
     <div class="ajarli-house-scroll" id="house-journey">
@@ -64,7 +65,7 @@
                 </section>
 
                 <section class="ajarli-house-visual" aria-label="مشهد داخلي ثلاثي الأبعاد لبيت قيد البناء">
-                    <canvas id="ajarli-interior-canvas" aria-hidden="true"></canvas>
+                    <canvas id="ajarli-interior-canvas" tabindex="0" aria-label="مشهد ثلاثي الأبعاد لداخل البيت؛ اسحب للنظر حولك"></canvas>
                     <div class="ajarli-interior-fallback" aria-hidden="true">
                         <div class="fallback-column column-left"></div>
                         <div class="fallback-column column-right"></div>
@@ -72,6 +73,7 @@
                         <div class="fallback-window"></div>
                     </div>
                     <div class="ajarli-interior-status"><span class="status-pulse"></span><span id="interior-status-text">مساحة داخلية قيد التكوين</span></div>
+                    <div class="ajarli-interior-viewer-hint" id="interior-viewer-hint"><i class="fa-solid fa-arrows-left-right"></i><span>اسحب أو حرّك بإصبعك للنظر داخل البيت</span></div>
                 </section>
             </main>
 

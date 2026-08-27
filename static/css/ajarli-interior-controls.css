@@ -1,0 +1,10 @@
+/* Ajarli inside-out exploration: the viewer stays inside the room, and drag control looks across the interior. */
+.ajarli-house-sticky::after { background: linear-gradient(90deg, rgba(5,15,10,.02) 0%, rgba(5,15,10,.11) 37%, rgba(5,15,10,.32) 68%, rgba(5,15,10,.65) 100%); }
+#ajarli-interior-canvas { cursor: grab; touch-action: pan-y; outline: none; }
+#ajarli-interior-canvas:active, .ajarli-house-intro.is-looking #ajarli-interior-canvas { cursor: grabbing; }
+#ajarli-interior-canvas:focus-visible { outline: 2px solid rgba(218,255,158,.72); outline-offset: -8px; }
+.ajarli-interior-viewer-hint { position: absolute; z-index: 5; right: clamp(20px, 3.2vw, 52px); bottom: clamp(32px, 7.2vh, 84px); display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid rgba(226,252,196,.21); border-radius: 11px 11px 3px 11px; color: rgba(242,252,233,.8); background: rgba(7,24,14,.39); box-shadow: inset 0 1px rgba(255,255,255,.08); backdrop-filter: blur(10px); font-size: .64rem; font-weight: 700; transition: opacity .28s cubic-bezier(.23,1,.32,1), transform .28s cubic-bezier(.23,1,.32,1); }.ajarli-interior-viewer-hint i { color: #d7ff92; }.ajarli-house-intro.is-looking .ajarli-interior-viewer-hint { opacity: 0; transform: translateY(6px); pointer-events: none; }
+.ajarli-interior-status { left: clamp(19px, 3vw, 50px); right: auto; }
+@media (max-width: 900px) { .ajarli-house-sticky::after { background: linear-gradient(180deg, rgba(5,15,10,.55) 0%, rgba(5,15,10,.13) 42%, rgba(5,15,10,.12) 66%, rgba(5,15,10,.58) 100%); }.ajarli-interior-viewer-hint { right: 18px; bottom: 105px; font-size: .58rem; }.ajarli-interior-status { bottom: 57px; } }
+@media (max-width: 480px) { .ajarli-interior-viewer-hint { right: 16px; bottom: 96px; max-width: 235px; line-height: 1.6; }.ajarli-interior-status { left: 15px; bottom: 53px; } }
+@media (prefers-reduced-motion: reduce) { .ajarli-interior-viewer-hint { display: none; } }
