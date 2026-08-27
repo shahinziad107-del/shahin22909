@@ -1,0 +1,25 @@
+/* Ajarli Interior Build: WebGL-first immersive construction viewed from inside a real unfinished home. */
+.ajarli-house-intro { background: #08140f; }
+.ajarli-house-sticky { background: #08140f; }
+.ajarli-house-sticky::before { display: none; }
+.ajarli-house-sticky::after { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(4, 13, 9, .04) 0%, rgba(4, 13, 9, .15) 35%, rgba(4, 13, 9, .84) 83%, rgba(4, 13, 9, .95) 100%); }
+.ajarli-house-nav, .ajarli-house-main, .ajarli-house-footer { z-index: 3; }
+.ajarli-house-nav { padding-top: 2px; }
+.ajarli-house-main { position: relative; display: block; min-height: 0; }
+.ajarli-house-copy { position: relative; z-index: 3; width: min(45%, 570px); min-height: 0; margin-right: auto; margin-left: 0; padding-top: clamp(15px, 5vh, 70px); pointer-events: none; }
+.ajarli-house-copy a { pointer-events: auto; }
+.ajarli-house-stages { min-height: 282px; }
+.ajarli-house-stage h1, .ajarli-house-stage h2 { max-width: 600px; font-size: clamp(2.7rem, 5.25vw, 5.55rem); text-shadow: 0 5px 26px rgba(0,0,0,.28); }
+.ajarli-house-stage p { color: rgba(241,249,234,.78); text-shadow: 0 2px 12px rgba(0,0,0,.32); }
+.ajarli-house-kicker { color: #d7ff92; }
+.ajarli-house-visual { position: absolute; z-index: 0; inset: 0; min-height: 0; overflow: hidden; perspective: none; background: linear-gradient(128deg, #132a1d, #06130d); }
+#ajarli-interior-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 560ms cubic-bezier(.23, 1, .32, 1); }
+.webgl-ready #ajarli-interior-canvas { opacity: 1; }
+.ajarli-interior-fallback { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse at 26% 36%, rgba(227, 204, 151, .26), transparent 26%), linear-gradient(118deg, #28442d 0%, #152b1e 42%, #07130d 100%); }
+.webgl-ready .ajarli-interior-fallback { visibility: hidden; opacity: 0; }
+.fallback-column { position: absolute; bottom: -15%; width: 12%; height: 99%; background: linear-gradient(90deg, #3c5940, #bdaf89 46%, #4b6041); box-shadow: 0 0 30px rgba(0,0,0,.34); transform: skewY(-8deg); }.column-left { left: 13%; }.column-right { left: 56%; }.fallback-wall { position: absolute; left: 25%; top: 10%; width: 65%; height: 72%; background: linear-gradient(100deg, #c5b48e, #8d936d 55%, #3b6041); transform: skewY(-8deg); }.fallback-window { position: absolute; top: 22%; left: 44%; width: 23%; height: 34%; border: 11px solid #576a4a; background: radial-gradient(circle at 70% 22%, #d8eda2, #66875d 45%, #263f2f); box-shadow: inset 0 0 25px rgba(0,0,0,.38); transform: skewY(-8deg); }
+.ajarli-interior-status { position: absolute; z-index: 2; left: clamp(19px, 3vw, 50px); bottom: clamp(30px, 5.5vh, 76px); display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid rgba(229,255,199,.17); border-radius: 10px 10px 3px 10px; color: rgba(238,250,227,.68); background: rgba(8, 25, 16, .33); box-shadow: inset 0 1px rgba(255,255,255,.08); backdrop-filter: blur(9px); font-size: .65rem; font-weight: 700; }.status-pulse { width: 6px; height: 6px; border-radius: 50%; background: #c5ef72; box-shadow: 0 0 0 4px rgba(197,239,114,.12); }
+.ajarli-house-scroll-hint { color: rgba(233,248,219,.61); }.ajarli-house-footer { position: relative; z-index: 4; }
+@media (max-width: 900px) { .ajarli-house-sticky::after { background: linear-gradient(180deg, rgba(4, 13, 9, .75) 0%, rgba(4, 13, 9, .35) 43%, rgba(4, 13, 9, .16) 70%, rgba(4, 13, 9, .62) 100%); }.ajarli-house-copy { width: min(100%, 520px); margin: 0 auto; padding-top: 33px; text-align: right; }.ajarli-house-stage h1, .ajarli-house-stage h2 { font-size: clamp(2.35rem, 10.6vw, 4.3rem); }.ajarli-house-stage p { max-width: 335px; font-size: .83rem; }.ajarli-house-stages { min-height: 224px; }.ajarli-interior-status { left: 18px; bottom: 56px; }.ajarli-house-visual { inset: 0 -21px; }.ajarli-house-scroll-hint { margin-top: 5px; } }
+@media (max-width: 480px) { .ajarli-house-scroll { height: 360svh; }.ajarli-house-sticky { min-height: 600px; }.ajarli-house-copy { padding-top: 28px; }.ajarli-house-stages { min-height: 198px; }.ajarli-house-stage h1, .ajarli-house-stage h2 { font-size: 2.35rem; }.ajarli-house-stage p { max-width: 305px; font-size: .74rem; line-height: 1.78; }.ajarli-interior-status { bottom: 54px; font-size: .58rem; }.ajarli-house-final-actions { margin-top: 14px; }.ajarli-house-auto-entry { font-size: .55rem; }.ajarli-house-visual { inset-inline: -21px; } }
+@media (prefers-reduced-motion: reduce) { .ajarli-interior-status { display: none; } #ajarli-interior-canvas { opacity: 0 !important; } .ajarli-interior-fallback { opacity: 1 !important; } }

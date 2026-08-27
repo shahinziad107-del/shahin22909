@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="./static/css/ajarli-refined.css">
     <link rel="stylesheet" href="./static/css/ajarli-house-intro.css">
     <link rel="stylesheet" href="./static/css/ajarli-house-auto-entry.css">
+    <link rel="stylesheet" href="./static/css/ajarli-interior-webgl.css">
 </head>
 <body class="ajarli-entry ajarli-house-intro" data-scene="0">
     <div class="ajarli-house-scroll" id="house-journey">
@@ -34,24 +35,24 @@
                     <span class="ajarli-house-index" id="scene-index">01 <i></i> 04</span>
                     <div class="ajarli-house-stages">
                         <article class="ajarli-house-stage is-active" data-copy-stage="0">
-                            <span class="ajarli-house-kicker"><i class="fa-solid fa-location-dot"></i> نبدأ من الأرض</span>
-                            <h1>مكانك،<br><em>بداية الحكاية.</em></h1>
-                            <p>حدد المنطقة والميزانية، ثم دع البحث يقترب من احتياجك الحقيقي.</p>
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-location-dot"></i> نحن داخل بيتك القادم</span>
+                            <h1>نبدأ من<br><em>المكان.</em></h1>
+                            <p>الأرض أمامك، والمساحة تبدأ من احتياجك الحقيقي ومكانك المناسب.</p>
                         </article>
                         <article class="ajarli-house-stage" data-copy-stage="1" aria-hidden="true">
-                            <span class="ajarli-house-kicker"><i class="fa-solid fa-cubes-stacked"></i> غرفة وراء غرفة</span>
-                            <h2>تفاصيل تبني<br><em>قرارًا أوضح.</em></h2>
-                            <p>عدد الغرف والمساحة ونوع العرض تظهر في مكانها، من دون بحث طويل.</p>
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-cubes-stacked"></i> الأعمدة ترتفع حولك</span>
+                            <h2>أساس ثابت.<br><em>قرار واثق.</em></h2>
+                            <p>تظهر لك المساحة كما تُعاش: من الداخل، قبل أن تضيع في تفاصيل لا تهمك.</p>
                         </article>
                         <article class="ajarli-house-stage" data-copy-stage="2" aria-hidden="true">
-                            <span class="ajarli-house-kicker"><i class="fa-solid fa-shield-heart"></i> تواصل بثقة</span>
-                            <h2>كل ما تحتاجه<br><em>قبل الخطوة التالية.</em></h2>
-                            <p>شاهد الصور، اقرأ التفاصيل، ثم تواصل عبر المسار الذي يناسبك.</p>
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-door-open"></i> الغرف تأخذ شكلها</span>
+                            <h2>كل غرفة<br><em>لها سبب.</em></h2>
+                            <p>عدد الغرف والمساحة والتفاصيل التي تصنع الفرق، كلها في مكان واحد.</p>
                         </article>
                         <article class="ajarli-house-stage" data-copy-stage="3" aria-hidden="true">
-                            <span class="ajarli-house-kicker"><i class="fa-solid fa-tag"></i> السعر أمامك</span>
-                            <h2>العقار المناسب.<br><em>بخطوة أوضح.</em></h2>
-                            <p>ابدأ بما يناسب ميزانيتك، واحفظ ما يهمك قبل أن تتواصل.</p>
+                            <span class="ajarli-house-kicker"><i class="fa-solid fa-tag"></i> الباب أصبح مفتوحًا</span>
+                            <h2>السعر أمامك.<br><em>والبيت حولك.</em></h2>
+                            <p>ابحث بما يناسب ميزانيتك، واحفظ ما يهمك قبل أن تتواصل.</p>
                             <div class="ajarli-house-final-actions">
                                 <a href="home.html" class="ajarli-house-enter">ادخل إلى أجرلي <i class="fa-solid fa-arrow-left"></i></a>
                                 <a href="register.html" class="ajarli-house-register">أنشئ حسابًا</a>
@@ -59,35 +60,18 @@
                             <span class="ajarli-house-auto-entry" id="ajarli-auto-entry">سيفتح أجرلي تلقائيًا الآن</span>
                         </article>
                     </div>
-                    <div class="ajarli-house-scroll-hint"><span>مرّر لتكمل البناء</span><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="ajarli-house-scroll-hint"><span>مرّر لتبني البيت من الداخل</span><i class="fa-solid fa-arrow-down"></i></div>
                 </section>
 
-                <section class="ajarli-house-visual" aria-label="بيت أجرلي يتشكل على مراحل">
-                    <div class="ajarli-house-sun" aria-hidden="true"></div>
-                    <div class="ajarli-house-grid" aria-hidden="true"></div>
-                    <div class="ajarli-house-model" aria-hidden="true">
-                        <div class="ajarli-house-shadow"></div>
-                        <div class="ajarli-house-plot"></div>
-                        <div class="ajarli-house-foundation"></div>
-                        <div class="ajarli-house-level house-level-ground">
-                            <div class="house-wall house-wall-front"></div>
-                            <div class="house-wall house-wall-side"></div>
-                            <div class="house-door"><span></span></div>
-                            <div class="house-window window-one"></div>
-                            <div class="house-window window-two"></div>
-                        </div>
-                        <div class="ajarli-house-level house-level-top">
-                            <div class="house-wall house-wall-front"></div>
-                            <div class="house-wall house-wall-side"></div>
-                            <div class="house-window window-three"></div>
-                            <div class="house-window window-four"></div>
-                        </div>
-                        <div class="house-roof"><i></i></div>
-                        <div class="house-price-card"><span>السعر حسب</span><strong>ميزانيتك</strong><small>كل التفاصيل قبل التواصل</small></div>
+                <section class="ajarli-house-visual" aria-label="مشهد داخلي ثلاثي الأبعاد لبيت قيد البناء">
+                    <canvas id="ajarli-interior-canvas" aria-hidden="true"></canvas>
+                    <div class="ajarli-interior-fallback" aria-hidden="true">
+                        <div class="fallback-column column-left"></div>
+                        <div class="fallback-column column-right"></div>
+                        <div class="fallback-wall"></div>
+                        <div class="fallback-window"></div>
                     </div>
-                    <div class="ajarli-house-marker marker-one"><span>01</span><i></i><em>موقع واضح</em></div>
-                    <div class="ajarli-house-marker marker-two"><span>02</span><i></i><em>تفاصيل دقيقة</em></div>
-                    <div class="ajarli-house-marker marker-three"><span>03</span><i></i><em>سعر ظاهر</em></div>
+                    <div class="ajarli-interior-status"><span class="status-pulse"></span><span id="interior-status-text">مساحة داخلية قيد التكوين</span></div>
                 </section>
             </main>
 
@@ -98,6 +82,6 @@
             </footer>
         </div>
     </div>
-    <script src="./static/js/ajarli-house-intro.js" defer></script>
+    <script type="module" src="./static/js/ajarli-house-intro.js"></script>
 </body>
 </html>
