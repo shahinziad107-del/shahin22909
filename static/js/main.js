@@ -289,153 +289,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize for Summer Search Modal
     initSummerSelects('summer-search-region', 'summer-search-area', 'كل القرى والمنتجعات');
 
-    // 4. Mobile Bottom Nav Interactive Dragging & Animations
+    // 4. Mobile Bottom Nav Active State & Navigation
     const mobileNav = document.querySelector('.mobile-bottom-nav');
     if (mobileNav) {
-        let indicator = document.querySelector('.nav-indicator');
-        if (!indicator) {
-            indicator = document.createElement('div');
-            indicator.className = 'nav-indicator';
-            mobileNav.insertBefore(indicator, mobileNav.firstChild);
-        }
-        
-        const navItems = Array.from(mobileNav.querySelectorAll('.nav-item:not(.center-add-btn)'));
-        let activeItem = null;
+        const navItems = Array.from(mobileNav.querySelectorAll('.nav-item'));
         let currentPath = window.location.pathname.split('/').pop();
-        if (!currentPath || currentPath === '') currentPath = 'home.html';
+        if (!currentPath || currentPath === '' || currentPath === 'index.html') currentPath = 'home.html';
         
-        const setActiveState = (item) => {
-            navItems.forEach(nav => {
-                nav.classList.remove('active');
-                const i = nav.querySelector('i');
-                if (i && i.dataset.origClass) {
-                    i.className = i.dataset.origClass;
-                }
-            });
-            item.classList.add('active');
-            
-            const icon = item.querySelector('i');
-            if (icon) {
-                if (!icon.dataset.origClass) icon.dataset.origClass = icon.className;
-                
-                if (icon.classList.contains('fa-house')) {
-                    icon.className = icon.className.replace('fa-house', 'fa-door-open fa-bounce');
-                } else if (icon.classList.contains('fa-magnifying-glass')) {
-                    icon.classList.add('search-scan');
-                } else if (icon.classList.contains('fa-phone')) {
-                    icon.classList.add('fa-shake');
-                } else if (icon.classList.contains('fa-user')) {
-                    icon.classList.add('fa-beat');
-                }
-            }
-        };
+        let activeItem = null;
 
         navItems.forEach(item => {
             const href = item.getAttribute('href');
-            if (href === currentPath || (currentPath === '' && href === 'home.html')) {
+            if (href === currentPath) {
+                activeItem = item;
+            } else if ((currentPath === 'account.html' || currentPath === 'settings.html' || currentPath === 'user_profile.html') && href === 'account.html') {
                 activeItem = item;
             }
-            
-            item.addEventListener('click', (e) => {
-                if(item.getAttribute('href') === '#') {
-                    e.preventDefault();
-                    setActiveState(item);
-                    indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-                    indicator.style.width = item.offsetWidth + 10 + 'px';
-                    indicator.style.left = item.offsetLeft - 5 + 'px';
-                    return;
-                }
-                e.preventDefault();
-                indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-                setActiveState(item);
-                
-                indicator.style.width = item.offsetWidth + 10 + 'px';
-                indicator.style.left = item.offsetLeft - 5 + 'px';
-                
-                setTimeout(() => {
-                    window.location.href = href;
-                }, 400); 
-            });
-        });
-        
-        if (!activeItem && navItems.length > 0) activeItem = navItems[0];
-        
-        // Touch Drag Logic
-        let isDragging = false;
-        mobileNav.addEventListener('touchmove', (e) => {
-            if(e.target.closest('.center-add-btn')) return;
-            e.preventDefault();
-            isDragging = true;
-            indicator.style.transition = 'none';
-            
-            const touch = e.touches[0];
-            const navRect = mobileNav.getBoundingClientRect();
-            let newLeft = touch.clientX - navRect.left - (indicator.offsetWidth / 2);
-            newLeft = Math.max(0, Math.min(newLeft, navRect.width - indicator.offsetWidth));
-            indicator.style.left = newLeft + 'px';
-        }, { passive: false });
 
-        mobileNav.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-            
-            const indRect = indicator.getBoundingClientRect();
-            const indCenter = indRect.left + indRect.width / 2;
-            
-            let closest = activeItem;
-            let minDistance = Infinity;
-            
-            navItems.forEach(item => {
-                const itemRect = item.getBoundingClientRect();
-                const itemCenter = itemRect.left + itemRect.width / 2;
-                const distance = Math.abs(indCenter - itemCenter);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closest = item;
+            item.addEventListener('click', (e) => {
+                if (href === '#') {
+                    e.preventDefault();
                 }
+                navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
             });
-            
-            if (closest) {
-                setActiveState(closest);
-                indicator.style.width = closest.offsetWidth + 10 + 'px';
-                indicator.style.left = closest.offsetLeft - 5 + 'px';
-                const href = closest.getAttribute('href');
-                if (closest !== activeItem) {
-                    if (href !== '#') {
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 400);
-                    } else {
-                        setTimeout(() => {
-                            closest.click();
-                        }, 150);
-                    }
-                }
-                activeItem = closest;
-            }
         });
+
+        if (!activeItem && navItems.length > 0) {
+            activeItem = navItems[0];
+        }
 
         if (activeItem) {
-            setActiveState(activeItem);
-            setTimeout(() => {
-                indicator.style.transition = 'none';
-                indicator.style.width = activeItem.offsetWidth + 10 + 'px';
-                indicator.style.left = activeItem.offsetLeft - 5 + 'px';
-                setTimeout(() => {
-                     indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-                }, 50);
-            }, 100);
+            navItems.forEach(n => n.classList.remove('active'));
+            activeItem.classList.add('active');
         }
-        
-        window.addEventListener('resize', () => {
-            const currentActive = mobileNav.querySelector('.nav-item.active:not(.center-add-btn)');
-            if (currentActive) {
-                indicator.style.transition = 'none';
-                indicator.style.width = currentActive.offsetWidth + 10 + 'px';
-                indicator.style.left = currentActive.offsetLeft - 5 + 'px';
-            }
-        });
     }
 
     // 5. Summer Resort Banner Injection

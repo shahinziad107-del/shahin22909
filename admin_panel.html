@@ -155,28 +155,31 @@
     <script src="./static/js/main.js"></script>
     <script type="module" src="./static/js/firebase-app.js"></script>
 
-    <!-- Mobile Bottom Nav -->
-    <div class="mobile-bottom-nav d-lg-none">
-        <a href="home.html" class="nav-item">
-            <i class="fa-solid fa-house"></i>
-        </a>
-        <a href="#" class="nav-item">
+            <!-- Mobile Bottom Nav Wrapper (Iconly Style) -->
+    <div class="mobile-nav-wrapper d-lg-none">
+        <div class="mobile-bottom-nav">
+            <a href="home.html" class="nav-item">
+                <i class="fa-solid fa-house"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="my_properties.html" class="nav-item">
+                <i class="fa-regular fa-compass"></i>
+                <span>استكشف</span>
+            </a>
+            <a href="#" class="nav-item chat-toggle-btn" data-action="toggle-chat">
+                <i class="fa-regular fa-comment-dots"></i>
+                <span>الرسائل</span>
+            </a>
+            <a href="account.html" class="nav-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>الإعدادات</span>
+            </a>
+        </div>
+        <button class="mobile-nav-search-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="بحث">
             <i class="fa-solid fa-magnifying-glass"></i>
-        </a>
-        <a href="add_property.html" class="nav-item center-add-btn">
-            <div class="add-btn-inner">
-                <i class="fa-solid fa-building"></i>
-            </div>
-        </a>
-        <a href="#" class="nav-item chat-toggle-btn" data-action="toggle-chat">
-            <i class="fa-solid fa-comment-dots"></i>
-        </a>
-        <a href="account.html" class="nav-item">
-            <i class="fa-regular fa-user"></i>
-        </a>
+        </button>
     </div>
-
-    <!-- Floating Desktop Search Button -->
+<!-- Floating Desktop Search Button -->
     <button class="liquid-search-btn floating-search-btn d-none d-lg-flex" data-bs-toggle="modal" data-bs-target="#searchModal" title="بحث" id="desktop-floating-search">
         <i class="fa-solid fa-magnifying-glass"></i>
     </button>
