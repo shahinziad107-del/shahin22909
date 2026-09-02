@@ -188,32 +188,59 @@ function bindDesktopDynamicBackdrop(container) {
     const backdrop = document.getElementById('desktop-bg-backdrop');
     if (!backdrop) return;
 
-    // Set backdrop from first card initially if available
-    const firstCardImg = container.querySelector('.property-card .card-img-el');
-    if (firstCardImg && firstCardImg.style.backgroundImage && firstCardImg.style.backgroundImage !== 'none') {
-        backdrop.style.backgroundImage = firstCardImg.style.backgroundImage;
-        backdrop.classList.add('has-image');
-    }
+    const cards = container.querySelectorAll('.property-card');
+    if (!cards.length) return;
 
-    container.querySelectorAll('.property-card').forEach(card => {
-        const updateBackdrop = () => {
-            const imgEl = card.querySelector('.card-img-el');
-            if (!imgEl) return;
-            const bgVal = imgEl.style.backgroundImage;
-            if (bgVal && bgVal !== 'none') {
-                backdrop.style.backgroundImage = bgVal;
-                backdrop.classList.add('has-image');
-            }
-        };
+    const setBackdropFromCard = (card) => {
+        if (!card) return;
+        const imgEl = card.querySelector('.card-img-el');
+        if (!imgEl) return;
+        const bgVal = imgEl.style.backgroundImage;
+        if (bgVal && bgVal !== 'none' && bgVal !== 'url("")') {
+            backdrop.style.backgroundImage = bgVal;
+            backdrop.classList.add('has-image');
+        }
+    };
 
-        card.addEventListener('mouseenter', updateBackdrop);
+    // Set backdrop from first card initially
+    setBackdropFromCard(cards[0]);
+
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => setBackdropFromCard(card));
+        card.addEventListener('focusin', () => setBackdropFromCard(card));
         
         card.querySelectorAll('.switcher-arrow').forEach(btn => {
             btn.addEventListener('click', () => {
-                setTimeout(updateBackdrop, 160);
+                setTimeout(() => setBackdropFromCard(card), 140);
             });
         });
     });
+
+    // Detect center card on horizontal scrolling
+    let scrollTimer = null;
+    container.addEventListener('scroll', () => {
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const containerRect = container.getBoundingClientRect();
+            const containerCenter = containerRect.left + containerRect.width / 2;
+            let closestCard = null;
+            let minDistance = Infinity;
+
+            cards.forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenter = cardRect.left + cardRect.width / 2;
+                const distance = Math.abs(containerCenter - cardCenter);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCard = card;
+                }
+            });
+
+            if (closestCard) {
+                setBackdropFromCard(closestCard);
+            }
+        }, 50);
+    }, { passive: true });
 
     // Wire up desktop left/right arrow buttons
     const scrollLeftBtn = document.getElementById('desktop-scroll-left');
