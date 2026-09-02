@@ -1516,14 +1516,14 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 }
 
 /* =========================================
-   Modern Card Redesign (Iconly / Product Style)
+   Modern Liquid Glass Card Redesign (Reference Style)
    ========================================= */
 .property-card {
-    background: #ffffff !important;
-    border-radius: 28px !important;
-    padding: 12px !important;
-    border: 1px solid rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.07), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+    background: #F5F5F8 !important;
+    border-radius: 40px !important;
+    padding: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.07), 0 6px 16px rgba(0, 0, 0, 0.02) !important;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
     overflow: hidden;
@@ -1534,15 +1534,31 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 
 .property-card:hover {
     transform: translateY(-6px) !important;
-    box-shadow: 0 24px 48px -10px rgba(0, 0, 0, 0.13) !important;
+    box-shadow: 0 32px 60px -10px rgba(0, 0, 0, 0.12) !important;
 }
 
 .card-img-wrapper {
     position: relative;
-    height: 220px;
-    border-radius: 20px !important;
+    height: 230px;
+    border-radius: 28px !important;
     overflow: hidden;
-    background: #f1f5f9;
+    background: #ffffff;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
+}
+
+/* Orbital Ring (الدواية - Curved 3D loop behind property image) */
+.card-orbital-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 95px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.4);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .property-image {
@@ -1550,6 +1566,8 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease, opacity 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .property-card:hover .property-image {
@@ -1559,24 +1577,22 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 /* Floating Badges & Action Buttons on Card Image */
 .card-badge-tag {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 14px;
+    right: 14px;
     z-index: 5;
-    background: rgba(15, 23, 42, 0.85);
+    background: #000000;
     color: #ffffff;
     border-radius: 9999px;
-    padding: 5px 12px;
+    padding: 5px 14px;
     font-size: 0.78rem;
-    font-weight: 700;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .card-float-actions {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 14px;
+    left: 14px;
     z-index: 5;
     display: flex;
     align-items: center;
@@ -1584,20 +1600,18 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 }
 
 .card-float-circle {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
     color: #1e293b;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
     transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
 
@@ -1622,26 +1636,26 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 /* Image Switcher Pill Overlay (سويتش الصور) */
 .card-img-switcher-pill {
     position: absolute;
-    bottom: 12px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 6;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-radius: 9999px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.14);
-    border: 1px solid rgba(255,255,255,0.7);
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border: 1px solid rgba(255,255,255,0.9);
 }
 
 .switcher-arrow {
     border: none;
     background: transparent;
-    padding: 2px 5px;
+    padding: 2px 6px;
     font-size: 0.8rem;
     color: #0f172a;
     cursor: pointer;
@@ -1657,16 +1671,15 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 }
 
 .switcher-dots-indicator {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: #334155;
     user-select: none;
-    letter-spacing: 1px;
 }
 
 /* Card Body Section */
 .property-card .card-body {
-    padding: 14px 6px 8px 6px !important;
+    padding: 16px 8px 4px 8px !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1699,7 +1712,7 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 }
 
 .card-author-name {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #475569;
     text-decoration: none;
@@ -1711,9 +1724,9 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 
 .card-title-heading {
     font-weight: 800;
-    font-size: 1.12rem;
+    font-size: 1.2rem;
     color: #0f172a;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.35;
 }
 
@@ -1721,8 +1734,8 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 10px;
-    font-size: 0.82rem;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
     color: #64748b;
     font-weight: 600;
 }
@@ -1736,36 +1749,42 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 
 .card-price-value {
     font-weight: 900;
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: #0f172a;
 }
 
 .card-price-unit {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #64748b;
     margin-right: 4px;
 }
 
-/* Card Bottom Action Bar (3-Pill Action Row) */
-.card-footer-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-top: 10px;
-    margin-top: auto;
-    border-top: 1px solid rgba(0,0,0,0.05);
+/* Liquid Glass Footer Container (نصف شفاف تحت ونصف ليكويد جلاس) */
+.card-liquid-glass-footer {
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(25px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+    border-radius: 34px !important;
+    padding: 8px 10px !important;
+    margin-top: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;
 }
 
 .card-pill-btn {
     flex: 1;
-    height: 44px;
+    height: 48px;
     border-radius: 9999px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 0.88rem;
+    font-weight: 800;
+    font-size: 0.9rem;
     text-decoration: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
@@ -1773,72 +1792,76 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
 }
 
 .card-pill-secondary {
-    background: #f1f5f9;
-    color: #0f172a;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
 }
 
 .card-pill-secondary:hover {
-    background: #e2e8f0;
-    color: #0f172a;
+    background: #ffffff !important;
+    color: #2563eb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
 }
 
 .card-circle-btn {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: #f1f5f9;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    color: #0f172a;
+    background: #ffffff !important;
+    border: none !important;
+    color: #0f172a !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     cursor: pointer;
     flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-circle-btn:hover {
-    background: #e2e8f0;
-    color: #2563eb;
-    transform: scale(1.05);
+    background: #ffffff !important;
+    color: #2563eb !important;
+    transform: scale(1.08);
 }
 
 .card-pill-primary {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: #ffffff !important;
-    border: none;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
 }
 
 .card-pill-primary:hover {
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    background: #2563eb !important;
     color: #ffffff !important;
-    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35) !important;
     transform: translateY(-1px);
 }
 
 /* Dark Mode Card Styling Overrides */
 [data-theme="dark"] .property-card,
 html[data-theme="dark"] .ajarli-page .property-card {
-    background: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.4) !important;
+    background: #14221a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
 [data-theme="dark"] .card-img-wrapper {
-    background: #0f172a;
+    background: #0b1410;
 }
 
 [data-theme="dark"] .card-float-circle {
-    background: rgba(30, 41, 59, 0.88);
+    background: rgba(20, 34, 26, 0.95);
     color: #f8fafc;
     border-color: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .card-img-switcher-pill {
-    background: rgba(30, 41, 59, 0.92);
+    background: rgba(20, 34, 26, 0.95);
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -1861,21 +1884,29 @@ html[data-theme="dark"] .ajarli-page .property-card {
 }
 
 [data-theme="dark"] .card-price-value {
-    color: #60a5fa;
+    color: #c5ef72;
+}
+
+[data-theme="dark"] .card-liquid-glass-footer {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 }
 
 [data-theme="dark"] .card-pill-secondary,
-[data-theme="dark"] .card-circle-btn {
-    background: #334155;
-    color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.05);
+[data-theme="dark"] .card-circle-btn,
+[data-theme="dark"] .card-pill-primary {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .card-pill-secondary:hover,
-[data-theme="dark"] .card-circle-btn:hover {
-    background: #475569;
-    color: #ffffff;
+[data-theme="dark"] .card-circle-btn:hover,
+[data-theme="dark"] .card-pill-primary:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #c5ef72 !important;
 }
+
 
 
 

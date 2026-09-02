@@ -1916,11 +1916,11 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                 </div>`;
             }
 
-            // Bottom action row: secondary pill (التفاصيل), center circle button (خرائط), primary pill (تواصل)
+            // Bottom action row inside Liquid Glass Footer container (نصف شفاف تحت ونصف ليكويد جلاس)
             let bottomActionsHtml = '';
             if (userOnly) {
                 bottomActionsHtml = `
-                <div class="card-footer-actions">
+                <div class="card-liquid-glass-footer">
                     ${!isSold ? `
                     <a href="edit_property.html?id=${prop.id}" class="card-pill-btn card-pill-secondary">
                         <i class="fa-regular fa-pen-to-square me-1"></i> تعديل
@@ -1942,7 +1942,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                 }
 
                 bottomActionsHtml = `
-                <div class="card-footer-actions">
+                <div class="card-liquid-glass-footer">
                     <a href="property_detail.html?id=${prop.id}" class="card-pill-btn card-pill-secondary">
                         التفاصيل <i class="fa-solid fa-chevron-left ms-1 fs-7"></i>
                     </a>
@@ -1951,7 +1951,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                     </button>
                     ${!isSold ? `
                     <button type="button" onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${authorPhoto.replace(/'/g, "\\'")}')" class="card-pill-btn card-pill-primary">
-                        <i class="fa-solid fa-comment-dots me-1"></i> تواصل
+                        <i class="fa-solid fa-plus me-1"></i> تواصل
                     </button>
                     ` : `
                     <span class="card-pill-btn card-pill-secondary text-muted">مباع</span>
@@ -1968,6 +1968,8 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                     <!-- Top Image Section -->
                     <div class="card-img-wrapper">
                         ${soldOverlay}
+                        <!-- 3D Orbital Ring (الدواية) -->
+                        <div class="card-orbital-ring"></div>
                         
                         <!-- Top-Right Type Badge Tag -->
                         <span class="card-badge-tag">${escapeHTML(propType)}</span>
@@ -2020,7 +2022,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
                             </div>
                         </div>
                         
-                        <!-- Bottom Action Bar (3 Pills) -->
+                        <!-- Liquid Glass Bottom Action Bar -->
                         ${bottomActionsHtml}
                     </div>
                 </div>
