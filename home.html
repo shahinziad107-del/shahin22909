@@ -104,7 +104,11 @@
             <!-- Properties Section -->
             <div class="ajarli-listing-intro d-flex justify-content-between align-items-center mb-4 reveal">
                 <h2 class="fw-bold text-dark mb-0">أحدث العقارات المضافة</h2>
-                <a href="#" class="text-decoration-none fw-bold" style="color: var(--secondary-color)">عرض الكل <i class="fa-solid fa-arrow-left ps-1"></i></a>
+                <div class="d-none d-lg-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-light rounded-circle shadow-sm" id="desktop-scroll-right" title="السابق" style="width:40px; height:40px;"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button type="button" class="btn btn-light rounded-circle shadow-sm" id="desktop-scroll-left" title="التالي" style="width:40px; height:40px;"><i class="fa-solid fa-chevron-left"></i></button>
+                    <a href="#" class="text-decoration-none fw-bold ms-3" style="color: var(--secondary-color)">عرض الكل <i class="fa-solid fa-arrow-left ps-1"></i></a>
+                </div>
             </div>
 
             <section class="ajarli-saved-searches" id="ajarli-saved-searches" aria-live="polite">
@@ -112,95 +116,57 @@
                 <div class="ajarli-saved-searches-list" id="ajarli-saved-searches-list"></div>
             </section>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 pb-5" id="properties-container">
-                
-                <!-- Dummy Property 1 -->
-                <div class="col reveal">
-                    <div class="property-card">
-                        <div class="card-img-wrapper">
-                            <span class="price-tag">2,500,000 ج.م</span>
-                            <div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
-                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
-                                <span>فيلا رائعة للإيجار</span>
+            <div class="desktop-properties-wrapper">
+                <!-- Dynamic Liquid Glass Backdrop for Desktop -->
+                <div class="desktop-bg-backdrop" id="desktop-bg-backdrop"></div>
+
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 desktop-horizontal-scroll" id="properties-container">
+                    
+                    <!-- Dummy Property 1 -->
+                    <div class="col reveal">
+                        <div class="property-card">
+                            <div class="card-img-wrapper">
+                                <div class="card-orbital-ring"></div>
+                                <span class="card-badge-tag">إيجار</span>
+                                <div class="card-float-actions">
+                                    <button type="button" class="card-float-circle favorite-property-btn" title="حفظ في المحفوظات"><i class="fa-regular fa-bookmark"></i></button>
+                                    <button type="button" class="card-float-circle share-card-btn" title="مشاركة"><i class="fa-solid fa-share-nodes"></i></button>
+                                </div>
+                                <div class="property-image card-img-el bg-secondary d-flex justify-content-center align-items-center text-white flex-column">
+                                    <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
+                                    <span>فيلا رائعة للإيجار</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body container-fluid p-4">
-                            <h3 class="card-title text-truncate">فيلا مع مسبح خاص</h3>
-                            <div class="location-text">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>القاهرة الجديدة, التجمع الخامس</span>
+                            <div class="card-body">
+                                <div>
+                                    <div class="card-author-row">
+                                        <div class="card-author-avatar"><i class="fa-regular fa-user"></i></div>
+                                        <span class="card-author-name">أحمد علي</span>
+                                        <span class="ms-auto text-muted small"><i class="fa-solid fa-location-dot text-primary ms-1"></i>التجمع الخامس</span>
+                                    </div>
+                                    <h4 class="card-title-heading text-truncate">فيلا فاخرة مع مسبح خاص</h4>
+                                    <div class="card-specs-pills">
+                                        <span><i class="fa-solid fa-bed text-primary ms-1"></i>4 غرف</span>
+                                        <span>•</span>
+                                        <span><i class="fa-solid fa-bath text-primary ms-1"></i>3 حمام</span>
+                                        <span>•</span>
+                                        <span><i class="fa-solid fa-ruler-combined text-primary ms-1"></i>350 م²</span>
+                                    </div>
+                                    <div class="card-price-container">
+                                        <div class="card-price-value">25,000 <span class="card-price-unit">ج.م</span></div>
+                                        <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i>منذ يومين</span>
+                                    </div>
+                                </div>
+                                <div class="card-liquid-glass-footer">
+                                    <a href="#" class="card-pill-btn card-pill-secondary">التفاصيل <i class="fa-solid fa-chevron-left ms-1 fs-7"></i></a>
+                                    <button type="button" class="card-circle-btn" title="الموقع الخريطة"><i class="fa-solid fa-location-dot"></i></button>
+                                    <button type="button" class="card-pill-btn card-pill-primary"><i class="fa-solid fa-plus me-1"></i> تواصل</button>
+                                </div>
                             </div>
-                            <div class="row gx-2 mt-3 mb-3 text-muted text-center" style="font-size: 0.9rem;">
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bed text-secondary mb-1 d-block"></i> 4 غرف</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bath text-secondary mb-1 d-block"></i> 3 حمام</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-ruler-combined text-secondary mb-1 d-block"></i> 350 م²</div></div>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> منذ يومين</span>
-                            <a href="#" class="btn btn-primary rounded-pill px-4">التفاصيل <i class="fa-solid fa-chevron-left ms-1 text-white-50"></i></a>
                         </div>
                     </div>
-                </div>
 
-                <!-- Dummy Property 2 -->
-                <div class="col reveal">
-                    <div class="property-card">
-                        <div class="card-img-wrapper">
-                            <span class="price-tag">1,200,000 ج.م</span>
-                            <div class="property-image bg-dark d-flex justify-content-center align-items-center text-white flex-column">
-                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
-                                <span>شقة سكنية</span>
-                            </div>
-                        </div>
-                        <div class="card-body container-fluid p-4">
-                            <h3 class="card-title text-truncate">شقة تشطيب سوبر لوكس</h3>
-                            <div class="location-text">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>مدينة الشيخ زايد</span>
-                            </div>
-                            <div class="row gx-2 mt-3 mb-3 text-muted text-center" style="font-size: 0.9rem;">
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bed text-secondary mb-1 d-block"></i> 3 غرف</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bath text-secondary mb-1 d-block"></i> 2 حمام</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-ruler-combined text-secondary mb-1 d-block"></i> 180 م²</div></div>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> اليوم</span>
-                            <a href="#" class="btn btn-primary rounded-pill px-4">التفاصيل <i class="fa-solid fa-chevron-left ms-1 text-white-50"></i></a>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- Dummy Property 3 -->
-                <div class="col reveal">
-                    <div class="property-card">
-                        <div class="card-img-wrapper">
-                            <span class="price-tag">8,000,000 ج.م</span>
-                            <div class="property-image bg-info d-flex justify-content-center align-items-center text-white flex-column">
-                                <i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i>
-                                <span>قصر فاخر</span>
-                            </div>
-                        </div>
-                        <div class="card-body container-fluid p-4">
-                            <h3 class="card-title text-truncate">قصر فاخر على النيل</h3>
-                            <div class="location-text">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>الزمالك, القاهرة</span>
-                            </div>
-                            <div class="row gx-2 mt-3 mb-3 text-muted text-center" style="font-size: 0.9rem;">
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bed text-secondary mb-1 d-block"></i> 8 غرف</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-bath text-secondary mb-1 d-block"></i> 6 حمام</div></div>
-                                <div class="col-4"><div class="p-2 border rounded bg-light"><i class="fa-solid fa-ruler-combined text-secondary mb-1 d-block"></i> 1000 م²</div></div>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i> منذ أسبوع</span>
-                            <a href="#" class="btn btn-primary rounded-pill px-4">التفاصيل <i class="fa-solid fa-chevron-left ms-1 text-white-50"></i></a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>

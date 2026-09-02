@@ -184,6 +184,55 @@ function bindCardImageSwitchers(container) {
     });
 }
 
+function bindDesktopDynamicBackdrop(container) {
+    const backdrop = document.getElementById('desktop-bg-backdrop');
+    if (!backdrop) return;
+
+    // Set backdrop from first card initially if available
+    const firstCardImg = container.querySelector('.property-card .card-img-el');
+    if (firstCardImg && firstCardImg.style.backgroundImage && firstCardImg.style.backgroundImage !== 'none') {
+        backdrop.style.backgroundImage = firstCardImg.style.backgroundImage;
+        backdrop.classList.add('has-image');
+    }
+
+    container.querySelectorAll('.property-card').forEach(card => {
+        const updateBackdrop = () => {
+            const imgEl = card.querySelector('.card-img-el');
+            if (!imgEl) return;
+            const bgVal = imgEl.style.backgroundImage;
+            if (bgVal && bgVal !== 'none') {
+                backdrop.style.backgroundImage = bgVal;
+                backdrop.classList.add('has-image');
+            }
+        };
+
+        card.addEventListener('mouseenter', updateBackdrop);
+        
+        card.querySelectorAll('.switcher-arrow').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(updateBackdrop, 160);
+            });
+        });
+    });
+
+    // Wire up desktop left/right arrow buttons
+    const scrollLeftBtn = document.getElementById('desktop-scroll-left');
+    const scrollRightBtn = document.getElementById('desktop-scroll-right');
+    if (scrollLeftBtn && !scrollLeftBtn.dataset.bound) {
+        scrollLeftBtn.dataset.bound = 'true';
+        scrollLeftBtn.addEventListener('click', () => {
+            container.scrollBy({ left: -420, behavior: 'smooth' });
+        });
+    }
+    if (scrollRightBtn && !scrollRightBtn.dataset.bound) {
+        scrollRightBtn.dataset.bound = 'true';
+        scrollRightBtn.addEventListener('click', () => {
+            container.scrollBy({ left: 420, behavior: 'smooth' });
+        });
+    }
+}
+
+
 
 // 30-Day Auto Check Logic
 async function checkExpiredProperties(uid) {
@@ -2031,6 +2080,7 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
         container.innerHTML = html;
         bindFavoriteButtons(container);
         bindCardImageSwitchers(container);
+        bindDesktopDynamicBackdrop(container);
 
         if (userOnly) {
             document.querySelectorAll('.mark-sold-btn').forEach(btn => {

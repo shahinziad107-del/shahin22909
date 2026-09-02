@@ -1907,6 +1907,92 @@ html[data-theme="dark"] .ajarli-page .property-card {
     color: #c5ef72 !important;
 }
 
+/* =========================================
+   Desktop Liquid Glass Dynamic Background & Horizontal Swiper
+   ========================================= */
+.desktop-properties-wrapper {
+    position: relative;
+    border-radius: 36px;
+    padding: 12px;
+    transition: all 0.5s ease;
+}
+
+@media (min-width: 992px) {
+    .desktop-properties-wrapper {
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        padding: 24px;
+    }
+
+    [data-theme="dark"] .desktop-properties-wrapper {
+        background: rgba(18, 30, 23, 0.45);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
+    }
+
+    .desktop-bg-backdrop {
+        position: absolute;
+        inset: -30px;
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        filter: blur(45px) brightness(0.7) saturate(140%);
+        opacity: 0;
+        transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), background-image 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+
+    .desktop-bg-backdrop.has-image {
+        opacity: 0.45;
+    }
+
+    [data-theme="dark"] .desktop-bg-backdrop.has-image {
+        opacity: 0.55;
+        filter: blur(50px) brightness(0.35) saturate(130%);
+    }
+
+    .desktop-horizontal-scroll {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-behavior: smooth !important;
+        gap: 24px !important;
+        padding-bottom: 16px !important;
+        padding-top: 8px !important;
+        position: relative;
+        z-index: 2;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(37, 99, 235, 0.35) transparent;
+    }
+
+    .desktop-horizontal-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .desktop-horizontal-scroll::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 9999px;
+    }
+
+    .desktop-horizontal-scroll::-webkit-scrollbar-thumb {
+        background: rgba(37, 99, 235, 0.35);
+        border-radius: 9999px;
+    }
+
+    .desktop-horizontal-scroll .col {
+        flex: 0 0 390px !important;
+        max-width: 390px !important;
+        width: 390px !important;
+        scroll-snap-align: start;
+    }
+}
+
+
 
 
 
