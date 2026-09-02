@@ -124,17 +124,66 @@ function renderSavedSearches(container) {
 
 function bindFavoriteButtons(container) {
     container.querySelectorAll('.favorite-property-btn').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const propertyId = button.dataset.propertyId;
             if (!propertyId) return;
             const isSaved = toggleFavoriteProperty(propertyId);
             button.classList.toggle('is-saved', isSaved);
             button.setAttribute('aria-pressed', String(isSaved));
-            button.setAttribute('title', isSaved ? 'إزالة من المفضلة' : 'حفظ في المفضلة');
+            button.setAttribute('title', isSaved ? 'إزالة من المحفوظات' : 'حفظ في المحفوظات');
             button.innerHTML = `<i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>`;
         });
     });
 }
+
+function bindCardImageSwitchers(container) {
+    container.querySelectorAll('.card-img-switcher-pill').forEach(pill => {
+        const card = pill.closest('.property-card');
+        if (!card) return;
+        const imgEl = card.querySelector('.card-img-el');
+        const numEl = pill.querySelector('.current-img-num');
+        const prevBtn = pill.querySelector('.prev-img-btn');
+        const nextBtn = pill.querySelector('.next-img-btn');
+        
+        let images = [];
+        try {
+            images = JSON.parse(card.dataset.images || '[]');
+        } catch (_) {}
+        
+        if (!images.length || !imgEl) return;
+        let currentIndex = 0;
+        
+        const updateImg = (newIdx) => {
+            currentIndex = (newIdx + images.length) % images.length;
+            card.dataset.imgIndex = currentIndex;
+            imgEl.style.opacity = '0.3';
+            setTimeout(() => {
+                imgEl.style.backgroundImage = `url('${images[currentIndex]}')`;
+                imgEl.style.opacity = '1';
+            }, 120);
+            if (numEl) numEl.innerText = currentIndex + 1;
+        };
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                updateImg(currentIndex + 1);
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                updateImg(currentIndex - 1);
+            });
+        }
+    });
+}
+
 
 // 30-Day Auto Check Logic
 async function checkExpiredProperties(uid) {
@@ -1695,13 +1744,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            document.querySelectorAll('[data-quick-rental], [data-quick-rooms]').forEach(button => {
+            document.querySelectorAll('[data-quick-rental], [data-quick-rooms], [data-quick-saved]').forEach(button => {
                 button.addEventListener('click', () => {
-                    const filters = normalizeSearchFilters({
-                        propertyType: button.dataset.quickRental || '',
-                        minRooms: button.dataset.quickRooms ? parseInt(button.dataset.quickRooms) : null
-                    });
-                    loadProperties(container, false, null, filters);
+                    if (button.dataset.quickSaved) {
+                        loadProperties(container, false, null, { savedOnly: true });
+                    } else {
+                        const filters = normalizeSearchFilters({
+                            propertyType: button.dataset.quickRental || '',
+                            minRooms: button.dataset.quickRooms ? parseInt(button.dataset.quickRooms) : null
+                        });
+                        loadProperties(container, false, null, filters);
+                    }
                     container.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
             });
@@ -1799,6 +1852,10 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
         if (filters) {
             properties = properties.filter(prop => {
                 let match = true;
+                if (filters.savedOnly) {
+                    const favSet = getFavoritePropertyIds();
+                    if (!favSet.has(prop.id)) match = false;
+                }
                 if (filters.governorate) {
                     if (prop.governorate !== filters.governorate) {
                         match = false;
@@ -1828,8 +1885,8 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
             if (properties.length === 0) {
                 container.innerHTML = `
                 <div class="col-12 text-center py-5 reveal active">
-                    <i class="fa-solid fa-magnifying-glass fs-1 text-muted mb-3"></i>
-                    <p class="text-muted fs-5">لا توجد عقارات مطابقة لعملية البحث.</p>
+                    <i class="fa-solid fa-bookmark fs-1 text-muted mb-3"></i>
+                    <p class="text-muted fs-5">لا توجد عقارات مطابقة حالياً.</p>
                 </div>`;
                 return;
             }
@@ -1837,84 +1894,141 @@ async function loadProperties(container, userOnly, uid=null, filters=null) {
 
         let html = '';
         const favoriteIds = getFavoritePropertyIds();
-        properties.forEach((prop) => {
+        properties.forEach((prop, index) => {
             const timeStr = prop.createdAt ? new Date(prop.createdAt.toDate()).toLocaleDateString('ar-EG') : 'اليوم';
-            let actionButtons = `<a href="property_detail.html?id=${prop.id}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-circle-info ms-1"></i> التفاصيل</a>`;
-            
             const isSold = prop.status === 'sold';
-            const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 2;"><span class="badge bg-danger fs-3 px-4 py-2" style="transform: rotate(-15deg); border: 2px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
-            const propertyImage = safeImageUrl(prop.images && prop.images.length ? prop.images[0] : '');
+            const soldOverlay = isSold ? `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(0,0,0,0.5); z-index: 7;"><span class="badge bg-danger fs-4 px-4 py-2" style="transform: rotate(-15deg); border: 2px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">تم البيع</span></div>` : '';
+            
+            const rawImages = Array.isArray(prop.images) ? prop.images.map(safeImageUrl).filter(Boolean) : [];
+            const firstImage = rawImages.length ? rawImages[0] : '';
             const authorPhoto = safeImageUrl(prop.authorPhoto || '');
+            const isFavorite = favoriteIds.has(prop.id);
+            const propType = prop.property_type || 'إيجار';
 
-            if (!userOnly && !isSold) {
-                actionButtons += `<button onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${authorPhoto.replace(/'/g, "\\'")}')" class="btn btn-primary btn-sm flex-grow-1 fw-bold shadow-sm rounded-pill"><i class="fa-solid fa-comment-dots fs-5 ms-1"></i> تواصل بالموقع</button>`;
+            // Image Switcher Control overlay HTML
+            let switcherHtml = '';
+            if (rawImages.length > 1) {
+                switcherHtml = `
+                <div class="card-img-switcher-pill">
+                    <button type="button" class="switcher-arrow prev-img-btn" title="الصورة السابقة"><i class="fa-solid fa-chevron-right"></i></button>
+                    <span class="switcher-dots-indicator"><span class="current-img-num">1</span>/${rawImages.length}</span>
+                    <button type="button" class="switcher-arrow next-img-btn" title="الصورة التالية"><i class="fa-solid fa-chevron-left"></i></button>
+                </div>`;
             }
 
-            let controlsHtml = '';
+            // Bottom action row: secondary pill (التفاصيل), center circle button (خرائط), primary pill (تواصل)
+            let bottomActionsHtml = '';
             if (userOnly) {
-                controlsHtml = `
-                <div class="card-footer bg-light border-top-0 d-flex justify-content-between align-items-center p-3 gap-2 flex-wrap">
+                bottomActionsHtml = `
+                <div class="card-footer-actions">
                     ${!isSold ? `
-                    <a href="edit_property.html?id=${prop.id}" class="btn btn-sm btn-warning rounded-pill flex-grow-1 text-white fw-bold">
-                        <i class="fa-regular fa-pen-to-square ms-1"></i> تعديل
+                    <a href="edit_property.html?id=${prop.id}" class="card-pill-btn card-pill-secondary">
+                        <i class="fa-regular fa-pen-to-square me-1"></i> تعديل
                     </a>
-                    <button class="btn btn-sm btn-success rounded-pill mark-sold-btn flex-grow-1 shadow-sm fw-bold" data-id="${prop.id}">
-                        <i class="fa-solid fa-check ms-1"></i> تحديد كمباع
+                    <button class="card-pill-btn card-pill-primary mark-sold-btn" data-id="${prop.id}">
+                        <i class="fa-solid fa-check me-1"></i> تم البيع
                     </button>
                     ` : ''}
-                    <button class="btn btn-sm btn-danger rounded-pill delete-prop-btn shadow-sm" data-id="${prop.id}" ${isSold ? 'style="flex-grow:1;"' : ''}>
-                        <i class="fa-regular fa-trash-can"></i> ${isSold ? 'حذف العقار' : ''}
+                    <button class="card-circle-btn delete-prop-btn text-danger" data-id="${prop.id}" title="حذف">
+                        <i class="fa-regular fa-trash-can"></i>
                     </button>
                 </div>`;
             } else {
-                const isFavorite = favoriteIds.has(prop.id);
-                controlsHtml = `
-                <div class="card-footer bg-light border-top-0 p-3">
-                    <div class="text-muted small mb-3"><i class="fa-regular fa-clock ms-1"></i> ${timeStr}</div>
-                    <div class="d-flex gap-2">
-                        ${actionButtons}
-                        <button type="button" class="favorite-property-btn ${isFavorite ? 'is-saved' : ''}" data-property-id="${escapeHTML(String(prop.id))}" aria-pressed="${isFavorite}" title="${isFavorite ? 'إزالة من المفضلة' : 'حفظ في المفضلة'}"><i class="${isFavorite ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
-                    </div>
+                let mapCoordsAttr = '';
+                if (prop.latitude && prop.longitude) {
+                    mapCoordsAttr = `onclick="window.open('https://maps.google.com/maps?q=${prop.latitude},${prop.longitude}', '_blank')"`;
+                } else {
+                    mapCoordsAttr = `onclick="alert('الموقع الجغرافي: ${escapeHTML(prop.location || '')}')"`;
+                }
+
+                bottomActionsHtml = `
+                <div class="card-footer-actions">
+                    <a href="property_detail.html?id=${prop.id}" class="card-pill-btn card-pill-secondary">
+                        التفاصيل <i class="fa-solid fa-chevron-left ms-1 fs-7"></i>
+                    </a>
+                    <button type="button" class="card-circle-btn" ${mapCoordsAttr} title="الموقع الجغرافي">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </button>
+                    ${!isSold ? `
+                    <button type="button" onclick="startChatWith('${prop.owner}', '${(prop.authorName || 'مستخدم غير معروف').replace(/'/g, "\\'")}', '${authorPhoto.replace(/'/g, "\\'")}')" class="card-pill-btn card-pill-primary">
+                        <i class="fa-solid fa-comment-dots me-1"></i> تواصل
+                    </button>
+                    ` : `
+                    <span class="card-pill-btn card-pill-secondary text-muted">مباع</span>
+                    `}
                 </div>`;
             }
 
+            const imagesJsonAttr = escapeHTML(JSON.stringify(rawImages));
+
             html += `
             <div class="col reveal active mb-4">
-                <div class="property-card h-100 d-flex flex-column" ${isSold ? 'style="opacity:0.9;"' : ''}>
-                    <div class="card-img-wrapper position-relative" style="height: 180px; overflow: hidden;">
+                <div class="property-card h-100" id="card-${index}" data-images="${imagesJsonAttr}" data-img-index="0" ${isSold ? 'style="opacity:0.9;"' : ''}>
+                    
+                    <!-- Top Image Section -->
+                    <div class="card-img-wrapper">
                         ${soldOverlay}
-                        <span class="price-tag bg-primary">${prop.price} ج.م</span>
-                        ${propertyImage ? `<div class="property-image h-100 w-100" style="background-image: url('${propertyImage}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
+                        
+                        <!-- Top-Right Type Badge Tag -->
+                        <span class="card-badge-tag">${escapeHTML(propType)}</span>
+                        
+                        <!-- Top-Left Floating Action Buttons -->
+                        <div class="card-float-actions">
+                            <button type="button" class="card-float-circle favorite-property-btn ${isFavorite ? 'is-saved' : ''}" data-property-id="${escapeHTML(String(prop.id))}" aria-pressed="${isFavorite}" title="${isFavorite ? 'إزالة من المحفوظات' : 'حفظ في المحفوظات'}">
+                                <i class="${isFavorite ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                            </button>
+                            <button type="button" class="card-float-circle share-card-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/property_detail.html?id=${prop.id}'); alert('تم نسخ رابط العقار إلى الحافظة!');" title="مشاركة">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Property Image -->
+                        ${firstImage ? `<div class="property-image card-img-el h-100 w-100" style="background-image: url('${firstImage}'); background-size: cover; background-position: center;"></div>` : `<div class="property-image bg-secondary d-flex justify-content-center align-items-center text-white flex-column h-100"><i class="fa-solid fa-image fs-1 mb-2 opacity-50"></i></div>`}
+                        
+                        <!-- Floating Image Switcher Pill -->
+                        ${switcherHtml}
                     </div>
                     
-                    <div class="card-body container-fluid p-3 flex-grow-1">
-                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
-                            <a href="user_profile.html?id=${prop.owner}" style="width: 35px; height: 35px; border-radius: 50%; background-image: url('${authorPhoto}'); background-color: var(--secondary-color); background-size: cover; background-position: center; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; text-decoration:none;" class="me-2 ms-2">
-                                ${!authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
-                            </a>
-                            <div class="text-truncate">
-                                <small class="text-muted d-block lh-1 mb-1" style="font-size: 0.7rem;">ناشر العقار</small>
-                                <a href="user_profile.html?id=${prop.owner}" class="fw-bold d-block lh-1 text-primary text-truncate text-decoration-none" style="font-size: 0.9rem;">${escapeHTML(prop.authorName || 'مستخدم غير معروف')}</a>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div>
+                            <!-- Author Row -->
+                            <div class="card-author-row">
+                                <a href="user_profile.html?id=${prop.owner}" class="card-author-avatar" style="${authorPhoto ? `background-image: url('${authorPhoto}');` : ''}">
+                                    ${!authorPhoto ? '<i class="fa-regular fa-user"></i>' : ''}
+                                </a>
+                                <a href="user_profile.html?id=${prop.owner}" class="card-author-name text-truncate">${escapeHTML(prop.authorName || 'مستخدم')}</a>
+                                <span class="ms-auto text-muted small"><i class="fa-solid fa-location-dot text-primary ms-1"></i>${escapeHTML(prop.location || '')}</span>
+                            </div>
+                            
+                            <!-- Title -->
+                            <h4 class="card-title-heading text-truncate">${escapeHTML(prop.title || 'عقار جديد')}</h4>
+                            
+                            <!-- Specs Row -->
+                            <div class="card-specs-pills">
+                                <span><i class="fa-solid fa-bed text-primary ms-1"></i>${prop.rooms || '-'} غرف</span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-bath text-primary ms-1"></i>${prop.bathrooms || '-'} حمام</span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-ruler-combined text-primary ms-1"></i>${prop.area ? prop.area + ' م²' : '-'}</span>
+                            </div>
+                            
+                            <!-- Price Container -->
+                            <div class="card-price-container">
+                                <div class="card-price-value">${prop.price ? prop.price.toLocaleString('ar-EG') : 0} <span class="card-price-unit">ج.م</span></div>
+                                <span class="text-muted small"><i class="fa-regular fa-clock ms-1"></i>${timeStr}</span>
                             </div>
                         </div>
-                        <h4 class="card-title text-truncate mb-2 fs-5">${escapeHTML(prop.title || '')}</h4>
-                        <div class="location-text mb-2 small text-muted">
-                            <i class="fa-solid fa-location-dot"></i> ${escapeHTML(prop.location || '')}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 small text-muted">
-                            <span title="عدد الغرف" class="fw-bold"><i class="fa-solid fa-bed text-primary ms-1"></i>${prop.rooms || '-'}</span>
-                            <span title="عدد الحمامات" class="fw-bold"><i class="fa-solid fa-bath text-primary ms-1"></i>${prop.bathrooms || '-'}</span>
-                            <span title="المساحة" class="fw-bold"><i class="fa-solid fa-ruler-combined text-primary ms-1"></i>${prop.area ? prop.area + 'م²' : '-'}</span>
-                            <span class="badge ${prop.property_type === 'إيجار' ? 'bg-success' : 'bg-primary'}">${escapeHTML(prop.property_type || 'غير محدد')}</span>
-                        </div>
+                        
+                        <!-- Bottom Action Bar (3 Pills) -->
+                        ${bottomActionsHtml}
                     </div>
-                    
-                    ${controlsHtml}
                 </div>
             </div>`;
         });
         container.innerHTML = html;
         bindFavoriteButtons(container);
+        bindCardImageSwitchers(container);
 
         if (userOnly) {
             document.querySelectorAll('.mark-sold-btn').forEach(btn => {

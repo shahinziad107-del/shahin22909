@@ -1515,5 +1515,368 @@ html[dir="rtl"] .close-banner, body[dir="rtl"] .close-banner, .close-banner {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* =========================================
+   Modern Card Redesign (Iconly / Product Style)
+   ========================================= */
+.property-card {
+    background: #ffffff !important;
+    border-radius: 28px !important;
+    padding: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.07), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.property-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 24px 48px -10px rgba(0, 0, 0, 0.13) !important;
+}
+
+.card-img-wrapper {
+    position: relative;
+    height: 220px;
+    border-radius: 20px !important;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.property-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.property-card:hover .property-image {
+    transform: scale(1.04);
+}
+
+/* Floating Badges & Action Buttons on Card Image */
+.card-badge-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+    background: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.card-float-actions {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-float-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.card-float-circle:hover {
+    transform: scale(1.1);
+    background: #ffffff;
+    color: #2563eb;
+}
+
+.favorite-property-btn.is-saved,
+.card-float-circle.is-saved {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+
+.favorite-property-btn.is-saved i,
+.card-float-circle.is-saved i {
+    color: #ffffff !important;
+}
+
+/* Image Switcher Pill Overlay (سويتش الصور) */
+.card-img-switcher-pill {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 9999px;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+    border: 1px solid rgba(255,255,255,0.7);
+}
+
+.switcher-arrow {
+    border: none;
+    background: transparent;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+    color: #0f172a;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.switcher-arrow:hover {
+    color: #2563eb;
+    transform: scale(1.15);
+}
+
+.switcher-dots-indicator {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #334155;
+    user-select: none;
+    letter-spacing: 1px;
+}
+
+/* Card Body Section */
+.property-card .card-body {
+    padding: 14px 6px 8px 6px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent !important;
+}
+
+.card-author-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.card-author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    text-decoration: none;
+}
+
+.card-author-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #475569;
+    text-decoration: none;
+}
+
+.card-author-name:hover {
+    color: #2563eb;
+}
+
+.card-title-heading {
+    font-weight: 800;
+    font-size: 1.12rem;
+    color: #0f172a;
+    margin-bottom: 6px;
+    line-height: 1.35;
+}
+
+.card-specs-pills {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.card-price-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.card-price-value {
+    font-weight: 900;
+    font-size: 1.25rem;
+    color: #0f172a;
+}
+
+.card-price-unit {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-right: 4px;
+}
+
+/* Card Bottom Action Bar (3-Pill Action Row) */
+.card-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: auto;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.card-pill-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    user-select: none;
+}
+
+.card-pill-secondary {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.card-pill-secondary:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.card-circle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-circle-btn:hover {
+    background: #e2e8f0;
+    color: #2563eb;
+    transform: scale(1.05);
+}
+
+.card-pill-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff !important;
+    border: none;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+}
+
+.card-pill-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    color: #ffffff !important;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+}
+
+/* Dark Mode Card Styling Overrides */
+[data-theme="dark"] .property-card,
+html[data-theme="dark"] .ajarli-page .property-card {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .card-img-wrapper {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .card-float-circle {
+    background: rgba(30, 41, 59, 0.88);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .card-img-switcher-pill {
+    background: rgba(30, 41, 59, 0.92);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .switcher-arrow {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .switcher-dots-indicator {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .card-title-heading {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .card-author-name,
+[data-theme="dark"] .card-specs-pills,
+[data-theme="dark"] .card-price-unit {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .card-price-value {
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .card-pill-secondary,
+[data-theme="dark"] .card-circle-btn {
+    background: #334155;
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .card-pill-secondary:hover,
+[data-theme="dark"] .card-circle-btn:hover {
+    background: #475569;
+    color: #ffffff;
+}
+
+
 
 
