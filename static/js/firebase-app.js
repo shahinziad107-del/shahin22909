@@ -17,6 +17,24 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Expose Firebase globals for chat and helper scripts
+window.auth = auth;
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.query = query;
+window.orderBy = orderBy;
+window.where = where;
+window.serverTimestamp = serverTimestamp;
+window.doc = doc;
+window.deleteDoc = deleteDoc;
+window.getDoc = getDoc;
+window.updateDoc = updateDoc;
+window.setDoc = setDoc;
+window.onSnapshot = onSnapshot;
+
+
 // XSS Prevention Helper
 function escapeHTML(str) {
     if (typeof str !== 'string') return str;
