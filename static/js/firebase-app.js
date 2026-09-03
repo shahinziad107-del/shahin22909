@@ -720,6 +720,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     return; 
                 }
                 const href = link.getAttribute('href');
+                const isPublicSearch = link.getAttribute('data-bs-target') === '#searchModal';
+                if (isPublicSearch) {
+                    return;
+                }
                 if (href && (href.includes('login.html') || href.includes('index.html') || href.includes('register.html') || href === '#')) {
                     // Check if it's a specific protected action disguised as a '#' link
                     const isSearchModal = link.getAttribute('data-bs-target') === '#searchModal';
@@ -733,7 +737,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const isSearchModal = link.getAttribute('data-bs-target') === '#searchModal';
                 const isChat = link.classList.contains('chat-toggle-btn') || link.getAttribute('data-action') === 'toggle-chat';
                 
-                if (isProtectedHref || isSearchModal || isChat) {
+                // Searching is a public discovery action; only account-sensitive actions and chat require sign-in.
+                if (isProtectedHref || isChat) {
                     e.preventDefault();
                     e.stopPropagation();
                     window.location.href = 'login.html';
