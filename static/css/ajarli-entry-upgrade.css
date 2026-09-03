@@ -1,0 +1,134 @@
+/* Ajarli entry experience upgrade: clearer hierarchy, stronger controls, and mobile-first polish. */
+.ajarli-house-intro {
+  --entry-lime: #c9f36f;
+  --entry-ink: #091a12;
+  background: #07150f !important;
+}
+.ajarli-house-intro .ajarli-house-sticky {
+  background:
+    radial-gradient(circle at 75% 18%, rgba(201, 243, 111, .16), transparent 22rem),
+    radial-gradient(circle at 14% 72%, rgba(67, 145, 91, .17), transparent 29rem),
+    linear-gradient(128deg, #0c2419 0%, #0e2b1e 48%, #07170f 100%) !important;
+}
+.ajarli-house-intro .ajarli-house-sticky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .4;
+  background: linear-gradient(90deg, transparent 0 49.8%, rgba(201,243,111,.08) 50%, transparent 50.2%);
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 72%, transparent);
+}
+.ajarli-house-intro .ajarli-house-nav,
+.ajarli-house-intro .ajarli-house-main,
+.ajarli-house-intro .ajarli-house-footer { z-index: 2; }
+.ajarli-house-intro .ajarli-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #f5faef !important;
+  font-weight: 800;
+}
+.ajarli-house-intro .ajarli-wordmark img {
+  width: 45px;
+  height: 45px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,.24);
+}
+.ajarli-house-intro .ajarli-house-skip {
+  padding: 9px 12px;
+  border: 1px solid rgba(236,249,227,.18);
+  border-radius: 10px 10px 3px 10px;
+  color: rgba(236,248,228,.78);
+  background: rgba(234,251,226,.06);
+}
+.ajarli-house-intro .ajarli-house-login {
+  border-radius: 10px 10px 3px 10px;
+  color: var(--entry-ink);
+  border-color: var(--entry-lime);
+  background: var(--entry-lime);
+}
+.ajarli-house-intro .ajarli-house-login:hover { color: var(--entry-ink); background: #ddff92; }
+.ajarli-house-intro .ajarli-house-index {
+  position: relative;
+  width: max-content;
+  padding: 8px 10px 8px 0;
+  border-right: 2px solid var(--entry-lime);
+  color: rgba(229,246,216,.63);
+}
+.ajarli-house-intro .ajarli-house-stage h1,
+.ajarli-house-intro .ajarli-house-stage h2 {
+  max-width: 590px;
+  text-shadow: 0 12px 34px rgba(0,0,0,.2);
+}
+.ajarli-house-intro .ajarli-house-kicker { letter-spacing: .01em; }
+.ajarli-house-intro .ajarli-house-stage p { color: rgba(235,246,227,.75); }
+.ajarli-house-intro .ajarli-house-scroll-hint {
+  width: max-content;
+  padding: 8px 11px;
+  border: 1px solid rgba(225,242,211,.14);
+  border-radius: 10px 10px 3px 10px;
+  background: rgba(234,251,226,.04);
+}
+.ajarli-house-intro .ajarli-house-enter,
+.ajarli-house-intro .ajarli-house-register { border-radius: 12px 12px 4px 12px; }
+.ajarli-house-intro .ajarli-house-enter { background: var(--entry-lime); }
+.ajarli-house-intro .ajarli-house-visual::before {
+  content: "المساحة تبدأ من هنا";
+  position: absolute;
+  top: 10%;
+  right: 2%;
+  padding: 8px 10px;
+  border: 1px solid rgba(224,249,201,.16);
+  border-radius: 10px 10px 3px 10px;
+  color: rgba(230,248,217,.56);
+  background: rgba(14,48,30,.35);
+  font-size: .62rem;
+  font-weight: 700;
+  z-index: 2;
+}
+.ajarli-house-intro .ajarli-interior-status {
+  border-color: rgba(223,249,191,.22) !important;
+  border-radius: 10px 10px 3px 10px !important;
+  background: rgba(10,34,22,.54) !important;
+}
+.ajarli-house-intro .ajarli-interior-viewer-hint {
+  border-radius: 10px 10px 3px 10px !important;
+  border-color: rgba(223,249,191,.18) !important;
+  background: rgba(10,34,22,.54) !important;
+}
+.ajarli-house-intro .ajarli-house-progress { height: 3px; }
+.ajarli-house-intro .ajarli-house-progress i { background: var(--entry-lime); box-shadow: 0 0 10px rgba(201,243,111,.5); }
+
+@media (max-width: 900px) {
+  .ajarli-house-intro .ajarli-house-sticky { padding: 17px 17px 12px; }
+  .ajarli-house-intro .ajarli-house-nav { gap: 10px; }
+  .ajarli-house-intro .ajarli-wordmark img { width: 39px; height: 39px; border-radius: 12px; }
+  .ajarli-house-intro .ajarli-house-nav-actions { gap: 7px; }
+  .ajarli-house-intro .ajarli-house-skip { padding: 7px 8px; font-size: .6rem; }
+  .ajarli-house-intro .ajarli-house-login { min-height: 34px; padding: 0 10px; font-size: .62rem; }
+  .ajarli-house-intro .ajarli-house-copy { padding-top: clamp(31px, 6vh, 58px); }
+  .ajarli-house-intro .ajarli-house-stage h1,
+  .ajarli-house-intro .ajarli-house-stage h2 { letter-spacing: -.07em; }
+  .ajarli-house-intro .ajarli-house-stage p { max-width: 320px; }
+  .ajarli-house-intro .ajarli-house-visual::before { top: 2%; right: auto; left: 0; }
+  .ajarli-house-intro .ajarli-interior-status { left: 0 !important; right: auto !important; bottom: 19% !important; }
+  .ajarli-house-intro .ajarli-interior-viewer-hint { left: 0 !important; right: auto !important; bottom: 8% !important; }
+}
+@media (max-width: 480px) {
+  .ajarli-house-intro .ajarli-house-sticky { min-height: 600px; }
+  .ajarli-house-intro .ajarli-house-nav .ajarli-wordmark { font-size: 1rem; }
+  .ajarli-house-intro .ajarli-house-skip { display: none; }
+  .ajarli-house-intro .ajarli-house-copy { padding-top: 27px; }
+  .ajarli-house-intro .ajarli-house-index { margin-bottom: 13px; font-size: .58rem; }
+  .ajarli-house-intro .ajarli-house-stage h1,
+  .ajarli-house-intro .ajarli-house-stage h2 { margin: 10px 0 11px; font-size: clamp(2.1rem, 12vw, 3.1rem); }
+  .ajarli-house-intro .ajarli-house-stage p { max-width: 285px; font-size: .72rem; line-height: 1.8; }
+  .ajarli-house-intro .ajarli-house-final-actions { margin-top: 17px; }
+  .ajarli-house-intro .ajarli-house-enter,
+  .ajarli-house-intro .ajarli-house-register { min-height: 43px; padding: 0 14px; font-size: .7rem; }
+  .ajarli-house-intro .ajarli-house-visual { min-height: 0; }
+  .ajarli-house-intro .ajarli-house-visual::before { font-size: .55rem; }
+  .ajarli-house-intro .ajarli-house-footer { grid-template-columns: 1fr minmax(58px, 95px) 1fr; }
+  .ajarli-house-intro .ajarli-house-footer > span:first-child { max-width: 92px; line-height: 1.4; }
+}
